@@ -1,20 +1,16 @@
-{ inputs, config, lib, pkgs, ... }: with lib;
-{
+{ config, lib, pkgs, ... }: {
+
   imports = [
     ./networking.nix
   ];
 
 
-  environment.systemPackages = [ (pkgs.callPackage "${builtins.fetchTarball "https://github.com/ryantm/agenix/archive/main.tar.gz"}/pkgs/agenix.nix" {}) ];
   config = {
     system.stateVersion = "23.11";
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
-    # This is a dummy key in ISO image, we shall not worry about its security.
-    # Agenix breaks in LiveCD due to https://github.com/ryantm/agenix/issues/165.
-    age.identityPaths = [ (pkgs.writeText "img_key_ed25519" (builtins.readFile ../../secrets/img_key_ed25519)) ];
-
     programs.gnupg.agent.enable = true;
+
 
     boot.supportedFilesystems = lib.mkForce [ "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" ];
 
@@ -47,14 +43,80 @@
     '';
 
 
+   disko.devices = {
+    disk = {
+      nvme = {
+        type = "disk";
+        device = "/dev/nvme0n1";
+        content = {
+          type = "gpt";
+          partitions = {
+            esp = {
+              label = "esp";
+              start = "0";
+              end = "4G";
+              # EFI Filesystem
+              type = "EF00";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
+              };
+            };
+            swap = {
+              label = "swap";
+              start = "4G";
+              end = "24G";
+              content = {
+                type = "luks";
+                name = "cryptswap";
+                content = { type = "swap"; };
+              };
+            };
+            root = {
+              label = "root";
+              start = "24G";
+              end = "100%";
+              content = {
+                type = "luks";
+                name = "cryptroot";
+                content = {
+                  type = "btrfs";
+                  subvolumes = {
+                    "/persist" = {
+                      mountpoint = "/persist";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                    "/persist/home" = {
+                      mountpoint = "/persist/home";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                    "/nix" = {
+                      mountpoint = "/nix";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                    "/tmp" = {
+                      mountpoint = "/tmp";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                    "/.snapshots" = {
+                      mountpoint = "/.snapshots";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+
    services.displayManager.autoLogin = {
       enable = true;
       user = "nixos";
     };
-
-    disko.devices = (import ./../shade/system/disko/default.nix { });
-    # This is a LiveCD, please don't enable disk config in NixOS.
-    disko.enableConfig = false;
 
     environment.systemPackages = with pkgs; let
       create-disko-pkg = name: path: (runCommandLocal "disko-${name}" { } ''
