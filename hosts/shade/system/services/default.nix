@@ -1,11 +1,5 @@
-{ lib, config, pkgs, ...}: {
-  imports = [
-    ./pipewire.nix
-    ./power.nix
-    ./backlight.nix
-  ];
+{ lib, config, pkgs, ... }: {
+  imports = [ ./pipewire.nix ./power.nix ./backlight.nix ];
 
-  services = {
-    dbus.implementation = "broker";
-  };
+  services = { dbus.implementation = "broker"; };
 }

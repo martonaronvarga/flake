@@ -1,15 +1,7 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}: {
-  imports = [
-    ./nixpkgs.nix
-    ./substituters.nix
-  ];
+{ config, pkgs, lib, ... }: {
+  imports = [ ./nixpkgs.nix ./substituters.nix ];
 
-  environment.systemPackages = [pkgs.git];
+  environment.systemPackages = [ pkgs.git pkgs.alejandra ];
 
   nix = {
     gc = {
@@ -20,14 +12,14 @@
     settings = {
       auto-optimise-store = true;
       builders-use-substitutes = true;
-      experimental-features = ["nix-command" "flakes" "repl-flake"];
+      experimental-features = [ "nix-command" "flakes" ];
       accept-flake-config = true;
       use-xdg-base-directories = true;
 
       keep-derivations = true;
       keep-outputs = true;
 
-      trusted-users = ["root" "wheel"];
+      trusted-users = [ "root" "wheel" ];
     };
   };
 }

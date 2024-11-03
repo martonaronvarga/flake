@@ -1,9 +1,5 @@
 { lib, config, pkgs, ... }:
 
 {
-  imports = [
-    ./boot.nix
-    ./security.nix
-    ./users.nix
-  ];
+  imports = [ ./boot.nix ./security.nix ./users.nix ];
 }

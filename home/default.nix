@@ -5,6 +5,13 @@
   ...
 }: {
 
+  imports = [
+    ./programs
+    ./services
+    ./terminal
+    ./neovim
+  ];
+
   home = {
     username = "usu";
     homeDirectory = "/home/usu";
