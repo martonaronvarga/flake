@@ -1,8 +1,5 @@
-{
-  config,
-  pkgs,
-  ...
-}: let
+{ config, pkgs, lib, ... }:
+let
   browser = ["firefox"];
   imageViewer = ["feh"];
   videoPlayer = ["vlc"];
@@ -37,7 +34,7 @@
 
   # XDG MIME types
   associations = builtins.mapAttrs (_: v: (map (e: "${e}.desktop") v)) ({
-      "application/pdf" = ["firefox"];
+      "application/pdf" = ["zathura"];
       "text/html" = browser;
       "text/plain" = ["neovim"];
       "inode/directory" = ["yazi"];
@@ -47,9 +44,9 @@
     // audio
     // browserTypes);
 in {
-  xdg = {
+  programs.xdg = {
     enable = true;
-    cacheHome = config.home.homeDirectory + "/.local/cache";
+    cacheHome = "${config.home.homeDirectory}/.local/cache";
 
     mimeApps = {
       enable = true;
@@ -60,13 +57,14 @@ in {
       enable = true;
       createDirectories = true;
       extraConfig = {
-        XDG_SCREENSHOTS_DIR = "${config.xdg.userDirs.pictures}/Screenshots";
+        XDG_SCREENSHOTS_DIR = "${config.xdg.userDirs.pictures}/screenshots";
       };
     };
   };
 
+  # Correctly define home packages
   home.packages = [
-    # used by `gio open` and xdp-gtk
+    # used by `gio open` and xdg-utils
     (pkgs.writeShellScriptBin "xdg-terminal-exec" ''
       kitty "$@"
     '')

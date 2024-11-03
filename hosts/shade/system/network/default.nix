@@ -1,12 +1,9 @@
-{ lib, config, pkgs, ...}:
-{
-  imports = [
-    ./spotify.nix
-  ];
+{ lib, config, pkgs, ... }: {
+  imports = [ ./spotify.nix ];
 
   networking = {
     # use quad9 with DNS over TLS
-    nameservers = ["9.9.9.9#dns.quad9.net"];
+    nameservers = [ "9.9.9.9#dns.quad9.net" ];
 
     networkmanager = {
       enable = true;

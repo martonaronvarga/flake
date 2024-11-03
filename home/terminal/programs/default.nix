@@ -1,4 +1,4 @@
-{
+{ pkgs, config, lib, ...}: {
   imports = [
     ./btop.nix
     ./cli.nix

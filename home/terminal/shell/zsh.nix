@@ -7,7 +7,7 @@
     enable = true;
     enableCompletion = true;
     syntaxHighlighting.enable = true;
-    autosuggestion.enable = true;
+    autosuggestions.enable = true;
     autocd = true;
     dotDir = ".config/zsh";
 
@@ -58,5 +58,5 @@
       bindkey "''${key[Up]}" up-line-or-search
       '';
   };
-  config.programs.bat.enable = true;
+  programs.bat.enable = true;
 }

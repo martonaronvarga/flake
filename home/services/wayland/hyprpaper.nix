@@ -9,8 +9,9 @@
     package = inputs.hyprpaper.packages.${pkgs.system}.default;
 
     settings = {
-      preload = [", ${../../../wallpaper.png}"];
-      wallpaper = [", ${../../../wallpaper.png}"];
+      splash = false;
+      preload = builtins.toString ../../../wallpaper.png;
+      wallpaper = ", ${builtins.toString ../../../wallpaper.png}";
     };
   };
 }

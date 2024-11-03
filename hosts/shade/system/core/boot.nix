@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+{ pkgs, lib, ... }: {
   hardware.enableAllFirmware = true;
   boot = {
 
@@ -15,39 +11,34 @@
 
     initrd = {
       systemd.enable = true;
-      luks.devices."cryptroot" = {
-        allowDiscards = true;
-      };
-      supportedFilesystems = ["btrfs"];
-      availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod"];
+      luks.devices."cryptroot" = { allowDiscards = true; };
+      supportedFilesystems = [ "btrfs" ];
+      availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
       kernelModules = [ "kvm-intel" ];
 
     };
 
     tmp.cleanOnBoot = true;
 
-
     consoleLogLevel = 3;
-    kernelParams = [
-      "quiet"
-      "systemd.show_status=auto"
-      "rd.udev.log_level=3"
-    ];
+    kernelParams = [ "quiet" "systemd.show_status=auto" "rd.udev.log_level=3" ];
 
     loader = {
       efi.canTouchEfiVariables = true;
       systemd-boot.enable = lib.mkForce false;
     };
 
+    kernelPackages = pkgs.linuxPackages_latest;
+
   };
 
   fileSystems."/" = {
-    fsType = "btrfs";
-    device = "/dev/disk/by-uuid/asd";
-    options = [ "defaults" "size=2G" "mode=755"];
+    fsType = "tmpfs";
+    options = [ "defaults" "size=2G" "mode=755" ];
   };
 
   fileSystems."/persist".neededForBoot = true;
 
-  environment.systemPackages = [pkgs.linuxPackages_latest.cpupower pkgs.sbctl ];
+  environment.systemPackages =
+    [ pkgs.linuxPackages_latest.cpupower pkgs.sbctl ];
 }

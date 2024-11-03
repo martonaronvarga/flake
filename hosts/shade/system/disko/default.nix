@@ -1,9 +1,9 @@
 {
-  disko.devices = { device ? "/dev/nvme0n1", ... }: {
+  disko.devices = {
     disk = {
       nvme = {
         type = "disk";
-        inherit device;
+        device = "/dev/nvme0n1";
         content = {
           type = "gpt";
           partitions = {
@@ -26,9 +26,7 @@
               content = {
                 type = "luks";
                 name = "cryptswap";
-                content = {
-                  type = "swap";
-                };
+                content = { type = "swap"; };
               };
             };
             root = {
