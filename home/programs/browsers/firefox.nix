@@ -23,7 +23,7 @@
           "privacy.purge_trackers.enabled" = true;
           "services.sync.prefs.sync.uiCustomization.state" = true;
           "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
-          "browser.download.dir" = "${config.user.home}/downloads";
+          "browser.download.dir" = "$HOME/downloads";
           "signon.rememberSignons" = false;
           "browser.shell.checkDefaultBrowser" = false;
           "browser.newtabpage.enabled" = false;
@@ -51,6 +51,7 @@
           "extensions.pocket.enabled" = false;
           "extensions.unifiedExtensions.enabled" = false;
           "extensions.shield-recipe-client.enabled" = false;
+          "extensions.autoDisableScopes" = 0;
           "reader.parse-on-load.enabled" = false;
 
           # security
@@ -171,13 +172,6 @@
             "Google".metaData.alias = "@g";
           };
         };
-        extensions = with pkgs.nur.repos.rycee.firefox.addons; [
-          grammarly
-          i-still-dont-care-about-cookies
-          zotero-connector
-          adblocker-ultimate
-        ];
-
       };
     };
   };

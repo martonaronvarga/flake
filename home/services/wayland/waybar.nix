@@ -1,135 +1,135 @@
 { pkgs, config, inputs, lib, ...}: {
   programs.waybar = {
     enable = true;
-    package = inputs.waybar.defaultPackage.x86_64-linux;
     
-    config = {
-      layer = "top";
-      position = "top";
-      height = 15;
-      margin-left = 10;
-      margin-right = 10;
-      margin-top = 5;
-      margin-bottom = 0;
-      spacing = 5;
-      modules-left = ["cpu" "memory" "hyprland/workspaces"];
-      modules-center = ["custom/media"];
-      modules-right = ["tray" "custom/keyboard" "network" "battery"  "pulseaudio" "clock" "custom/quit"];
+    settings = {
+      mainBar = {
+        layer = "top";
+        position = "top";
+        height = 15;
+        margin-left = 10;
+        margin-right = 10;
+        margin-top = 5;
+        margin-bottom = 0;
+        spacing = 5;
+        modules-left = ["cpu" "memory" "hyprland/workspaces"];
+        modules-center = ["custom/media"];
+        modules-right = ["tray" "custom/keyboard" "network" "battery"  "pulseaudio" "clock" "custom/quit"];
 
-      "hyprland/workspaces" = {
-        format = "{icon}";
-        all-outputs = true;
-        on-click = "activate";
-        "format-icons" = {
-          "1" = "1";
-          "2" = "2";
-          "3" = "3";
-          "4" = "4";
-          "5" = "5";
-          urgent = " {icon}";
-          focused = " {icon}";
-          default = " {icon}";
-        };
-      };
-
-      tray = {
-        spacing = 8;
-        icon-size = 7;
-        icon-limit = 5;
-        scroll = true;
-      };
-
-      cpu = {
-        format = " {usage}%";
-        max-length = 10;
-        interval = 1;
-      };
-
-      memory = {
-        format = "󰇂 {used:0.1f}G";
-        max-length = 10;
-        interval = 1;
-      };
-
-      backlight = {
-        device = "DP-1";
-        format = "{icon} {percent}%";
-        format-icons = ["" "" "" "" "" "" "" "" ""];
-        on-click = "brightnessctl s 10%";
-      };
-
-      clock = {
-        format = "{:%H:%M}";
-        format-alt = "{:%a %b %d}";
-        tooltip = false;
-      };
-
-      battery = {
-        states = {
-          good = 95;
-          warning = 30;
-          cricital = 15;
+        "hyprland/workspaces" = {
+          format = "{icon}";
+          all-outputs = true;
+          on-click = "activate";
+          "format-icons" = {
+            "1" = "1";
+            "2" = "2";
+            "3" = "3";
+            "4" = "4";
+            "5" = "5";
+            urgent = " {icon}";
+            focused = " {icon}";
+            default = " {icon}";
+          };
         };
 
-        bat = "BAT0";
-        adapter = "AC";
-        interval = 30;
-        max-length = 20;
-        format = "{icon} {capacity}%";
-        format-charging = "󱐋 {capacity}%";
-        format-plugged = " {capacity}%";
-        format-discharging = " {capacity}%";
-        format-alt = "{icon} {time}";
-        format-icons = [ " " " " " " " " " " ];
-      };
-      
-      network = {
-        format = "{ifname}";
-        format-wifi = " {essid}";
-        format-ethernet =  " {ifname}";
-        format-disconnected = "Disconnected ";
-        format-alt = "{ifname}: {ipaddr}/{cidr}";
-        tooltip-format-wifi = "{signalStrength}%";
-        max-length = 20;
-      };
-      
-      "custom/media" = {
-        format = "{}";
-        interval = 1;
-        exec = "playerctl metadata --format '{{artist}} - {{title}}'";
-      };
-      
-      "custom/keyboard" = {
-        format = " {layout}";
-        interval = 1;
-        exec = ''
-          hyprctl devices -j |
-          jq -r '.keyboards[] | .active_keymap' |
-          head -n1 |
-          cut -c1-2 |
-          tr 'a-z' 'A-Z'
-        '';
+        tray = {
+          spacing = 8;
+          icon-size = 7;
+          icon-limit = 5;
+          scroll = true;
         };
-      };
-      
-      pulseaudio = {
-        format = "{icon} {volume}";
-        format-bluetooth = " {volume}";
-        format-muted = "  {volume}";
-        format-icons = {
-          headphone = "";
-          phone = "";
-          headset = "";
-          car = "";
-          default = ["" "" ""];
+
+        cpu = {
+          format = " {usage}%";
+          max-length = 10;
+          interval = 1;
         };
-        scroll-step = 1;
-        on-click = "pavucontrol";
-      };
-      
-      "custom/quit" = {
-        format = "";
-        exec = "wlogout";
+
+        memory = {
+          format = "󰇂 {used:0.1f}G";
+          max-length = 10;
+          interval = 1;
+        };
+
+        backlight = {
+          device = "DP-1";
+          format = "{icon} {percent}%";
+          format-icons = ["" "" "" "" "" "" "" "" ""];
+          on-click = "brightnessctl s 10%";
+        };
+
+        clock = {
+          format = "{:%H:%M}";
+          format-alt = "{:%a %b %d}";
+          tooltip = false;
+        };
+
+        battery = {
+          states = {
+            good = 95;
+            warning = 30;
+            cricital = 15;
+          };
+
+          bat = "BAT0";
+          adapter = "AC";
+          interval = 30;
+          max-length = 20;
+          format = "{icon} {capacity}%";
+          format-charging = "󱐋 {capacity}%";
+          format-plugged = " {capacity}%";
+          format-discharging = " {capacity}%";
+          format-alt = "{icon} {time}";
+          format-icons = [ " " " " " " " " " " ];
+        };
+        
+        network = {
+          format = "{ifname}";
+          format-wifi = " {essid}";
+          format-ethernet =  " {ifname}";
+          format-disconnected = "Disconnected ";
+          format-alt = "{ifname}: {ipaddr}/{cidr}";
+          tooltip-format-wifi = "{signalStrength}%";
+          max-length = 20;
+        };
+        
+        "custom/media" = {
+          format = "{}";
+          interval = 1;
+          exec = "playerctl metadata --format '{{artist}} - {{title}}'";
+        };
+        
+        "custom/keyboard" = {
+          format = " {layout}";
+          interval = 1;
+          exec = ''
+            hyprctl devices -j |
+            jq -r '.keyboards[] | .active_keymap' |
+            head -n1 |
+            cut -c1-2 |
+            tr 'a-z' 'A-Z'
+          '';
+          };
+        
+        pulseaudio = {
+          format = "{icon} {volume}";
+          format-bluetooth = " {volume}";
+          format-muted = "  {volume}";
+          format-icons = {
+            headphone = "";
+            phone = "";
+            headset = "";
+            car = "";
+            default = ["" "" ""];
+          };
+          scroll-step = 1;
+          on-click = "pavucontrol";
+        };
+        
+        "custom/quit" = {
+          format = "";
+          exec = "wlogout";
+        };
       };
     };
     
@@ -255,4 +255,5 @@
         color: #ffffff;
       }
     '';
- }
+ };
+}

@@ -1,5 +1,5 @@
 { config, pkgs, lib, inputs, ... }: {
-  user.packages = with pkgs; [
+  home.packages = with pkgs; [
     nix-zsh-completions
   ];
 
@@ -7,7 +7,7 @@
     enable = true;
     enableCompletion = true;
     syntaxHighlighting.enable = true;
-    autosuggestions.enable = true;
+    autosuggestion.enable = true;
     autocd = true;
     dotDir = ".config/zsh";
 

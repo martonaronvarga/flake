@@ -1,5 +1,7 @@
 {
   pkgs,
+  inputs,
+  lib,
   ...
 }: {
   imports = [

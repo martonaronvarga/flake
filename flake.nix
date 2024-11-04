@@ -35,6 +35,11 @@
         systems.follows = "hyprland/systems";
       };
     };
+    
+    hyprland-contrib = {
+      url = "github:hyprwm/contrib";
+      inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    };
 
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
@@ -70,24 +75,23 @@
       };
     };
 
-    waybar = {
-      url = "github:Alexays/Waybar";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     nvf.url = "github:notashelf/nvf";
     nvf.inputs.nixpkgs.follows = "nixpkgs";
 
-    yazi.url = "github:sxyazi/yazi";
-    yazi.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, utils, disko, lanzaboote
+  outputs = inputs @ { self, nixpkgs, nixos-hardware, utils, disko, lanzaboote
     , impermanence, home-manager, agenix, alejandra, hyprland, hypridle, hyprland-plugins
-    , hyprlock, hyprpaper, hyprcursor, waybar, nvf, yazi, ... }@inputs: {
+    , hyprland-contrib, hyprlock, hyprpaper, hyprcursor, nvf, ... }:
+      let
+        lib = nixpkgs.lib;
+        pkgs = import nixpkgs { system = "x86_64-linux"; };
+      in {
       nixosConfigurations = {
-        img-shade = nixpkgs.lib.nixosSystem {
+        img-shade = lib.nixosSystem {
           system = "x86_64-linux";
+          specialArgs = { inherit inputs self lib; };
           modules = [
             disko.nixosModules.default
             impermanence.nixosModules.impermanence
@@ -102,7 +106,8 @@
           ];
         };
         
-        shade = nixpkgs.lib.nixosSystem {
+        shade = lib.nixosSystem {
+          specialArgs = { inherit inputs self lib; };
           system = "x86_64-linux";
           modules = [
             disko.nixosModules.default
@@ -112,8 +117,13 @@
             agenix.nixosModules.default
             nvf.nixosModules.default
             ./hosts/shade
-            ./modules/agenix.nix
-            ./home
+            ./modules
+            {home-manager.extraSpecialArgs = { inherit inputs self pkgs;};}
+            { 
+              home-manager = {
+                users.usu = import ./home/default.nix;
+              };
+            }
           ];
         };
       };

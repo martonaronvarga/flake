@@ -1,15 +1,13 @@
 {
   lib,
-  self,
+  pkgs,
   inputs,
   ...
 }: {
-
   imports = [
-    ./programs
-    ./services
+    ./programs 
+    ./services 
     ./terminal
-    ./neovim
   ];
 
   home = {

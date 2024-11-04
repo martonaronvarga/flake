@@ -1,3 +1,3 @@
 { lib, config, pkgs, inputs, ... }: {
-  imports = [ ./core ./disko ./hardware ./network ./nix ./programs ./services ];
+  imports = [ ./neovim ./core ./disko ./hardware ./network ./nix ./programs ./services ];
 }

@@ -1,10 +1,11 @@
 {
   inputs,
   pkgs,
+  self,
   ...
 }: let
-  cursor = "Mocha Light";
-  cursorPackage = inputs.self.packages.${pkgs.system}.catppuccin-cursors;
+  cursor = "Catppuccin Mocha Light";
+  cursorPackage = pkgs.catppuccin-cursors;
 in {
   imports = [
     ./binds.nix
@@ -13,7 +14,7 @@ in {
   ];
 
   home.packages = [
-    inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
+   inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
   ];
 
   xdg.dataFile."icons/${cursor}".source = "${cursorPackage}/share/icons/${cursor}";

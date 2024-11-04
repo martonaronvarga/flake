@@ -44,7 +44,7 @@ let
     // audio
     // browserTypes);
 in {
-  programs.xdg = {
+  xdg = {
     enable = true;
     cacheHome = "${config.home.homeDirectory}/.local/cache";
 

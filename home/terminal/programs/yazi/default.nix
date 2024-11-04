@@ -4,12 +4,12 @@
   inputs,
   ...
 }: {
-  imports = [
-    ./theme/filetype.nix
-    ./theme/icons.nix
-    ./theme/manager.nix
-    ./theme/status.nix
-  ];
+   imports = [
+     ./theme/filetype.nix
+     ./theme/icons.nix
+     ./theme/manager.nix
+     ./theme/status.nix
+   ];
 
   # general file info
   home.packages = [pkgs.exiftool];
@@ -18,10 +18,8 @@
   programs.yazi = {
     enable = true;
 
-    package = inputs.yazi.packages.${pkgs.system}.default;
-
-    enableBashIntegration = config.programs.bash.enable;
-    enableZshIntegration = config.programs.zsh.enable;
+    enableBashIntegration = config.programs.bash.enable or false;
+    enableZshIntegration = config.programs.zsh.enable or false;
 
     settings = {
       manager = {

@@ -1,13 +1,12 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
-    exa
+    eza
     bat
     fzf
     btop
     neofetch
     zip
     unzip
-    unrar
     fd
     file
     ripgrep

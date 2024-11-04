@@ -2,7 +2,7 @@
   programs.aerc = {
     enable = true;
     extraAccounts = {};#TODO
-    extraBindings = {};#TODO
+    extraBinds = {};#TODO
     extraConfig = {};#TODO
   };
 }
