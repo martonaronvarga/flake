@@ -3,6 +3,7 @@
     ./media/playerctl.nix
     ./system/polkit-agent.nix
     ./wayland/wluma.nix
+    ./wayland/dunst.nix
     ./wayland/waybar.nix
     ./wayland/hypridle.nix
     ./wayland/hyprpaper.nix

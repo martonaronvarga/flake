@@ -89,6 +89,7 @@
         pkgs = import nixpkgs { system = "x86_64-linux"; };
       in {
       nixosConfigurations = {
+        #nix build .#nixosConfigurations.img-shade.config.system.build.isoImage       
         img-shade = lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs self lib; };
@@ -106,6 +107,7 @@
           ];
         };
         
+        
         shade = lib.nixosSystem {
           specialArgs = { inherit inputs self lib; };
           system = "x86_64-linux";
@@ -114,6 +116,7 @@
             impermanence.nixosModules.impermanence
             lanzaboote.nixosModules.lanzaboote
             home-manager.nixosModules.home-manager
+      	    nixos-hardware.nixosModules.lenovo-x1-carbon-gen-6
             agenix.nixosModules.default
             nvf.nixosModules.default
             ./hosts/shade

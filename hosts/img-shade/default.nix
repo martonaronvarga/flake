@@ -12,7 +12,7 @@
     programs.gnupg.agent.enable = true;
 
 
-    boot.supportedFilesystems = lib.mkForce [ "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" ];
+    boot.supportedFilesystems = lib.mkForce [ "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" "ext4" ];
 
     # Set internationalisation properties.
     console = {
@@ -63,18 +63,9 @@
                 mountpoint = "/boot";
               };
             };
-            swap = {
-              label = "swap";
-              start = "4G";
-              end = "24G";
-              content = {
-                type = "luks";
-                name = "cryptswap";
-                content = { type = "swap"; };
-              };
-            };
+            
             root = {
-              label = "root";
+              label = "iso_root";
               start = "24G";
               end = "100%";
               content = {
@@ -112,6 +103,8 @@
       };
     };
   };
+
+  disko.enableConfig = false;
 
    services.displayManager.autoLogin = {
       enable = true;

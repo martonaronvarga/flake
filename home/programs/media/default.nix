@@ -4,7 +4,7 @@
   home.packages = with pkgs; [
     # audio control
     pulsemixer
-    pwvucontrol
+    pavucontrol
 
     spotify
 
