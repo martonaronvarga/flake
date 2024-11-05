@@ -94,7 +94,7 @@
         
         # custom theme vim -noir
         extraLuaFiles = [
-           ./noir.lua
+           (builtins.path { path = ./noir.lua; })
         ];
       };
     };
