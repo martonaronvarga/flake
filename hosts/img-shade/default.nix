@@ -53,8 +53,7 @@
           partitions = {
             esp = {
               label = "esp";
-              start = "0";
-              end = "4G";
+              size="4G";
               # EFI Filesystem
               type = "EF00";
               content = {
@@ -63,11 +62,19 @@
                 mountpoint = "/boot";
               };
             };
-            
+
+            swap = {
+              label = "swap";
+              size = "16G";
+              content = {
+                type = "luks";
+                name = "cryptswap";
+                content = { type = "swap"; };
+              };
+            };
             root = {
               label = "iso_root";
-              start = "24G";
-              end = "100%";
+              size = "100%";
               content = {
                 type = "luks";
                 name = "cryptroot";
@@ -103,7 +110,7 @@
       };
     };
   };
-
+  
   disko.enableConfig = false;
 
    services.displayManager.autoLogin = {

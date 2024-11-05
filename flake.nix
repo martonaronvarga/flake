@@ -116,7 +116,7 @@
             impermanence.nixosModules.impermanence
             lanzaboote.nixosModules.lanzaboote
             home-manager.nixosModules.home-manager
-      	    nixos-hardware.nixosModules.lenovo-x1-carbon-gen-6
+      	    nixos-hardware.nixosModules.lenovo-thinkpad-x1-6th-gen
             agenix.nixosModules.default
             nvf.nixosModules.default
             ./hosts/shade
