@@ -10,9 +10,6 @@
     pulsemixer
     pavucontrol
 
-    spotify
-
-
     # videos
     vlc
     libvlc
