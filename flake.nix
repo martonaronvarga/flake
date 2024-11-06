@@ -86,7 +86,13 @@
     , hyprland-contrib, hyprlock, hyprpaper, hyprcursor, nvf, ... }:
       let
         lib = nixpkgs.lib;
-        pkgs = import nixpkgs { system = "x86_64-linux"; };
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          overlays = [
+            (import ./overlays/wl-screenrec-fix.nix)
+          ];
+        };
+
       in {
       nixosConfigurations = {
         #nix build .#nixosConfigurations.img-shade.config.system.build.isoImage       
