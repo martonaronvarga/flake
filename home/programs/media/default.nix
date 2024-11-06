@@ -9,6 +9,5 @@
 
     # videos
     vlc
-    libvlc
   ];
 }
