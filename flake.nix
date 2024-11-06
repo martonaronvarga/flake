@@ -2,7 +2,7 @@
   description = "Marton A. Varga's NixOS";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/a36b4d9ac9e2f4c42b145685a31ac8b58776e8cb";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
     utils.url = "github:zimbatm/flake-utils";
