@@ -5,7 +5,8 @@ final: prev: {
       src = prev.fetchFromGitHub {
         owner = "NixOS";
         repo = "nixpkgs";
-        rev = "sha256-a36b4d9ac9e2f4c42b145685a31ac8b58776e8cb";  # The commit hash
+        rev = "a36b4d9ac9e2f4c42b145685a31ac8b58776e8cb";  # The commit hash
+        hash = "sha256-OqMsWbV1WVItuyZRmb8AopSE9BYPOwqeWfcICtxhkdQ=";
       };
     });
 }
