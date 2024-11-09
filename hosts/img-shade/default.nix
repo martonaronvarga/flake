@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, inputs, ... }: {
 
   imports = [
     ./networking.nix
@@ -10,7 +10,7 @@
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
     programs.gnupg.agent.enable = true;
-
+  
 
     boot.supportedFilesystems = lib.mkForce [ "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" "ext4" ];
 

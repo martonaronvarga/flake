@@ -2,16 +2,23 @@
   hardware.enableAllFirmware = true;
   boot = {
 
-    lanzaboote = {
-      enable = true;
-      pkiBundle = "/etc/secureboot";
-    };
+    # lanzaboote = {
+    #   enable = true;
+    #   pkiBundle = "/etc/secureboot";
+    # };
 
     bootspec.enable = true;
 
     initrd = {
       systemd.enable = true;
-      luks.devices."cryptroot" = { allowDiscards = true; };
+      luks.devices."cryptswap" = { 
+        allowDiscards = true;
+        device = "/dev/disk/by-partlabel/swap";
+      };
+      luks.devices."cryptroot" = {
+        device = "/dev/disk/by-partlabel/root";
+        allowDiscards = true;
+      };
       supportedFilesystems = [ "btrfs" ];
       availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
       kernelModules = [ "kvm-intel" ];
@@ -25,7 +32,7 @@
 
     loader = {
       efi.canTouchEfiVariables = true;
-      systemd-boot.enable = lib.mkForce false;
+     # systemd-boot.enable = lib.mkForce false;
     };
 
     kernelPackages = pkgs.linuxPackages_latest;
