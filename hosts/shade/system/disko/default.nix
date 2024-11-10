@@ -9,8 +9,7 @@
           partitions = {
             esp = {
               label = "esp";
-              start = "0";
-              end = "4G";
+              size="4G";
               # EFI Filesystem
               type = "EF00";
               content = {
@@ -21,8 +20,7 @@
             };
             swap = {
               label = "swap";
-              start = "4G";
-              end = "24G";
+              size="16G";
               content = {
                 type = "luks";
                 name = "cryptswap";
@@ -31,8 +29,7 @@
             };
             root = {
               label = "root";
-              start = "24G";
-              end = "100%";
+              size = "100%";
               content = {
                 type = "luks";
                 name = "cryptroot";

@@ -52,7 +52,7 @@
           type = "gpt";
           partitions = {
             esp = {
-              label = "esp";
+              label = "iso_esp";
               size="4G";
               # EFI Filesystem
               type = "EF00";
@@ -64,7 +64,7 @@
             };
 
             swap = {
-              label = "swap";
+              label = "iso_swap";
               size = "16G";
               content = {
                 type = "luks";
