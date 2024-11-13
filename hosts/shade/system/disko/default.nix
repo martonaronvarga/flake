@@ -16,6 +16,7 @@
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
+                mountOptions = [ "umask=077" ];
               };
             };
             swap = {
@@ -35,7 +36,19 @@
                 name = "cryptroot";
                 content = {
                   type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  postCreateHook = ''
+                    cryptsetup open /dev/nvme0n1p3 cryptroot
+                    mount -o subvol=root /dev/mapper/cryptroot /mnt
+                    btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
+                    umount /mnt
+                    cryptsetup close cryptroot
+                  '';
                   subvolumes = {
+                    "/root" = {
+                      mountpoint = "/";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
                     "/persist" = {
                       mountpoint = "/persist";
                       mountOptions = [ "compress=zstd" "noatime" ];

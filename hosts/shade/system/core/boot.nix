@@ -23,6 +23,20 @@
       availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
       kernelModules = [ "kvm-intel" ];
 
+      postDeviceCommands = pkgs.lib.mkBefore ''
+        mkdir -p /mnt
+        mount -o subvol=/ /dev/mapper/cryptroot /mnt/root
+        btrfs subvolume list -o /mnt/root | cut -f9 -d' ' |
+        while read subvolume; do
+            echo "Deleting /$subvolume subvolume"
+            btrfs subvolume delete "/mnt/$subvolume"
+        done &&
+        echo "Deleting /root subvolume" &&
+        btrfs subvolume delete /mnt/root
+        echo "Restoring blank /root subvolume"
+        btrfs subvolume snapshot /mnt/root-blank /mnt/root
+        umount /mnt
+      '';
     };
 
     tmp.cleanOnBoot = true;
@@ -33,6 +47,7 @@
     loader = {
       efi.canTouchEfiVariables = true;
      # systemd-boot.enable = lib.mkForce false;
+      systemd-boot.enable = true;
     };
 
     kernelPackages = pkgs.linuxPackages_latest;
@@ -40,11 +55,11 @@
   };
 
   fileSystems."/" = {
-    fsType = "tmpfs";
-    options = [ "defaults" "size=2G" "mode=755" ];
+    fsType = "btrfs";
+    options = [ "compress=zstd" "noatime" ];
   };
 
-  fileSystems."/persist".neededForBoot = true;
+  
 
   environment.systemPackages =
     [ pkgs.linuxPackages_latest.cpupower pkgs.sbctl ];

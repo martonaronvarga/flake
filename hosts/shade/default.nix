@@ -15,8 +15,11 @@
       "/var/lib"
       "/var/cache"
       "/etc/NetworkManager/system-connections"
+      "/var/lib/NetworkManager/"
     ];
-    files = [ "/etc/machine-id" "/home/usu/.config/zsh/.zsh_history" ];
+    files = [ 
+      "/etc/machine-id" 
+    ];
     users.usu = {
       directories = [
         "documents"
@@ -29,6 +32,7 @@
         ".cache"
         ".local"
         ".mozilla"
+        ".config/zsh/.zsh_history"
         {
           directory = ".gnupg";
           mode = "0700";
@@ -44,6 +48,11 @@
       ];
     };
   };
+
+  security.sudo.extraConfig = ''
+    Defaults lecture = never
+  '';
+  
 
   services.btrbk.instances.snapshot = {
     # snapshot on the start and the middle of every hour.
