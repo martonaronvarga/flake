@@ -38,11 +38,10 @@
                   type = "btrfs";
                   extraArgs = [ "-f" ];
                   postCreateHook = ''
-                    cryptsetup open /dev/nvme0n1p3 cryptroot
-                    mount -o subvol=root /dev/mapper/cryptroot /mnt
-                    btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
-                    umount /mnt
-                    cryptsetup close cryptroot
+                    MNTPOINT=$(mktemp -d)
+                    mount "/dev/mapper/cryptroot" "$MNTPOINT" -o subvol=/
+                    trap 'umount $MNTPOINT; rm -rf $MNTPOINT' EXIT
+                    btrfs subvolume snapshot -r $MNTPOINT/root $MNTPOINT/root-blank
                   '';
                   subvolumes = {
                     "/root" = {

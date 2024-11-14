@@ -99,12 +99,8 @@
           system = "x86_64-linux";
           specialArgs = { inherit inputs self lib; };
           modules = [
-            disko.nixosModules.default
-            impermanence.nixosModules.impermanence
-            lanzaboote.nixosModules.lanzaboote
-            home-manager.nixosModules.home-manager
       	    agenix.nixosModules.default
-            "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-base.nix"
+            "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
             ./hosts/img-shade
             {
               environment.systemPackages = [ agenix.packages.x86_64-linux.default ];

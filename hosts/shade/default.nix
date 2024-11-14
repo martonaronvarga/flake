@@ -48,6 +48,8 @@
       ];
     };
   };
+  
+  fileSystems."/persist".neededForBoot = true;
 
   security.sudo.extraConfig = ''
     Defaults lecture = never

@@ -23,21 +23,30 @@
       availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
       kernelModules = [ "kvm-intel" ];
 
-      postDeviceCommands = pkgs.lib.mkBefore ''
-        mkdir -p /mnt
-        mount -o subvol=/ /dev/mapper/cryptroot /mnt/root
-        btrfs subvolume list -o /mnt/root | cut -f9 -d' ' |
-        while read subvolume; do
-            echo "Deleting /$subvolume subvolume"
-            btrfs subvolume delete "/mnt/$subvolume"
-        done &&
-        echo "Deleting /root subvolume" &&
-        btrfs subvolume delete /mnt/root
-        echo "Restoring blank /root subvolume"
-        btrfs subvolume snapshot /mnt/root-blank /mnt/root
-        umount /mnt
-      '';
-    };
+      systemd.services."btrfs-rollback" = {
+        description = "Rollback root filesystem to pristine state";
+        requires = [ "cryptroot.device" ];
+        after = [ "cryptroot.target" ];
+        wantedBy = [ "initrd.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script = ''
+            mkdir -p /mnt
+            mount -o subvol=/ /dev/mapper/cryptroot /mnt/root
+            btrfs subvolume list -o /mnt/root | cut -f9 -d' ' |
+            while read subvolume; do
+                echo "Deleting /$subvolume subvolume"
+                btrfs subvolume delete "/mnt/$subvolume"
+            done &&
+            echo "Deleting /root subvolume" &&
+            btrfs subvolume delete /mnt/root
+            echo "Restoring blank /root subvolume"
+            btrfs subvolume snapshot /mnt/root-blank /mnt/root
+            umount /mnt   
+          '';
+        };
+      };
 
     tmp.cleanOnBoot = true;
 
