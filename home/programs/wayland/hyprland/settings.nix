@@ -1,6 +1,6 @@
 {config, ...}: let
   pointer = config.home.pointerCursor;
-  cursorName = "catppuccin-mocha-light-cursors";
+  cursorName = "catppuccin-mocha-flamingo-cursors";
 in {
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
@@ -99,7 +99,6 @@ in {
     misc = {
       force_default_wallpaper = 0;
       disable_hyprland_logo = true;
-      allow_tearing = true;
 
       # enable variable refresh rate (effective depending on hardware)
       vrr = 1;
@@ -111,6 +110,7 @@ in {
     gestures = {
       workspace_swipe = true;
       workspace_swipe_forever = true;
+      workspace_swipe_min_speed_to_force = 5;
     };
 
     xwayland.force_zero_scaling = true;

@@ -16,7 +16,7 @@
       waylandCompositors = {
         hyprland = {
           prettyName = "Hyprland";
-          binPath = "/run/current-system/sw/bin/Hyprland";
+          binPath = lib.mkForce "${inputs.hyprland.packages.${pkgs.system}.default}/bin/Hyprland";
         };
       };
     };

@@ -136,8 +136,8 @@
     style = ''
       * {
         font-size: 10px;
-        font-family: "Terminus (TTF)";
-        border = none;
+        font-family: "terminess-ttf";
+        border: none;
         min-height: 0px;
         border-radius: 4px;
       }

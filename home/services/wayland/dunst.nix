@@ -3,7 +3,7 @@
     enable = true;
     settings = {
       global = {
-        font = "Terminus Font 12";
+        font = "terminess-ttf 12";
         allow_markup = "yes";
         format = "<b>%s</b>\n%b";
         sort = "yes";

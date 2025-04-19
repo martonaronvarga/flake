@@ -13,7 +13,7 @@
         show_always = true;
       };
       character = {
-        success_symbol = "[](bold white)";
+        success_symbol = "[](bold white)";
         error_symbol = "[](bold red)";
       };
 
@@ -25,7 +25,7 @@
       };
 
       nix_shell = {
-        symbol = " ";
+        symbol = "  ";
         format = "[$symbol$name]($style)";
         heuristic = true;
       };

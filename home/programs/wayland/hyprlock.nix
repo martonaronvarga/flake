@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  font_family = "Terminus";
+  font_family = "terminess-ttf";
 in {
   programs.hyprlock = {
     enable = true;
@@ -59,7 +59,7 @@ in {
       label = [
         {
           monitor = "";
-          text = "cmd[update:1000] date +'H:%M'";
+          text = "cmd[update:1000] date +'%H:%M'";
           inherit font_family;
           font_size = 50;
           color = "rgba(255, 255, 255, .3)";

@@ -5,8 +5,8 @@
   ...
 }: {
   home.pointerCursor = {
-    package = pkgs.catppuccin-cursors;
-    name = "Catppuccin Mocha Dark";
+    package = pkgs.catppuccin-cursors.mochaFlamingo;
+    name = "catppuccin-mocha-flamingo-cursors";
     size = 16;
     gtk.enable = true;
     x11.enable = true;
@@ -16,8 +16,8 @@
     enable = true;
 
     font = {
-      name = "Terminus (TTF) Bold";
-      package = pkgs.terminus_font_ttf;
+      name = "terminess-ttf";
+      package = pkgs.nerd-fonts.terminess-ttf;
       size = 9;
     };
 

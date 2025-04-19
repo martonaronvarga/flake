@@ -3,8 +3,8 @@
     enable = true;
     font = {
       size = 14;
-      name = "Terminus";
-      package = pkgs.terminus_font_ttf;
+      name = "terminess-ttf";
+      package = pkgs.nerd-fonts.terminess-ttf;
     };
 
     settings = {
@@ -55,25 +55,25 @@
       url_color = "#888888";
 
       color0 = "#000000";
-      color8 = "#555555";
+      color8 = "#ff5555";
 
       color1 = "#ff5555";
       color9 = "#ff6e6e";
 
-      color2 = "#55ff55";
-      color10 = "#6eff6e";
+      color2 = "#ffffff";
+      color10 = "#ffffff";
 
-      color3 = "#ffff55";
-      color11 = "#ffff6e";
+      color3 = "#ffffff";
+      color11 = "#ffffff";
 
-      color4 = "#5555ff";
-      color12 = "#6e6eff";
+      color4 = "#ffffff";
+      color12 = "#ffffff";
 
-      color5  = "#ff55ff";
-      color13 = "#ff6eff";
+      color5  = "#ffffff";
+      color13 = "#ffffff";
 
-      color6  = "#55ffff";
-      color14 = "#6effff";
+      color6  = "#ffffff";
+      color14 = "#ffffff";
 
       color7  = "#bbbbbb";
       color15 = "#ffffff";

@@ -56,7 +56,7 @@
       "idleinhibit fullscreen, class:^(firefox)$"
 
       "dimaround, class:^(xdg-desktop-portal-gtk)$"
-      "dimaround, class:^(polkit-gnome-authentication-agent-1)$"
+      "dimaround, class:^(hyprpolkitagent)$"
 
       # fix xwayland apps
       "rounding 0, xwayland:1"
