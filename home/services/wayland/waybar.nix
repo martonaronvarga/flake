@@ -11,7 +11,7 @@
         margin-right = 10;
         margin-top = 5;
         margin-bottom = 0;
-        spacing = 5;
+        spacing = 7;
         modules-left = ["cpu" "memory" "hyprland/workspaces"];
         modules-center = ["custom/media"];
         modules-right = ["tray" "custom/keyboard" "network"  "backlight" "battery"  "pulseaudio" "clock" "custom/quit"];
@@ -40,13 +40,13 @@
         };
 
         cpu = {
-          format = " {usage}%";
+          format = "  {usage}%";
           max-length = 10;
           interval = 1;
         };
 
         memory = {
-          format = "󰇂 {used:0.1f}G";
+          format = "󰇂  {used:0.1f}G";
           max-length = 10;
           interval = 1;
         };
@@ -55,7 +55,6 @@
           device = "DP-1";
           format = "{icon} {percent}%";
           format-icons = ["" "" "" "" "" "" "" "" ""];
-          on-click = "brightnessctl s 10%";
         };
 
         clock = {
@@ -127,7 +126,7 @@
         };
         
         "custom/quit" = {
-          format = "";
+          format = " ";
           on-click = "wlogout";
         };
       };
@@ -148,13 +147,13 @@
       }
 
       #battery {
-        background-color: #000000;
+        /*background-color: #000000; */
         color: white;
       }
 
       #battery.charging {
         color: #ffffff;
-        background-color: #000000;
+        /* background-color: #000000; */
       }
       
       @keyframes blink {
@@ -175,37 +174,37 @@
       }
       
       label:focus {
-        background-color: #000000;
+        /*background-color: #000000;*/
       }
 
       #custom-quit {
-        background: #000000;
+        /*background: #000000;*/
         color: #FFFFFF;
       }
 
       #clock {
         color: white;
-        background-color: #000000;
+        /*background-color: #000000; */
       }
 
       #custom-keyboard {
-        background-color: #000000;
+        /*background-color: #000000; */
         color: #ffffff;
       }
 
       #custom-media {
         min-width: 100px;
-        background-color: #66cc99;
+        /*background-color: #66cc99;*/
         color: #2a5c45;
       }
 
       #pulseaudio {
-        background: #000000;
+        /*background: #000000; */
         color: #ffffff;
       }
       
       #pulseaudio.muted {
-        background: #000000;
+        /*background: #000000;*/
         color: #ffffff;
       }
 
@@ -219,12 +218,12 @@
       }
       
       #cpu {
-        background-color: #000000;
+       /* background-color: #000000; */
         color: #ffffff;
       }
 
       #memory {
-        background-color: #000000;
+        /*background-color: #000000; */
         color: #ffffff;
       }
 
@@ -251,7 +250,7 @@
       }
 
       #tray {
-        background-color: #000000;
+        box-shadow: inset 0 -3px transparent;
         color: #ffffff;
       }
     '';
