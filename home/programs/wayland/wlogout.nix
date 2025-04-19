@@ -19,11 +19,12 @@ in {
 
       window {
       	background-color: rgba(0, 0, 0, .95);
-        font-family: terminess-ttf;
+        font-family: Terminus Nerd Font;
         font-size: 14pt;
       }
 
       button {
+        color: rgba(255, 255, 255, .9);
         background: rgba(0, 0, 0, .05);
         border-radius: 8px;
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1), 0 0 rgba(0, 0, 0, .95);
@@ -32,11 +33,19 @@ in {
         background-size: 25%;
         margin: 1rem;
         transition: box-shadow .2s ease-in-out, background-color 0.2s ease-in-out;
+        position: relative;
       }
 
       button:focus, button:active, button:hover {
         background-color: rgba(255, 255, 255, 0.2);
         outline-style: none;
+      }
+
+      button label {
+        display: block;
+        margin-top: 2.5em;
+        text-align: center;
+        color: rgba(255, 255, 255, .9);
       }
 
       ${lib.concatMapStringsSep "\n" bgImageSection [

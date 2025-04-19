@@ -15,7 +15,7 @@
 
   toggle = program: service: let
     prog = builtins.substring 0 14 program;
-    runserv = lib.optionalString service "run-as-service";
+    runserv = lib.optionalString service "systemd-run --user --collect";
   in "pkill ${prog} || ${runserv} ${program}";
 
   runOnce = program: "pgrep ${program} || ${program}";
@@ -25,17 +25,17 @@ in {
     # binds
     bind = [
       # compositor commands
-      "$mod SHIFT, E, exec, pkill Hyprland"
+      "$mod SHIFT, E, exec, hyprctl dispatch exit"
       "$mod, Q, killactive,"
       "$mod, F, fullscreen,"
-      "$mod SHIFT, fullscreen, 0"
+      "$mod SHIFT, F, fullscreen, 0"
       "$mod, G, togglegroup,"
       "$mod SHIFT, N, changegroupactive, f"
       "$mod SHIFT, P, changegroupactive, b"
       "$mod, R, togglesplit,"
       "$mod, T, togglefloating,"
       "$mod, P, pseudo,"
-      "$mod ALT, ,resizeactive,"
+      "$mod ALT, R, resizeactive,"
 
 
       # utility
@@ -69,7 +69,7 @@ in {
 
       # special workspace
       "$mod SHIFT, grave, movetoworkspace, special"
-      "$mod, grave, togglespecialworkspace, eDP-1"
+      "$mod, grave, togglespecialworkspace, current"
 
       # cycle workspaces
       "$mod, bracketleft, workspace, m-1"

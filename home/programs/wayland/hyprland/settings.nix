@@ -5,20 +5,17 @@ in {
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
     env = [
-      "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
       "HYPRCURSOR_THEME,${cursorName}"
       "HYPRCURSOR_SIZE,${toString pointer.size}"
     ];
 
     exec-once = [
-      # set cursor for HL itself
-      "hyprpaper"
-      "sleep 1 && hyprctl setcursor ${cursorName} ${toString pointer.size}"
-      "hyprlock"
+      "hyprctl setcursor ${cursorName} ${toString pointer.size}"
       "nm-applet"
       "blueman-applet"
-      "waybar"
       "dunst"
+      "waybar"
+      "hyprlock"
     ];
 
     general = {
@@ -87,7 +84,8 @@ in {
       # focus change on cursor move
       follow_mouse = 1;
       accel_profile = "flat";
-      touchpad.scroll_factor = 0.1;
+      touchpad.scroll_factor = 0.5;
+      natural_scroll = true;
     };
 
     dwindle = {
@@ -104,8 +102,6 @@ in {
       vrr = 1;
     };
 
-    render.direct_scanout = true;
-
     # touchpad gestures
     gestures = {
       workspace_swipe = true;
@@ -113,9 +109,5 @@ in {
       workspace_swipe_min_speed_to_force = 5;
     };
 
-    xwayland.force_zero_scaling = true;
-
-    debug.disable_logs = false;
-    
   };
  }

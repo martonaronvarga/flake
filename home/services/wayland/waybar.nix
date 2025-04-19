@@ -14,7 +14,7 @@
         spacing = 5;
         modules-left = ["cpu" "memory" "hyprland/workspaces"];
         modules-center = ["custom/media"];
-        modules-right = ["tray" "custom/keyboard" "network" "battery"  "pulseaudio" "clock" "custom/quit"];
+        modules-right = ["tray" "custom/keyboard" "network"  "backlight" "battery"  "pulseaudio" "clock" "custom/quit"];
 
         "hyprland/workspaces" = {
           format = "{icon}";
@@ -85,7 +85,7 @@
         
         network = {
           format = "{ifname}";
-          format-wifi = " {essid}";
+          format-wifi = "  {essid}";
           format-ethernet =  " {ifname}";
           format-disconnected = "Disconnected ";
           format-alt = "{ifname}: {ipaddr}/{cidr}";
@@ -96,18 +96,18 @@
         "custom/media" = {
           format = "{}";
           interval = 1;
-          exec = "playerctl metadata --format '{{artist}} - {{title}}'";
+          exec = "playerctl metadata --format '{{artist}} - {{title}}' 2>/dev/null || echo ''";
         };
         
         "custom/keyboard" = {
-          format = " {layout}";
-          interval = 1;
+          format = "  {}";
+          interval = 5;
           exec = ''
             hyprctl devices -j |
             jq -r '.keyboards[] | .active_keymap' |
             head -n1 |
             cut -c1-2 |
-            tr 'a-z' 'A-Z'
+            tr 'a-z' 'A-Z' || echo "--"
           '';
           };
         
@@ -128,7 +128,7 @@
         
         "custom/quit" = {
           format = "";
-          exec = "wlogout";
+          on-click = "wlogout";
         };
       };
     };

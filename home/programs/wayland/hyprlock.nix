@@ -25,7 +25,7 @@ in {
         {
           monitor = "";
           path = "sceenshot";
-          color = "rgba(0, 0, 0, .7)";
+          color = "rgba(0, 0, 0, .4)";
           blur_passes = 3;
           blur_size = 7;
           noise = 0.0117;
@@ -49,7 +49,7 @@ in {
           font_color = "rgba(255, 255, 255, .8)";
 
           fade_on_empty = false;
-          placeholder_text = ''<span font_family="${font_family}" foreground="#ffffff66">Password...</span>'';
+          placeholder_text = "<span font_family='${font_family}' foreground='#ffffff66'>Password...</span>";
 
           dots_spacing = 0.2;
           dots_center = true;

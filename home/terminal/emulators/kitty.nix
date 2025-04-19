@@ -1,6 +1,8 @@
 { pkgs, lib, config, imputs, ...}: {
   programs.kitty = {
     enable = true;
+    package = pkgs.kitty;
+    shellIntegration.enableZshIntergration = true;
     font = {
       size = 14;
       name = "Terminess Nerd Font";
