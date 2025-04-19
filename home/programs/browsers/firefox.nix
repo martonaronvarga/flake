@@ -143,7 +143,7 @@
         search = {
           force = true;
           default = "Startpage";
-          order = [ "Startpage" "Google" ];
+          order = [ "Startpage" "Google" "Nix Packages" "NixOS Wiki" ];
           engines = {
             "Nix Packages" = {
               urls = [{
@@ -158,18 +158,18 @@
             };
             "NixOS Wiki" = {
                 urls = [{ template = "https://nixos.wiki/index.php?search={searchTerms}"; }];
-                iconUpdateURL = "https://nixos.wiki/favicon.png";
+                icon = "https://nixos.wiki/favicon.png";
                 updateInterval = 24 * 60 * 60 * 1000; # every day
                 definedAliases = [ "@nw" ];
             };
             "Startpage" = {
               urls = [{ template = "https://www.eu.startpage.com/do/search?query={searchTerms}"; }];
-              iconUpdateURL = "https://www.startpage.com/favicon.ico";
+              icon = "https://www.startpage.com/favicon.ico";
               updateInterval = 24 * 60 * 60 * 1000; # every day
               defunedAliases = [ "@sp" ];
             };
-            "Bing".metaData.hidden = true;
-            "Google".metaData.alias = "@g";
+            "bing".metaData.hidden = true;
+            "google".metaData.alias = "@g";
           };
         };
       };

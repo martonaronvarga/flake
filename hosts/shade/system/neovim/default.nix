@@ -5,13 +5,13 @@
     settings = {
       vim = {
         viAlias = true;
-        autocomplete.enable = true;
+        autocomplete.nvim-cmp.enable = true;
         lsp.enable = true;
         vimAlias = true;
         assistant.copilot.enable = true;
-        autoIndent = true;
         bell = "none";
-        colourTerm = true;
+        options.termguicolors = true;
+        options.autoindent = true;
         comments.comment-nvim.enable = true;
         dashboard.dashboard-nvim.enable = true;
         extraPackages = [pkgs.fzf pkgs.ripgrep];
@@ -70,7 +70,7 @@
           ts.enable = true;
         };
         
-        leaderKey = " ";
+        globals.mapLeader = " ";
         lsp.formatOnSave = true;
         lsp.lightbulb.enable = true;
         lsp.trouble.enable = true;
@@ -78,7 +78,7 @@
         minimap.codewindow.enable = true;
         notify.nvim-notify.enable = true;
 
-        snippets.vsnip.enable = true;
+        snippets.luasnip.enable = true;
         spellcheck.enable = true;
 
         statusline.lualine.enable = true;

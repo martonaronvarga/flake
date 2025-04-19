@@ -13,7 +13,7 @@
   home = {
     username = "usu";
     homeDirectory = "/home/usu";
-    stateVersion = "23.11";
+    stateVersion = "24.11";
     extraOutputsToInstall = ["doc" "devdoc"];
   };
 

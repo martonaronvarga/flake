@@ -12,7 +12,8 @@
     directories = [
       "/var/log"
       "/var/lib/bluetooth"
-      "/var/lib"
+      "/var/lib/colord/"
+      "/var/lib/nixos"
       "/var/cache"
       "/etc/NetworkManager/system-connections"
       "/var/lib/NetworkManager/"
@@ -22,12 +23,12 @@
     ];
     users.usu = {
       directories = [
-        "documents"
-        "downloads"
-        "music"
-        "pictures"
-        "videos"
-        "zotero"
+        "Documents"
+        "Downloads"
+        "Music"
+        "Pictures"
+        "Videos"
+        "Zotero"
         ".zotero"
         ".cache"
         ".local"
@@ -80,5 +81,5 @@
 
   time.timeZone = lib.mkDefault "Europe/Budapest";
 
-  system.stateVersion = "23.11";
+  system.stateVersion = "25.05";
 }

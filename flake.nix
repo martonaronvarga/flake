@@ -131,5 +131,8 @@
           ];
         };
       };
+
+      shade = self.nixosConfigurations.shade.config.system.build.toplevel;
+      img-shade = self.nixosConfigurations.img-shade.config.system.build.toplevel;
     };
 }

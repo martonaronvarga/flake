@@ -37,7 +37,7 @@
       
       "float, class: ^(Zotero)$"
       "float, class: ^blueman-manager$"
-      "float, fuzzel"
+      "float, class: fuzzel"
       # make Firefox/Zen PiP window floating and sticky
       "float, title:^(Picture-in-Picture)$"
       "pin, title:^(Picture-in-Picture)$"
@@ -60,8 +60,7 @@
 
       # fix xwayland apps
       "rounding 0, xwayland:1"
-      "center, class:^(.*jetbrains.*)$, title:^(Confirm Exit|Open Project|win424|win201|splash)$"
-      "size 640 400, class:^(.*jetbrains.*)$, title:^(splash)$"
+      "nofocus, title:(.*is sharing (your screen | a window))"
 
     ];
   };

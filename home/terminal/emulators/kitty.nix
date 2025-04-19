@@ -3,11 +3,16 @@
     enable = true;
     font = {
       size = 14;
-      name = "Terminus (TTF) Bold";
+      name = "Terminus";
       package = pkgs.terminus_font_ttf;
     };
 
     settings = {
+      wayland_window_title = "kitty";
+      hide_window_decorations = "titlebar-only";
+      adjust_line_height = "150%";
+      adjust_column_width = "0";
+      disable_ligatures = "never";
       scrollback_lines = 10000;
       placement_strategy = "center";
 
@@ -55,7 +60,7 @@
       color1 = "#ff5555";
       color9 = "#ff6e6e";
 
-      color2 = "#55ff55W";
+      color2 = "#55ff55";
       color10 = "#6eff6e";
 
       color3 = "#ffff55";

@@ -9,13 +9,14 @@
       noto-fonts-cjk-sans
       noto-fonts-emoji
       roboto
+      nerd-fonts.roboto-mono
+      nerd-fonts.noto
+      nerd-fonts.fantasque-sans-mono
+      nerd-fonts.commit-mono
+      nerd-fonts.terminess-ttf
       (google-fonts.override { fonts = [ "Inter" ]; })
 
-      # monospace fonts
-      roboto-mono
-
-      # nerdfonts
-      (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+      nerd-fonts.symbols-only
     ];
 
     # causes more issues than it solves
@@ -28,9 +29,9 @@
       addAll = builtins.mapAttrs
         (_: v: [ "Symbols Nerd Font" ] ++ v ++ [ "Noto Color Emoji" ]);
     in addAll {
-      serif = [ "Roboto" ];
-      sansSerif = [ "Noto Sans" ];
-      monospace = [ "Roboto Mono" ];
+      serif = [ "Terminus" ];
+      sansSerif = [ "Terminus" ];
+      monospace = [ "Terminus" ];
       emoji = [ ];
     };
   };

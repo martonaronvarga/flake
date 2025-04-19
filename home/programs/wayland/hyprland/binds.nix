@@ -23,75 +23,67 @@ in {
   wayland.windowManager.hyprland.settings = {
     
     # binds
-    bind = let
-      monocle = "dwindle:no_gaps_when_only";
-    in
-      [
-        # compositor commands
-        "$mod SHIFT, E, exec, pkill Hyprland"
-        "$mod, Q, killactive,"
-        "$mod, F, fullscreen,"
-        "$mod SHIFT, fullscreen, 0"
-        "$mod, G, togglegroup,"
-        "$mod SHIFT, N, changegroupactive, f"
-        "$mod SHIFT, P, changegroupactive, b"
-        "$mod, R, togglesplit,"
-        "$mod, T, togglefloating,"
-        "$mod, P, pseudo,"
-        "$mod ALT, ,resizeactive,"
+    bind = [
+      # compositor commands
+      "$mod SHIFT, E, exec, pkill Hyprland"
+      "$mod, Q, killactive,"
+      "$mod, F, fullscreen,"
+      "$mod SHIFT, fullscreen, 0"
+      "$mod, G, togglegroup,"
+      "$mod SHIFT, N, changegroupactive, f"
+      "$mod SHIFT, P, changegroupactive, b"
+      "$mod, R, togglesplit,"
+      "$mod, T, togglefloating,"
+      "$mod, P, pseudo,"
+      "$mod ALT, ,resizeactive,"
 
-        # toggle "monocle" (no_gaps_when_only)
-        "$mod, M, exec, hyprctl keyword ${monocle} $(($(hyprctl getoption ${monocle} -j | jaq -r '.int') ^ 1))"
 
-        # utility
-        # terminal
-        "$mod, Return, exec, kitty"
-        # logout menu
-        "$mod, Escape, exec, ${toggle "wlogout" true} -p layer-shell"
-        # lock screen
-        "$mod, L, exec, pgrep hyprlock || hyprlock"
-        # fuzzel
-        "$mod, D, exec, fuzzel"
-        # select area to perform OCR on
-        "$mod, O, exec, ${runOnce "wl-ocr"}"
-        ", XF86Favorites, exec, ${runOnce "wl-ocr"}"
+      # utility
+      # terminal
+      "$mod, Return, exec, kitty"
+      # logout menu
+      "$mod, Escape, exec, ${toggle "wlogout" true} -p layer-shell"
+      # lock screen
+      "$mod, L, exec, pgrep hyprlock || hyprlock"
+      # fuzzel
+      "$mod, D, exec, fuzzel"
 
-        # move focus
-        "$mod, left, movefocus, l"
-        "$mod, right, movefocus, r"
-        "$mod, up, movefocus, u"
-        "$mod, down, movefocus, d"
+      # move focus
+      "$mod, left, movefocus, l"
+      "$mod, right, movefocus, r"
+      "$mod, up, movefocus, u"
+      "$mod, down, movefocus, d"
 
-        # screenshot
-        # area
-        ", Print, exec, ${runOnce "grimblast"} --notify copysave area"
-        "$mod SHIFT, R, exec, ${runOnce "grimblast"} --notify copysave area"
+      # screenshot
+      # area
+      ", Print, exec, ${runOnce "grimblast"} --notify copysave area"
+      "$mod SHIFT, R, exec, ${runOnce "grimblast"} --notify copysave area"
 
-        # current screen
-        "CTRL, Print, exec, ${runOnce "grimblast"} --notify --cursor copysave output"
-        "$mod SHIFT CTRL, R, exec, ${runOnce "grimblast"} --notify --cursor copysave output"
+      # current screen
+      "CTRL, Print, exec, ${runOnce "grimblast"} --notify --cursor copysave output"
+      "$mod SHIFT CTRL, R, exec, ${runOnce "grimblast"} --notify --cursor copysave output"
 
-        # all screens
-        "ALT, Print, exec, ${runOnce "grimblast"} --notify --cursor copysave screen"
-        "$mod SHIFT ALT, R, exec, ${runOnce "grimblast"} --notify --cursor copysave screen"
+      # all screens
+      "ALT, Print, exec, ${runOnce "grimblast"} --notify --cursor copysave screen"
+      "$mod SHIFT ALT, R, exec, ${runOnce "grimblast"} --notify --cursor copysave screen"
 
-        # special workspace
-        "$mod SHIFT, grave, movetoworkspace, special"
-        "$mod, grave, togglespecialworkspace, eDP-1"
+      # special workspace
+      "$mod SHIFT, grave, movetoworkspace, special"
+      "$mod, grave, togglespecialworkspace, eDP-1"
 
-        # cycle workspaces
-        "$mod, bracketleft, workspace, m-1"
-        "$mod, bracketright, workspace, m+1"
+      # cycle workspaces
+      "$mod, bracketleft, workspace, m-1"
+      "$mod, bracketright, workspace, m+1"
 
-        # cycle monitors
-        "$mod SHIFT, bracketleft, focusmonitor, l"
-        "$mod SHIFT, bracketright, focusmonitor, r"
+      # cycle monitors
+      "$mod SHIFT, bracketleft, focusmonitor, l"
+      "$mod SHIFT, bracketright, focusmonitor, r"
 
-        # send focused workspace to left/right monitors
-        "$mod SHIFT ALT, bracketleft, movecurrentworkspacetomonitor, l"
-        "$mod SHIFT ALT, bracketright, movecurrentworkspacetomonitor, r"
-      ]
-      ++ workspaces;
+      # send focused workspace to left/right monitors
+      "$mod SHIFT ALT, bracketleft, movecurrentworkspacetomonitor, l"
+      "$mod SHIFT ALT, bracketright, movecurrentworkspacetomonitor, r"
+    ]
+    ++ workspaces;
 
 
     bindl = [

@@ -25,28 +25,29 @@
 
       systemd.services."btrfs-rollback" = {
         description = "Rollback root filesystem to pristine state";
-        requires = [ "cryptroot.device" ];
-        after = [ "cryptroot.target" ];
+        before = [ "sysroot.mount" ];
+        after = [ "cryptroot.target" "dev-mapper-cryptroot.device" ];
+        requires = [ "cryptroot.device" "cryptroot.target" "dev-mapper-cryptroot.device" ];
         wantedBy = [ "initrd.target" ];
         serviceConfig = {
           Type = "oneshot";
         };
         script = ''
+            set -euo pipefail
             mkdir -p /mnt
-            mount -o subvol=/ /dev/mapper/cryptroot /mnt/root
-            btrfs subvolume list -o /mnt/root | cut -f9 -d' ' |
-            while read subvolume; do
-                echo "Deleting /$subvolume subvolume"
-                btrfs subvolume delete "/mnt/$subvolume"
-            done &&
-            echo "Deleting /root subvolume" &&
-            btrfs subvolume delete /mnt/root
-            echo "Restoring blank /root subvolume"
-            btrfs subvolume snapshot /mnt/root-blank /mnt/root
-            umount /mnt   
-          '';
-        };
+            mount -t btrfs -o subvol=/ /dev/mapper/cryptroot /mnt
+            if btrfs subvolume show /mnt/root-blank >/dev/null 2>&1; then
+              btrfs subvolume delete /mnt/root
+              btrfs subvolume snapshot /mnt/root-blank /mnt/root
+              echo "Rollback successful"
+            else
+              echo "ERROR: root-blank snapshot missing!"
+              exit 1
+            fi
+            umount /mnt
+        '';
       };
+    };
 
     tmp.cleanOnBoot = true;
 
@@ -65,7 +66,7 @@
 
   fileSystems."/" = {
     fsType = "btrfs";
-    options = [ "compress=zstd" "noatime" ];
+    options = [ "subvol=root" "compress=zstd" "noatime" ];
   };
 
   

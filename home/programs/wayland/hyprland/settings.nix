@@ -1,6 +1,5 @@
 {config, ...}: let
   pointer = config.home.pointerCursor;
-
   cursorName = "catppuccin-mocha-light-cursors";
 in {
   wayland.windowManager.hyprland.settings = {
@@ -13,7 +12,8 @@ in {
 
     exec-once = [
       # set cursor for HL itself
-      "hyprctl setcursor ${cursorName} ${toString pointer.size}"
+      "hyprpaper"
+      "sleep 1 && hyprctl setcursor ${cursorName} ${toString pointer.size}"
       "hyprlock"
       "nm-applet"
       "blueman-applet"
@@ -28,37 +28,32 @@ in {
       border_size = 2;
       "col.active_border" = "rgba(FFFFFFFF) rgba(808080ee) 45deg";
       "col.inactive_border" = "rgba(202020FF)";
-
       no_focus_fallback = true;
-
-      allow_tearing = true;
       resize_on_border = true;
     };
 
     decoration = {
       rounding = 12;
-      
       active_opacity = 1.0;
       dim_inactive = true;
       dim_strength = 0.4;
 
-      drop_shadow = true;
-      shadow_range = 12;
-      shadow_render_power = 6;
-      "col.shadow" = "rgba(FFFFFF55)";
-      "col.shadow_inactive" = "rgba(000000FF)";
-
       blur = {
         enabled = true;
-        brightness = 1.0;
-
-        vibrancy = 1.0;
-
-        passes = 3;
         size = 10;
-
+        passes = 3;
+        brightness = 1.0;
+        vibrancy = 1.0;
         popups = true;
         popups_ignorealpha = 0.2;
+      };
+
+      shadow = {
+        enabled = true;
+        range = 12;
+        render_power = 6;
+        color = "rgba(FFFFFF55)";
+        color_inactive = "rgba(000000FF)";
       };
     };
 
@@ -104,6 +99,7 @@ in {
     misc = {
       force_default_wallpaper = 0;
       disable_hyprland_logo = true;
+      allow_tearing = true;
 
       # enable variable refresh rate (effective depending on hardware)
       vrr = 1;
@@ -120,29 +116,6 @@ in {
     xwayland.force_zero_scaling = true;
 
     debug.disable_logs = false;
-
-
-    hyprbars = {
-      bar_height = 20;
-      bar_precedence_over_border = true;
-
-      # order is right-to-left
-      hyprbars-button = [
-        # close
-        "rgba(000000FF), 15, , hyprctl dispatch killactive"
-        # maximize
-        "rgb(000000FF), 15, , hyprctl dispatch fullscreen 1"
-      ];
-    };
-
-    hyprexpo = {
-      columns = 3;
-      gap_size = 4;
-      bg_col = "rgb(000000)";
-
-      enable_gesture = true;
-      gesture_distance = 300;
-      gesture_positive = false;
-    };
+    
   };
  }

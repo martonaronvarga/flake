@@ -9,8 +9,9 @@
     system.stateVersion = "24.11";
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
-    programs.gnupg.agent.enable = true;
-  
+    boot.supportedFilesystems = lib.mkForce [ "btrfs" "vfat" "reiserfs" "f2fs" "xfs" "ntfs" "cifs"];
+
+    boot.kernelParams = [ "nomodeset" "intel_pstate=disable" "acpi_osi=Linux" "pci=noaer"];
 
     console = {
       font = "Lat2-Terminus16";
@@ -35,6 +36,7 @@
     [
       coreutils-full
       git
+      stress-ng
       wget
       vim
     ];
