@@ -26,12 +26,12 @@ in {
       button {
         color: rgba(255, 255, 255, .9);
         background: rgba(0, 0, 0, .05);
-        border-radius: 8px;
+        border-radius: 15px;
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1), 0 0 rgba(0, 0, 0, .95);
         background-repeat: no-repeat;
         background-position: center;
         background-size: 25%;
-        margin: 1rem;
+        margin: 3rem;
         transition: box-shadow .2s ease-in-out, background-color 0.2s ease-in-out;
         position: relative;
       }
@@ -41,12 +41,6 @@ in {
         outline-style: none;
       }
 
-      button label {
-        display: block;
-        margin-top: 2.5em;
-        text-align: center;
-        color: rgba(255, 255, 255, .9);
-      }
 
       ${lib.concatMapStringsSep "\n" bgImageSection [
         "lock"

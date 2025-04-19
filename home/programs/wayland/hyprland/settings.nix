@@ -7,6 +7,7 @@ in {
     env = [
       "HYPRCURSOR_THEME,${cursorName}"
       "HYPRCURSOR_SIZE,${toString pointer.size}"
+      "XDG_CURRENT_DESKTOP,Hyprland"
     ];
 
     exec-once = [
@@ -85,7 +86,7 @@ in {
       follow_mouse = 1;
       accel_profile = "flat";
       touchpad.scroll_factor = 0.5;
-      natural_scroll = true;
+      touchpad.natural_scroll = true;
     };
 
     dwindle = {

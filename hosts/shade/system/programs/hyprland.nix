@@ -5,5 +5,5 @@
     withUWSM = lib.mkForce false; # default is off to use flake
   };
 
-  environment.variables.NIXOS_OZONE_WL = "1";
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
 }

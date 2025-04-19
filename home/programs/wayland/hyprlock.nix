@@ -42,17 +42,22 @@ in {
 
           size = "300, 50";
 
-          outline_thickness = 1;
+          outline_thickness = 3;
 
-          outer_color = "rgba(0, 0, 0, 1)";
+          outer_color = "rgba(25, 25, 25, 1)";
           inner_color = "rgba(0, 0, 0, .8)";
           font_color = "rgba(255, 255, 255, .8)";
 
-          fade_on_empty = false;
-          placeholder_text = "<span font_family='${font_family}' foreground='#ffffff66'>Password...</span>";
 
+          fade_on_empty = false;
+          placeholder_text = "<span foreground='#ffffff66'>Password...</span>";
+
+          dots_size = 0.25;
           dots_spacing = 0.2;
           dots_center = true;
+
+          halign = "center";
+          valign = "center";
         }
       ];
 
