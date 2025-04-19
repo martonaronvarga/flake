@@ -19,7 +19,7 @@ in {
 
       window {
       	background-color: rgba(0, 0, 0, .95);
-        font-family: monospace;
+        font-family: terminess-ttf;
         font-size: 14pt;
       }
 

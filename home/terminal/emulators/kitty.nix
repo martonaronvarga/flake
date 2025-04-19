@@ -3,7 +3,7 @@
     enable = true;
     font = {
       size = 14;
-      name = "terminess-ttf";
+      name = "Terminess Nerd Font";
       package = pkgs.nerd-fonts.terminess-ttf;
     };
 
@@ -14,6 +14,9 @@
       adjust_column_width = "0";
       disable_ligatures = "never";
       scrollback_lines = 10000;
+      cursor_shape = "beam";
+      cursor_blink_interval = "0.5";
+      cursor_stop_blinking_after = "0";
       placement_strategy = "center";
 
       linux_display_server = "wayland";

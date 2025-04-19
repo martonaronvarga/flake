@@ -3,9 +3,9 @@
     enable = true;
     settings = {
       main = {
-        font = "Noto Sans";
+        font = "Terminess Nerd Font 12";
         dpi-aware = "auto";
-        prompt = "󱄅";
+        prompt = "󱄅 ";
         icons-enabled = "no";
         terminal = "kitty";
         width = "50";
@@ -23,7 +23,7 @@
         border = "3137487f";
       };
       border = {
-        width = "0.1";
+        width = "2";
         radius = "30";
       };
       dmenu = {

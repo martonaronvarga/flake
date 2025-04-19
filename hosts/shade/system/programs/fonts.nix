@@ -29,9 +29,9 @@
       addAll = builtins.mapAttrs
         (_: v: [ "Symbols Nerd Font" ] ++ v ++ [ "Noto Color Emoji" ]);
     in addAll {
-      serif = [ "terminess-ttf" ];
-      sansSerif = [ "terminess-ttf" ];
-      monospace = [ "terminess-ttf" ];
+      serif = [ "Terminess Nerd Font" ];
+      sansSerif = [ "Terminess Nerd Font" ];
+      monospace = [ "Terminess Nerd Font" ];
       emoji = [ ];
     };
   };

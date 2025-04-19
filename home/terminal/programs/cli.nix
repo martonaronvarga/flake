@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     eza
+    jq
     bat
     fzf
     btop

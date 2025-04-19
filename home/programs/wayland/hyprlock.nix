@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  font_family = "terminess-ttf";
+  font_family = "Terminess Nerd Font";
 in {
   programs.hyprlock = {
     enable = true;

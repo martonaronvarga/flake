@@ -16,7 +16,7 @@
     enable = true;
 
     font = {
-      name = "terminess-ttf";
+      name = "Terminess Nerd Font";
       package = pkgs.nerd-fonts.terminess-ttf;
       size = 9;
     };

@@ -136,7 +136,7 @@
     style = ''
       * {
         font-size: 10px;
-        font-family: "terminess-ttf";
+        font-family: "Terminess Nerd Font";
         border: none;
         min-height: 0px;
         border-radius: 4px;
@@ -144,7 +144,7 @@
 
       window#waybar {
           background: rgba(0,0,0,0);
-          color = #ffffff;
+          color: #ffffff;
       }
 
       #battery {
