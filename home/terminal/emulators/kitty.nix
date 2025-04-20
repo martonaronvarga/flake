@@ -12,7 +12,6 @@
     extraConfig = ''
       wayland_window_title kitty
       hide_window_decorations titlebar-only
-      adjust_line_height 150%
       adjust_column_width 0
       disable_ligatures never
       scrollback_lines 10000
@@ -28,8 +27,6 @@
       enable_audio_bell no
       visual_bell_duration 0.1
 
-      initial_window_width 95c
-      initial_window_height 35c
       window_padding_width 20 20
       confirm_os_window_close 0
 
