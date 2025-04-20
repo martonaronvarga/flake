@@ -16,14 +16,13 @@
         ignore_newline = "no";
 
         width = 320;
-        heigth = 500;
+        height = 150;
         origin = "top_right";
-        offet = "10x12";
+        offset = "10x12";
         progress_bar = true;
-        progress_bar_heigth = 14;
-        progress_bar_frame_wifth = 1;
-        progress_bar_min_width = 150;
-        progress_bar_max_width = 300;
+        progress_bar_height = 14;
+        progress_bar_frame_width = 1;
+        progress_bar_max_width = 0;
 
         frame_width = 3;
         frame_color = "#000000";
@@ -32,7 +31,7 @@
         monitor = 0;
         follow = "keyboard";
         show_indicators = "no";
-        sticky_history = "yes";
+        sticky_history = "no";
         line_height = 0;
         separator_height = 3;
         padding = 16;
@@ -48,7 +47,7 @@
         max_icon_size = 48;
 
         corner_radius = 15;
-        always_run_script = "true";
+        always_run_script = true;
       };
 
       shortcuts = {
@@ -97,7 +96,7 @@
         highlight = "#ff0000";
       };
 
-      volumte-unmuted = {
+      volume-unmuted = {
         summary = "Volume Unmuted";
         highlight = "#00ff00";
       };

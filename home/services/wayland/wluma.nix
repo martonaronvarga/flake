@@ -6,7 +6,8 @@
   systemd.user.services.wluma = {
     Unit = {
       Description = "Automatic backlight control";
-      PartOf = ["graphical-session.target"];
+      After = ["graphical-session.target"];
+      Requires = ["graphical-session.target"];
     };
     Service = {
       ExecStart = lib.getExe pkgs.wluma;
@@ -31,8 +32,8 @@
     output.backlight = [
       {
         capturer = "none";
-        name = "DP-1";
-        path = "/sys/class/backlight/amdgpu_bl0";
+        name = "eDP-1";
+        path = "/sys/class/backlight/intel_backlight";
       }
     ];
 

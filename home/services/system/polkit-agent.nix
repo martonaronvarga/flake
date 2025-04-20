@@ -1,21 +1,11 @@
 {pkgs, ...}: {
-  systemd.user.services.hyprpolkitagent = {
-    Unit.Description = "Hyprland Polkit Agent";
-    Unit.After = ["graphical-session.target"];
-    Unit.Wants = ["graphical-session.target"];
+  home.packages = [
+    pkgs.hyprpolkitagent
+  ];
 
-    Install = {
-      WantedBy = ["graphical-session.target"];
-      Wants = ["graphical-session.target"];
-      After = ["graphical-session.target"];
-    };
-
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.hyprpolkitagent}/bin/hyprpolkitagent";
-      Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
-    };
-  };
+  programs.uwsm.extraSessionCommands = ''
+    systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+    systemctl --user enable --now hyprpolkitagent.service
+    systemctl --user start hypridle.service
+  '';
 }
