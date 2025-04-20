@@ -4,6 +4,7 @@
 in {
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
+    monitor = "eDP-1, preferred, auto, 1.25";
     env = [
       "HYPRCURSOR_THEME,${cursorName}"
       "HYPRCURSOR_SIZE,${toString pointer.size}"
@@ -12,7 +13,6 @@ in {
 
     exec-once = [
       "hyprctl setcursor ${cursorName} ${toString pointer.size}"
-      "nm-applet"
       "blueman-applet"
       "dunst"
       "waybar"
@@ -50,7 +50,7 @@ in {
         enabled = true;
         range = 12;
         render_power = 6;
-        color = "rgba(FFFFFF55)";
+        color = "rgba(FFFFFF35)";
         color_inactive = "rgba(000000FF)";
       };
     };
@@ -75,7 +75,7 @@ in {
         text_color = "rgb(FFFFFF)";
       };
 
-      "col.border_active" = "rgba(FFFFFF55)";
+      "col.border_active" = "rgba(FFFFFF25)";
       "col.border_inactive" = "rgba(000000FF)";
     };
 

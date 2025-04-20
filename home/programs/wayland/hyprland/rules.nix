@@ -36,8 +36,9 @@
     windowrulev2 = [
       
       "float, class: ^(Zotero)$"
-      "float, class: ^blueman-manager$"
+      "float, class: ^Bluetooth-Devices$"
       "float, class: fuzzel"
+      "float, class: pavucontrol"
       # make Firefox/Zen PiP window floating and sticky
       "float, title:^(Picture-in-Picture)$"
       "pin, title:^(Picture-in-Picture)$"
