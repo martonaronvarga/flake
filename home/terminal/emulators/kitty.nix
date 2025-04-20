@@ -10,83 +10,76 @@
       package = pkgs.nerd-fonts.terminess-ttf;
     };
 
-    settings = {
-      wayland_window_title = "kitty";
-      hide_window_decorations = "titlebar-only";
-      adjust_line_height = "150%";
-      adjust_column_width = "0";
-      disable_ligatures = "never";
-      scrollback_lines = 10000;
-      cursor_shape = "beam";
-      cursor_blink_interval = "0.5";
-      cursor_stop_blinking_after = "15.0";
-      placement_strategy = "center";
+    extraConfig = ''
+      wayland_window_title kitty
+      hide_window_decorations titlebar-only
+      adjust_line_height 150%
+      adjust_column_width 0
+      disable_ligatures never
+      scrollback_lines 10000
+      cursor_shape beam
+      cursor_blink_interval 0.5
+      cursor_stop_blinking_after 15.0
+      placement_strategy center
 
-      linux_display_server = "auto";
-      wayland_titlebar_color = "background";
+      linux_display_server auto
+      wayland_titlebar_color background
 
-      allow_remote_control = "yes";
-      enable_audio_bell = false;
-      visual_bell_duration = "0.1";
+      allow_remote_control yes
+      enable_audio_bell no
+      visual_bell_duration 0.1
 
-      initial_window_width = "95c";
-      initial_window_height = "35c";
-      window_padding_width = "20 20";
-      confirm_os_window_close = "0";
+      initial_window_width 95c
+      initial_window_height 35c
+      window_padding_width 20 20
+      confirm_os_window_close 0
 
-      copy_on_select = "clipboard";
-      
+      copy_on_select clipboard
+
       # Tab bar
-
-      tab_bar_style = "fade";
-      tab_fade = "1";
-      active_tab_foreground = "#ffffff";
-      active_tab_background = "#000000";
-      inactive_tab_foreground = "#888888";
-      inactive_tab_background = "#000000";
-      tab_bar_background = "#000000";
-      inactive_tab_font_style = "bold";
-      active_tab_font_style = "bold";
+      tab_bar_style fade
+      tab_fade 1
+      active_tab_foreground #ffffff
+      active_tab_background #000000
+      inactive_tab_foreground #888888
+      inactive_tab_background #000000
+      tab_bar_background #000000
+      inactive_tab_font_style bold
+      active_tab_font_style bold
 
       # Colors
+      background #000000
+      foreground #383e42
 
-      background = "#000000";
-      foreground = "#ffffff";
+      cursor #e25303
 
-      cursor = "#ffffff";
+      selection_background #121212
 
-      selection_background = "#444444";
-      selection_foreground = "#ffffff";
+      url_color #5e676e
 
-      url_color = "#888888";
+      color0 #000000
 
-      color0 = "#000000";
-      color8 = "#ff5555";
+      color1 #e25303
+      color2 #5e676e
+      color3 #5e676e
+      color4 #5e676e
+      color5 #5e676e
+      color6 #5e676e
+      color7 #5e676e
+      color8 #5e676e
+      color9 #73280c
+      color10 #5e676e
+      color11 #5e676e
+      color12 #5e676e
+      color13 #5e676e
+      color14 #5e676e
+      color15 #ffffff
+      
 
-      color1 = "#ff5555";
-      color9 = "#ff6e6e";
-
-      color2 = "#ffffff";
-      color10 = "#ffffff";
-
-      color3 = "#ffffff";
-      color11 = "#ffffff";
-
-      color4 = "#ffffff";
-      color12 = "#ffffff";
-
-      color5  = "#ffffff";
-      color13 = "#ffffff";
-
-      color6  = "#ffffff";
-      color14 = "#ffffff";
-
-      color7  = "#bbbbbb";
-      color15 = "#ffffff";
+      map kitty_mod+t new_tab_with_cwd
 
 
-      map = "kitty_mod+t new_tab_with_cwd";
-    };
-
+    '';
+    
   };
 }
