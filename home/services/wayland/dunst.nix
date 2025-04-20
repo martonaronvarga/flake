@@ -5,7 +5,7 @@
       global = {
         font = "Terminess Nerd Font 12";
         allow_markup = "yes";
-        format = "<b>%s</b>\n%b";
+        format = "<b>%s</b>\\\n%b";
         sort = "yes";
         indicate_hidden = "yes";
         alignment = "left";
@@ -22,7 +22,6 @@
         progress_bar = true;
         progress_bar_height = 14;
         progress_bar_frame_width = 1;
-        progress_bar_max_width = 0;
 
         frame_width = 3;
         frame_color = "#000000";
@@ -61,7 +60,7 @@
         background = "#000000";
         foreground = "#ffffff";
         frame_color = "#ffffff";
-        highlight_color = "#ffffff";
+        highlight = "#ffffff";
       };
 
       urgency_normal = {
