@@ -22,7 +22,5 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [ kitty wget coreutils-full git ];
-
-
+  environment.systemPackages = with pkgs; [ wget coreutils-full git ];
 }

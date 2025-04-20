@@ -58,7 +58,7 @@
       bindkey "''${key[Up]}" up-line-or-search
 
       if [[ $(tty) == /dev/tty1 ]]; then
-        exec uwsm start hyprland-uwsm
+        exec uwsm start hyprland-uwsm.desktop
       fi
     '';
   };
