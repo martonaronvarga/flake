@@ -3,7 +3,6 @@
     enable = true;
     package = pkgs.kitty;
     shellIntegration.enableZshIntegration = true;
-    enableGitIntegration = true;
     font = {
       size = 14;
       name = "Terminess Nerd Font";
