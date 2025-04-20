@@ -19,11 +19,6 @@
           binPath = lib.mkForce "${inputs.hyprland.packages.${pkgs.system}.default}/bin/Hyprland";
         };
       };
-      extraSessionCommands = ''
-        systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-        systemctl --user enable --now hypridle.service
-        systemctl --user enable --now hyprpaper.service
-      '';
     };
   };
 
