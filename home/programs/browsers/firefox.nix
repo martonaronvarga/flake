@@ -13,7 +13,7 @@
         name = "default";
         isDefault = true;
         settings = {
-          "browser.startup.homepage" = "https://eu.startpage.com";
+          "browser.startup.homepage" = "https://startpage.com";
           "browser.search.defaultenginename" = "Startpage";
           "browser.search.order.1" = "Startpage";
           "browser.translations.automaticallyPopup" = false;
@@ -163,7 +163,7 @@
                 definedAliases = [ "@nw" ];
             };
             "Startpage" = {
-              urls = [{ template = "https://www.eu.startpage.com/do/search?query={searchTerms}"; }];
+              urls = [{ template = "https://www.startpage.com/do/search?query={searchTerms}"; }];
               icon = "https://www.startpage.com/favicon.ico";
               updateInterval = 24 * 60 * 60 * 1000; # every day
               defunedAliases = [ "@sp" ];

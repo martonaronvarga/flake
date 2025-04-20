@@ -12,7 +12,7 @@
 
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.hyprpolkitagent}/bin/hyprpolkitagent}";
+      ExecStart = "${pkgs.hyprpolkitagent}/bin/hyprpolkitagent";
       Restart = "on-failure";
       RestartSec = 1;
       TimeoutStopSec = 10;

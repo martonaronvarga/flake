@@ -5,7 +5,7 @@
       main = {
         font = "Terminess Nerd Font 12";
         dpi-aware = "auto";
-        prompt = "󱄅 ";
+        prompt = "󱄅  ";
         icons-enabled = "no";
         terminal = "kitty";
         width = "50";
@@ -15,12 +15,12 @@
         letter-spacing = "2";
       };
       colors = {
-        background = "3137487f";
+        background = "000000e6";
         text = "ffffffff";
-        match = "FB958Bdd";
-        selection = "e7e7e7e7";
-        selection-match = "FB958Bdd";
-        border = "3137487f";
+        match = "ffffffff";
+        selection = "222222ff";
+        selection-match = "ffffffff";
+        border = "ffffffcc";
       };
       border = {
         width = "2";

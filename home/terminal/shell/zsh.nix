@@ -56,7 +56,10 @@
      
     initExtra = ''
       bindkey "''${key[Up]}" up-line-or-search
-      '';
+      if [[ "$(tty)" == /dev/tty1]]; then
+        uwsm start hyprland
+      fi
+    '';
   };
   programs.bat.enable = true;
 }

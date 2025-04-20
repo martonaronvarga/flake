@@ -50,11 +50,12 @@ in {
 
 
           fade_on_empty = false;
-          placeholder_text = "<span foreground='#ffffff66'>Password...</span>";
+          placeholder_text = ''<span foreground="#ffffff66">Password...</span>'';
 
           dots_size = 0.25;
           dots_spacing = 0.2;
           dots_center = true;
+          position = "0, -250";
 
           halign = "center";
           valign = "center";
@@ -69,7 +70,7 @@ in {
           font_size = 50;
           color = "rgba(255, 255, 255, .3)";
 
-          position = "0, 150";
+          position = "0, 250";
 
           valign = "center";
           halign = "center";
@@ -81,14 +82,14 @@ in {
           font_size = 20;
           color = "rgb(255, 255, 255, 0.6)";
 
-          position = "0, 50";
+          position = "0, 150";
 
           valign = "center";
           halign = "center";
         }
         {
           text = "cmd[update:30000] cat /sys/class/power_supply/BAT0/capacity";
-          position = "0, -150";
+          position = "0, -350";
         }
       ];
     };
