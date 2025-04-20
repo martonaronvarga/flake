@@ -5,6 +5,7 @@
 in {
   imports = [
     ./programs
+    ./emulators
     ./shell/starship.nix
     ./shell/zsh.nix
     ./shell/zoxide.nix

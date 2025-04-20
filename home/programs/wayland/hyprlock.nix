@@ -50,7 +50,9 @@ in {
 
 
           fade_on_empty = false;
-          placeholder_text = ''<span color="#ffffff66">Password...</span>'';
+          placeholder_text = ''
+            <span foreground="#ffffff66">Password...</span>
+          '';
 
           dots_size = 0.25;
           dots_spacing = 0.2;
