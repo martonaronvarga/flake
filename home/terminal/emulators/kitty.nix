@@ -1,8 +1,9 @@
-{ pkgs, lib, config, imputs, ...}: {
-  programs.kitty = {
+{ pkgs, lib, config, inputs, ...}: {
+  programs.kitty = lib.mkForce {
     enable = true;
     package = pkgs.kitty;
-    shellIntegration.enableZshIntergration = true;
+    shellIntegration.enableZshIntegration = true;
+    enableGitIntegration = true;
     font = {
       size = 14;
       name = "Terminess Nerd Font";
@@ -18,19 +19,19 @@
       scrollback_lines = 10000;
       cursor_shape = "beam";
       cursor_blink_interval = "0.5";
-      cursor_stop_blinking_after = "0";
+      cursor_stop_blinking_after = "15.0";
       placement_strategy = "center";
 
-      linux_display_server = "wayland";
+      linux_display_server = "auto";
       wayland_titlebar_color = "background";
 
       allow_remote_control = "yes";
-      enable_audio_bell = "no";
+      enable_audio_bell = false;
       visual_bell_duration = "0.1";
 
       initial_window_width = "95c";
       initial_window_height = "35c";
-      window_padding_width = "20";
+      window_padding_width = "20 20";
       confirm_os_window_close = "0";
 
       copy_on_select = "clipboard";
