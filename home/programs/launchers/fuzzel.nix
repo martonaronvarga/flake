@@ -5,7 +5,7 @@
       main = {
         font = "Terminess Nerd Font 12";
         dpi-aware = "auto";
-        prompt = "󱄅  ";
+        prompt = "~~> ";
         icons-enabled = "no";
         terminal = "kitty";
         width = "50";
