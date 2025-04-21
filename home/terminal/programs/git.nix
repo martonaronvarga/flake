@@ -4,7 +4,7 @@
   ...
 }: let
   cfg = config.programs.git;
-  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHlpRMbmc5c/qQA9Nb9CSov4DD4f8B+hAJ5ZH/0sRgwA usu@shade";
+  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY1cx1Encvc+3ovWpbyM0H1W7uIsXPanAXLlWoyvm/9 git@github.com"
  
 in {
   home.packages = [pkgs.gh];
@@ -28,7 +28,7 @@ in {
     aliases = let
       log = "log --show-notes='*' --abbrev-commit --pretty=format:'%Cred%h %Cgreen(%aD)%Creset -%C(bold red)%d%Creset %s %C(bold blue)<%an>% %Creset' --graph";
     in {
-      a = "add --patch"; # make it a habit to consciosly add hunks
+      a = "add --patch"; # make it a habit to consciously add hunks
       ad = "add";
 
       b = "branch";

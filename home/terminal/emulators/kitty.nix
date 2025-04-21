@@ -4,7 +4,7 @@
     package = pkgs.kitty;
     shellIntegration.enableZshIntegration = true;
     font = {
-      size = 14;
+      size = 12;
       name = "Terminess Nerd Font";
       package = pkgs.nerd-fonts.terminess-ttf;
     };

@@ -1,20 +1,26 @@
-{ pkgs, config, inputs, lib, ...}: {
+{
+  pkgs,
+  config,
+  inputs,
+  lib,
+  ...
+}: {
   programs.waybar = {
     enable = true;
-    
+
     settings = {
       mainBar = {
         layer = "top";
         position = "top";
-        height = 15;
+        height = 10;
         margin-left = 10;
         margin-right = 10;
         margin-top = 5;
         margin-bottom = 0;
-        spacing = 7;
+        spacing = 10;
         modules-left = ["cpu" "memory" "hyprland/workspaces"];
         modules-center = ["custom/media"];
-        modules-right = ["tray" "custom/keyboard" "network"  "backlight" "battery"  "pulseaudio" "clock" "custom/quit"];
+        modules-right = ["tray" "custom/keyboard" "network" "backlight" "battery" "pulseaudio" "clock" "custom/quit"];
 
         "hyprland/workspaces" = {
           format = "{icon}";
@@ -79,25 +85,25 @@
           format-plugged = " {capacity}%";
           format-discharging = " {capacity}%";
           format-alt = "{icon} {time}";
-          format-icons = [ " " " " " " " " " " ];
+          format-icons = [" " " " " " " " " "];
         };
-        
+
         network = {
           format = "{ifname}";
           format-wifi = "  {essid}";
-          format-ethernet =  " {ifname}";
+          format-ethernet = " {ifname}";
           format-disconnected = "Disconnected ";
           format-alt = "{ifname}: {ipaddr}/{cidr}";
           tooltip-format-wifi = "{signalStrength}%";
           max-length = 20;
         };
-        
+
         "custom/media" = {
           format = "{}";
           interval = 1;
           exec = "playerctl metadata --format '{{artist}} - {{title}}' 2>/dev/null || echo ''";
         };
-        
+
         "custom/keyboard" = {
           format = "  {}";
           interval = 5;
@@ -108,8 +114,8 @@
             cut -c1-2 |
             tr 'a-z' 'A-Z' || echo "--"
           '';
-          };
-        
+        };
+
         pulseaudio = {
           format = "{icon} {volume}";
           format-bluetooth = " {volume}";
@@ -124,21 +130,21 @@
           scroll-step = 1;
           on-click = "pavucontrol";
         };
-        
+
         "custom/quit" = {
           format = " ";
           on-click = "wlogout";
         };
       };
     };
-    
+
     style = ''
       * {
-        font-size: 10px;
+        font-size: 12px;
         font-family: "Terminess Nerd Font";
         border: none;
         min-height: 0px;
-        border-radius: 4px;
+        border-radius: 2px;
       }
 
       window#waybar {
@@ -155,7 +161,7 @@
         color: #ffffff;
         /* background-color: #000000; */
       }
-      
+
       @keyframes blink {
         to {
           background-color: #ffffff;
@@ -172,7 +178,7 @@
           animation-iteration-count: infinite;
           animation-direction: alternate;
       }
-      
+
       label:focus {
         /*background-color: #000000;*/
       }
@@ -202,7 +208,7 @@
         /*background: #000000; */
         color: #ffffff;
       }
-      
+
       #pulseaudio.muted {
         /*background: #000000;*/
         color: #ffffff;
@@ -212,11 +218,11 @@
         /*background: #000000; */
         color: white;
       }
-      
+
       #network.disconnected {
         background-color: #f53c3c;
       }
-      
+
       #cpu {
        /* background-color: #000000; */
         color: #ffffff;
@@ -254,5 +260,5 @@
         color: #ffffff;
       }
     '';
- };
+  };
 }

@@ -24,8 +24,9 @@ in {
       gaps_in = 5;
       gaps_out = 20;
       border_size = 2;
-      "col.active_border" = "rgba(FFFFFFFF) rgba(808080ee) 45deg";
-      "col.inactive_border" = "rgba(202020FF)";
+      "col.active_border" = "rgba(000000ff) rgba(808080ee) 45deg";
+      "col.inactive_border" = "rgba(00000066)";
+      no_border_on_floating = true;
       no_focus_fallback = true;
       resize_on_border = true;
     };
@@ -50,7 +51,7 @@ in {
         enabled = true;
         range = 12;
         render_power = 6;
-        color = "rgba(FFFFFF35)";
+        color = "rgba(ffffff50)";
         color_inactive = "rgba(000000FF)";
       };
     };

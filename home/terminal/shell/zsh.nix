@@ -1,4 +1,10 @@
-{ config, pkgs, lib, inputs, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
   home.packages = with pkgs; [
     nix-zsh-completions
   ];
@@ -15,7 +21,7 @@
       expireDuplicatesFirst = true;
       path = "${config.xdg.dataHome}/.zsh_history";
     };
-     
+
     zplug = {
       enable = true;
       plugins = [
@@ -50,10 +56,11 @@
       mv = "mv -v";
       cp = "cp -vr";
       gst = "git status";
+      ga = "git add";
       gcmsg = "git commit -m";
       ip = "ip --color";
-     };
-     
+    };
+
     initExtra = ''
       bindkey "''${key[Up]}" up-line-or-search
 

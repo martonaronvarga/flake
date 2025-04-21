@@ -6,6 +6,8 @@
     # audio control
     pulsemixer
     pavucontrol
+    pulseaudio
+    slack
 
     # videos
     vlc

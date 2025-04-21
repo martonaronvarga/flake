@@ -13,21 +13,21 @@ in {
 
     settings = {
       general = {
-        disable_loading_bar = true;
-        hide_cursor = false;
-        enable_fingerprint = true;
-        no_fade_in = false;
-        no_fade_out = false;
-        grace = 5;
+        hide_cursor = true;
+        grace = 3;
+      };
+
+      auth = {
+        "fingerprint:enabled" = true;
       };
 
       background = [
         {
           monitor = "";
-          path = "sceenshot";
-          color = "rgba(0, 0, 0, .4)";
-          blur_passes = 3;
-          blur_size = 7;
+          path = "color";
+          color = "rgba(0, 0, 0, 0.8)";
+          blur_passes = 4;
+          blur_size = 12;
           noise = 0.0117;
           contrast = 0.8916;
           brightness = 0.8125;
@@ -48,11 +48,8 @@ in {
           inner_color = "rgba(0, 0, 0, .8)";
           font_color = "rgba(255, 255, 255, .8)";
 
-
           fade_on_empty = false;
-          placeholder_text = ''
-            <span foreground="#ffffff66">Password...</span>
-          '';
+          placeholder_text = ''Password...'';
 
           dots_size = 0.25;
           dots_spacing = 0.2;

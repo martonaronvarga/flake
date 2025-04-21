@@ -1,6 +1,10 @@
-{ lib, config, pkgs, inputs, ... }:
-
 {
+  lib,
+  config,
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ./system
   ];
@@ -17,9 +21,10 @@
       "/var/cache"
       "/etc/NetworkManager/system-connections"
       "/var/lib/NetworkManager/"
+      "/secrets"
     ];
-    files = [ 
-      "/etc/machine-id" 
+    files = [
+      "/etc/machine-id"
     ];
     users.usu = {
       directories = [
@@ -49,13 +54,12 @@
       ];
     };
   };
-  
+
   fileSystems."/persist".neededForBoot = true;
 
   security.sudo.extraConfig = ''
     Defaults lecture = never
   '';
-  
 
   services.btrbk.instances.snapshot = {
     # snapshot on the start and the middle of every hour.
@@ -76,7 +80,7 @@
 
   i18n = {
     defaultLocale = "en_US.UTF-8";
-    supportedLocales = [ "en_US.UTF-8/UTF-8" "hu_HU.UTF-8/UTF-8" ];
+    supportedLocales = ["en_US.UTF-8/UTF-8" "hu_HU.UTF-8/UTF-8"];
   };
 
   time.timeZone = lib.mkDefault "Europe/Budapest";
