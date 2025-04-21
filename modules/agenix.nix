@@ -6,10 +6,10 @@
 }: {
   age.secrets = {
     usu = {
-      file = "../secrets/usu.age";
+      file = toString ../secrets/usu.age;
       owner = "usu";
-      mode = 600;
+      mode = "600";
     };
   };
-  # age.identityPaths = [ "/persist/secrets/usu_ed25519"];
+  age.identityPaths = [ "/persist/home/usu/.ssh/id_ed25519" ];
 }
