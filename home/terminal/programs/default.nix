@@ -6,5 +6,6 @@
     ./nix.nix
     ./yazi
     ./xdg.nix
+    ./hx.nix
   ];
 }
