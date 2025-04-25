@@ -13,102 +13,102 @@
     }
     {
       name = "*README";
-      fg = "#ffd700";
+      fg = "#2a5c45";
       bold = true;
     }
     {
       name = "*README.rst";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*README.md";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*LICENSE";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*LICENSE.md";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*COPYING";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*INSTALL";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*COPYRIGHT";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*AUTHORS";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*HISTORY";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*CONTRIBUTORS";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*CONTRIBUTING";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*CONTRIBUTING.md";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*CHANGELOG";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*CHANGELOG.md";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*CODEOWNERS";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*PATENTS";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*VERSION";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*NOTICE";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {
       name = "*CHANGES";
-      fg = "#ffd700";
+      fg = "#e25303";
       bold = true;
     }
     {

@@ -1,4 +1,10 @@
-{ pkgs, lib, config, inputs, ...}: {
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  ...
+}: {
   programs.kitty = lib.mkForce {
     enable = true;
     package = pkgs.kitty;
@@ -51,31 +57,30 @@
 
       selection_background #121212
 
-      url_color #5e676e
+      url_color #2a5c45
 
       color0 #000000
 
       color1 #e25303
-      color2 #5e676e
+      color2 #2a5c45
       color3 #5e676e
-      color4 #5e676e
+      color4 #2a5c45
       color5 #5e676e
-      color6 #5e676e
+      color6 #2a5c45
       color7 #5e676e
       color8 #5e676e
-      color9 #73280c
-      color10 #5e676e
+      color9 #e25303
+      color10 #2a5c45
       color11 #5e676e
-      color12 #5e676e
+      color12 #2a5c45
       color13 #5e676e
-      color14 #5e676e
+      color14 #2a5c45
       color15 #ffffff
-      
+
 
       map kitty_mod+t new_tab_with_cwd
 
 
     '';
-    
   };
 }

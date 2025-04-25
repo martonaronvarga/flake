@@ -1,13 +1,19 @@
-{ pkgs, config, inputs, lib, ...}: {
+{
+  pkgs,
+  config,
+  inputs,
+  lib,
+  ...
+}: {
   programs.nvf = {
     enable = true;
 
     settings = {
       vim = {
         viAlias = true;
+        vimAlias = true;
         autocomplete.nvim-cmp.enable = true;
         lsp.enable = true;
-        vimAlias = true;
         assistant.copilot.enable = true;
         bell = "none";
         options.termguicolors = true;
@@ -21,28 +27,27 @@
             setup = "require('aerial').setup {}";
           };
 
-
           harpoon = {
             package = harpoon;
             setup = "require('harpoon').setup {}";
             after = ["aerial"];
           };
         };
-        
+
         filetree.nvimTree = {
           enable = true;
           setupOpts = {
             git.enable = true;
             renderer = {
               add_trailing = true;
-              icons =  {};
+              icons = {};
             };
           };
         };
-        
+
         git.enable = true;
         hideSearchHighlight = true;
-        
+
         languages = {
           enableDAP = true;
           enableExtraDiagnostics = true;
@@ -51,7 +56,7 @@
           enableTreesitter = true;
 
           bash = {
-           enable = true;
+            enable = true;
           };
 
           clang.enable = true;
@@ -69,7 +74,7 @@
           tailwind.enable = true;
           ts.enable = true;
         };
-        
+
         globals.mapLeader = " ";
         lsp.formatOnSave = true;
         lsp.lightbulb.enable = true;
@@ -86,15 +91,15 @@
         statusline.lualine.theme = "auto";
 
         syntaxHighlighting = true;
-        
+
         telescope.enable = true;
         terminal.toggleterm.enable = true;
 
         treesitter.enable = true;
-        
+
         # custom theme vim -noir
         extraLuaFiles = [
-           (builtins.path { path = ./noir.lua; })
+          (builtins.path {path = ./noir.lua;})
         ];
       };
     };

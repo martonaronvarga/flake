@@ -22,19 +22,19 @@
       path = "${config.xdg.dataHome}/.zsh_history";
     };
 
-    zplug = {
-      enable = true;
-      plugins = [
-        {name = "zsh-users/zsh-autosuggestions";}
-        {name = "zsh-users/zsh-syntax-highlighting";}
-        {name = "zsh-users/zsh-completions";}
-        {name = "romkatv/zsh-defer";}
-      ];
-    };
+    # zplug = {
+    #   enable = true;
+    #   plugins = [
+    #     {name = "zsh-users/zsh-autosuggestions";}
+    #     {name = "zsh-users/zsh-completions";}
+    #     {name = "romkatv/zsh-defer";}
+    #     {name = "zsh-users/zsh-syntax-highlighting";}
+    #   ];
+    # };
 
     shellAliases = {
-      eltehpc = "kitty +kitten ssh -i ~/.ssh/eltehpc usumusu@atlasz.elte.hu";
-      eltehvpn = "sudo openfortivpn fw1.vpn.elte.hu:4443 -u usumusu --ca-file=/home/usu/Downloads/elte-ca.crt";
+      eltehpc = "kitty +kitten ssh usumusu@atlasz.elte.hu";
+      eltevpn = "sudo openfortivpn fw1.vpn.elte.hu:4443 -u usumusu --ca-file=/home/usu/Downloads/elte-ca.crt";
       eltevpnstop = "sudo killall openfortivpn";
       ssh = "kitty +kitten ssh";
       c = "clear";
@@ -45,6 +45,7 @@
       utar = "tar -zxvf"; # utar <archive_decompress> <file_list>
       zip = "zip -r"; # zip <archive_name> <file_list>
       ".." = "cd ..";
+      cd = "z";
       mkdir = "mkdir -p";
       fm = "yazi";
       ls = "exa --color=auto --icons --git";

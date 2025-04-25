@@ -8,9 +8,9 @@
     enable = true;
     settings = {
       main = {
-        font = "Terminess Nerd Font 12";
+        font = "Terminess Nerd Font:size=12";
         dpi-aware = "auto";
-        prompt = "> ";
+        prompt = ''> '';
         icons-enabled = "no";
         terminal = "kitty";
         width = "50";
@@ -20,7 +20,7 @@
         letter-spacing = "2";
       };
       colors = {
-        background = "000000e6";
+        background = "000000e4";
         text = "ffffffff";
         match = "ffffffff";
         selection = "222222ff";

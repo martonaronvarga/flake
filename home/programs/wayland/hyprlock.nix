@@ -25,7 +25,7 @@ in {
         {
           monitor = "";
           path = "color";
-          color = "rgba(0, 0, 0, 0.8)";
+          color = "rgba(0, 0, 0, 0.95)";
           blur_passes = 4;
           blur_size = 12;
           noise = 0.0117;

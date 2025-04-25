@@ -10,7 +10,7 @@
     # Mode;
     mode_normal = {
       fg = "black";
-      bg = "lightblue";
+      bg = "#2a5c45";
       bold = true;
     };
     mode_select = {

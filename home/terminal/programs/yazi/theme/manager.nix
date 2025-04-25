@@ -1,37 +1,37 @@
 {
   programs.yazi.theme.manager = {
-    cwd = {fg = "cyan";};
+    cwd = {fg = "#e25303";};
 
     # Hovered
     hovered = {
       fg = "black";
-      bg = "lightblue";
+      bg = "#e25303";
     };
 
     preview_hovered = {
       fg = "black";
-      bg = "lightblue";
+      bg = "#2a5c45";
     };
 
     # Find
     find_keyword = {
-      fg = "yellow";
+      fg = "#e25303";
       italic = true;
     };
     find_position = {
-      fg = "magenta";
+      fg = "#e25303";
       bg = "reset";
       italic = true;
     };
 
     # Marker
     marker_selected = {
-      fg = "lightgreen";
-      bg = "lightgreen";
+      fg = "#e25303";
+      bg = "#e25303";
     };
     marker_copied = {
-      fg = "lightyellow";
-      bg = "lightyellow";
+      fg = "#e25303";
+      bg = "#e25303";
     };
     marker_cut = {
       fg = "lightred";
@@ -41,7 +41,7 @@
     # Tab
     tab_active = {
       fg = "black";
-      bg = "lightblue";
+      bg = "#2a5c45";
     };
     tab_inactive = {
       fg = "white";
