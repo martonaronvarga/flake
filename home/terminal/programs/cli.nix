@@ -18,9 +18,9 @@
     croc
     exiftool
     tldr
-    vim
     tmux
     rsync
+    libgcc
   ];
 
   programs = {
