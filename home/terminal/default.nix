@@ -20,7 +20,7 @@ in {
     WINEPREFIX = "${data}/wine";
     XAUTHORITY = "$XDG_RUNTIME_DIR/Xauthority";
 
-    EDITOR = "nvim";
+    EDITOR = "hx";
     DIRENV_LOG_FORMAT = "";
 
     # auto-run programs using nix-index-database

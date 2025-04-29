@@ -1,5 +1,9 @@
-{ config, pkgs, lib, ... }:
-let
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
   browser = ["firefox"];
   imageViewer = ["feh"];
   videoPlayer = ["vlc"];
@@ -36,7 +40,7 @@ let
   associations = builtins.mapAttrs (_: v: (map (e: "${e}.desktop") v)) ({
       "application/pdf" = ["zathura"];
       "text/html" = browser;
-      "text/plain" = ["neovim"];
+      "text/plain" = ["hx"];
       "inode/directory" = ["yazi"];
     }
     // image
@@ -54,7 +58,7 @@ in {
     };
 
     userDirs = {
-      enable = false;
+      enable = true;
       createDirectories = false;
       extraConfig = {
         XDG_SCREENSHOTS_DIR = "${config.xdg.userDirs.Pictures}/screenshots";
@@ -69,5 +73,6 @@ in {
       kitty "$@"
     '')
     pkgs.xdg-utils
+    pkgs.feh
   ];
 }

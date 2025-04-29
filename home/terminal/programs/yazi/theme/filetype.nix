@@ -117,63 +117,63 @@
     }
     {
       name = "*.adoc";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.asciidoc";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.etx";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.info";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.markdown";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.md";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.mkd";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.mdx";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.nfo";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.org";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.norg";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.pod";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.rst";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.tex";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.textile";
-      fg = "#d7d700";
+      fg = "#white";
     }
     {
       name = "*.bib";

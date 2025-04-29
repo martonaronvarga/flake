@@ -20,7 +20,7 @@
     };
     mode_unset = {
       fg = "black";
-      bg = "lightmagenta";
+      bg = "#e25303";
       bold = true;
     };
 

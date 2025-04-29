@@ -9,7 +9,7 @@
     };
 
     preview_hovered = {
-      fg = "black";
+      fg = "white";
       bg = "#2a5c45";
     };
 
@@ -26,11 +26,11 @@
 
     # Marker
     marker_selected = {
-      fg = "#e25303";
+      fg = "black";
       bg = "#e25303";
     };
     marker_copied = {
-      fg = "#e25303";
+      fg = "black";
       bg = "#e25303";
     };
     marker_cut = {

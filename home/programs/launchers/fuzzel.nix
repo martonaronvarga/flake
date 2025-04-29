@@ -20,7 +20,7 @@
         letter-spacing = "2";
       };
       colors = {
-        background = "000000e4";
+        background = "00000060";
         text = "ffffffff";
         match = "ffffffff";
         selection = "222222ff";

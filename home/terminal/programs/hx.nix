@@ -17,6 +17,11 @@ in {
         true-color = true;
         auto-pairs = true;
         cursorline = true;
+        cursor-shape = {
+          insert = "bar";
+          normal = "block";
+          select = "block";
+        };
         completion-trigger-len = 1;
         rulers = [80];
         bufferline = "always";
@@ -25,6 +30,11 @@ in {
           left = ["mode" "spinner" "file-name"];
           center = ["diagnostics"];
           right = ["position" "position-percentage" "file-encoding"];
+        };
+        indent-guides = {
+          render = true;
+          character = "▏";
+          skip-levels = 1;
         };
       };
 
@@ -130,7 +140,7 @@ in {
           g_6 = "#737373";
           g_7 = "#535353";
           g_8 = "#323232";
-          g_9 = "#212121";
+          g_9 = "#222222";
           g_10 = "#1d1d1d";
           g_11 = "#191919";
           g_12 = "#151515";
