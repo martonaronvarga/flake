@@ -8,6 +8,8 @@ in {
     env = [
       "HYPRCURSOR_THEME,${cursorName}"
       "HYPRCURSOR_SIZE,${toString pointer.size}"
+      "XCURSOR_THEME, ${cursorName}"
+      "XCURSOR_SIZE, ${toString pointer.size}"
       "XDG_CURRENT_DESKTOP,Hyprland"
     ];
 
@@ -110,6 +112,5 @@ in {
       workspace_swipe_forever = true;
       workspace_swipe_min_speed_to_force = 5;
     };
-
   };
- }
+}

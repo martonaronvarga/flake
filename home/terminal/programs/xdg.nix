@@ -59,9 +59,9 @@ in {
 
     userDirs = {
       enable = true;
-      createDirectories = false;
+      createDirectories = true;
       extraConfig = {
-        XDG_SCREENSHOTS_DIR = "${config.xdg.userDirs.Pictures}/screenshots";
+        XDG_SCREENSHOTS_DIR = "${config.xdg.userDirs.pictures}/screenshots";
       };
     };
   };

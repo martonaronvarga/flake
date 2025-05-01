@@ -35,7 +35,6 @@
         "Videos"
         "Zotero"
         ".zotero"
-        ".cache"
         ".local"
         ".mozilla"
         ".config/zsh/.zsh_history"

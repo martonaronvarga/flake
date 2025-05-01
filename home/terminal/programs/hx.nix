@@ -15,6 +15,8 @@ in {
         line-number = "absolute";
         mouse = true;
         true-color = true;
+        color-modes = true;
+        undercurl = true;
         auto-pairs = true;
         cursorline = true;
         cursor-shape = {

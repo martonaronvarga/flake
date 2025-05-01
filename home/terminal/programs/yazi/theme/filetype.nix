@@ -117,63 +117,63 @@
     }
     {
       name = "*.adoc";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.asciidoc";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.etx";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.info";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.markdown";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.md";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.mkd";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.mdx";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.nfo";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.org";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.norg";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.pod";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.rst";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.tex";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.textile";
-      fg = "#white";
+      fg = "white";
     }
     {
       name = "*.bib";

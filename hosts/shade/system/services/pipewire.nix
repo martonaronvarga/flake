@@ -9,5 +9,5 @@
     wireplumber.extraConfig."wireplumber.profiles".main."monitor.libcamera" = "disabled";
   };
 
-  #services.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 }
