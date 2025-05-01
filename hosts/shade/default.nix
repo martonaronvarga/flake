@@ -16,11 +16,11 @@
     directories = [
       "/var/log"
       "/var/lib/bluetooth"
-      "/var/lib/colord/"
+      "/var/lib/colord"
       "/var/lib/nixos"
-      "/var/cache"
       "/etc/NetworkManager/system-connections"
       "/var/lib/NetworkManager/"
+      "/var/lib/systemd/coredump"
       "/secrets"
     ];
     files = [
@@ -35,8 +35,6 @@
         "Videos"
         "Zotero"
         ".zotero"
-        ".local"
-        ".mozilla"
         ".config/zsh/.zsh_history"
         {
           directory = ".gnupg";
@@ -50,6 +48,7 @@
           directory = ".local/share/keyrings";
           mode = "0700";
         }
+        ".local/share/direnv"
       ];
     };
   };

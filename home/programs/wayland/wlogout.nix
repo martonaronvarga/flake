@@ -19,8 +19,8 @@ in {
 
       window {
       	background-color: rgba(0, 0, 0, .95);
-        font-family: Terminus Nerd Font;
-        font-size: 14pt;
+        font-family: Terminess Nerd Font;
+        font-size: 11pt;
       }
 
       button {
@@ -31,7 +31,6 @@ in {
         background-position: center;
         background-size: 25%;
         transition: box-shadow .2s ease-in-out, background-color 0.2s ease-in-out;
-        position: relative;
       }
 
       button:focus, button:active, button:hover {
