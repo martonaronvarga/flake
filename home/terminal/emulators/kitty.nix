@@ -51,11 +51,11 @@
 
       # Colors
       background #000000
-      foreground #383e42
+      foreground #d0d0d0
 
       cursor #e25303
 
-      selection_background #121212
+      selection_background #1a1a1a
 
       url_color #2a5c45
 
@@ -63,18 +63,18 @@
 
       color1 #e25303
       color2 #2a5c45
-      color3 #5e676e
+      color3 #aaaaaa
       color4 #2a5c45
       color5 #5e676e
       color6 #2a5c45
-      color7 #5e676e
-      color8 #5e676e
-      color9 #e25303
-      color10 #2a5c45
-      color11 #5e676e
-      color12 #2a5c45
-      color13 #5e676e
-      color14 #2a5c45
+      color7 #e0e0e0
+      color8 #888888
+      color9 #ff6611
+      color10 #33aa77
+      color11 #dddddd
+      color12 #33aa77
+      color13 #dddddd
+      color14 #33aa77
       color15 #ffffff
 
 

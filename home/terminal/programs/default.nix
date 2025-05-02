@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ...}: {
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}: {
   imports = [
     ./btop.nix
     ./cli.nix
@@ -7,5 +12,6 @@
     ./yazi
     ./xdg.nix
     ./hx.nix
+    ./neofetch.nix
   ];
 }

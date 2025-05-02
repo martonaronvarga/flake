@@ -40,10 +40,13 @@
           mount -t btrfs -o subvol=/ /dev/mapper/cryptroot /mnt
           if btrfs subvolume show /mnt/root-blank >/dev/null 2>&1; then
             # Delete all nested subvolumes under /mnt/root
-            btrfs subvolume list /mnt/root | awk '{print $9}' | sort -r | while read sub; do
-              echo "Deleting subvolume /mnt/root/$sub"
+            echo "Removing nested subvolumes under /mnt/root..."
+
+            for sub in $(btrfs subvolume list /mnt/root | grep -oP '\S+$' | sort -r); do
+              echo "Deleting /mnt/root/$sub"
               btrfs subvolume delete "/mnt/root/$sub" || true
             done
+
             btrfs subvolume delete /mnt/root
             btrfs subvolume snapshot /mnt/root-blank /mnt/root
             echo "Rollback successful"

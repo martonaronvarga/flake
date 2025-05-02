@@ -35,7 +35,6 @@ in {
         "$mod, R, togglesplit,"
         "$mod, T, togglefloating,"
         "$mod, P, pseudo,"
-        "$mod ALT, R, resizeactive,"
 
         # utility
         "$mod, B, exec, firefox"
@@ -104,6 +103,11 @@ in {
       # backlight
       ", XF86MonBrightnessUp, exec, brillo -q -u 300000 -A 5"
       ", XF86MonBrightnessDown, exec, brillo -q -u 300000 -U 5"
+    ];
+
+    bindm = [
+      "$mod, mouse:273, resizewindow"
+      "$mod, mouse:272, movewindow"
     ];
   };
 }
