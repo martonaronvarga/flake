@@ -1,3 +1,4 @@
+{lib, config, pkgs, ...}:
 {
   disko.devices = {
     disk = {
@@ -28,45 +29,57 @@
                 content = { type = "swap"; };
               };
             };
-            root = {
-              label = "root";
+            luks = {
+              label = "luks";
               size = "100%";
               content = {
                 type = "luks";
                 name = "cryptroot";
+                extraOpenArgs = [ "--allow-discards" ];
                 content = {
                   type = "btrfs";
-                  extraArgs = [ "-f" ];
+                  extraArgs = [ "-L" "nixos" "-f" ];
                   postCreateHook = ''
                     MNTPOINT=$(mktemp -d)
-                    mount "/dev/mapper/cryptroot" "$MNTPOINT" -o subvol=/
-                    trap 'umount $MNTPOINT; rm -rf $MNTPOINT' EXIT
-                    btrfs subvolume snapshot -r $MNTPOINT/root $MNTPOINT/root-blank
-                  '';
+                    mount "/dev/mapper/cryptroot" "$MNTPOINT" -o subvol=/ && {
+                      trap 'umount "$MNTPOINT" && rm -rf "$MNTPOINT"' EXIT
+                      if btrfs subvolume show "$MNTPOINT/root" >/dev/null 2>&1; then
+                        btrfs subvolume snapshot -r "$MNTPOINT/root" "$MNTPOINT/root-blank" || 
+                          { echo "Snapshot failed!" >&2; exit 1; }
+                      else
+                        echo "Root subvolume missing!" >&2
+                        exit 1
+                      fi
+                    } || {
+                      echo "Mount failed!" >&2
+                      rm -rf "$MNTPOINT"
+                      exit 1
+                    }
+                  ''; 
                   subvolumes = {
                     "/root" = {
                       mountpoint = "/";
-                      mountOptions = [ "compress=zstd" "noatime" ];
+                      mountOptions = [ "subvol=root" "compress=zstd" "noatime" ];
                     };
                     "/persist" = {
                       mountpoint = "/persist";
-                      mountOptions = [ "compress=zstd" "noatime" ];
+                      mountOptions = [ "subvol=persist" "compress=zstd" "noatime" ];
                     };
-                    "/persist/home" = {
-                      mountpoint = "/persist/home";
-                      mountOptions = [ "compress=zstd" "noatime" ];
+                    "/home" = {
+                      mountpoint = "/home";
+                      mountOptions = [ "subvol=home" "compress=zstd" "noatime" ];
                     };
                     "/nix" = {
                       mountpoint = "/nix";
-                      mountOptions = [ "compress=zstd" "noatime" ];
+                      mountOptions = [ "subvol=nix" "compress=zstd" "noatime" ];
                     };
                     "/tmp" = {
                       mountpoint = "/tmp";
-                      mountOptions = [ "compress=zstd" "noatime" ];
+                      mountOptions = [ "subvol=tmp" "compress=zstd" "noatime" ];
                     };
                     "/.snapshots" = {
                       mountpoint = "/.snapshots";
-                      mountOptions = [ "compress=zstd" "noatime" ];
+                      mountOptions = [ "subvol=.snapshots" "compress=zstd" "noatime" ];
                     };
                   };
                 };

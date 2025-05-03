@@ -15,11 +15,16 @@
       experimental-features = [ "nix-command" "flakes" ];
       accept-flake-config = true;
       use-xdg-base-directories = true;
+      warn-dirty = false;
 
       keep-derivations = true;
       keep-outputs = true;
 
       trusted-users = [ "root" "wheel" ];
     };
+
+    generateRegistryFromInputs = true;
+    generateNixPathFromInputs = true;
+    linkInputs = true;
   };
 }

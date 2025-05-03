@@ -25,6 +25,10 @@
     ];
     files = [
       "/etc/machine-id"
+      "/etc/ssh/ssh_host_ed25519_key.pub"
+      "/etc/ssh/ssh_host_ed25519_key"
+      "/etc/ssh/ssh_host_rsa_key.pub"
+      "/etc/ssh/ssh_host_rsa_key"
     ];
     users.usu = {
       directories = [
@@ -71,7 +75,7 @@
       volume."/" = {
         snapshot_dir = ".snapshots";
         subvolume."persist".snapshot_preserve = "48h 7d";
-        subvolume."persist/home".snapshot_preserve = "48h 7d 4w";
+        subvolume."home".snapshot_preserve = "48h 7d 4w";
       };
     };
   };

@@ -37,23 +37,22 @@
         script = ''
           set -euo pipefail
           mkdir -p /mnt
-          mount -t btrfs -o subvol=/ /dev/mapper/cryptroot /mnt
-          if btrfs subvolume show /mnt/root-blank >/dev/null 2>&1; then
-            # Delete all nested subvolumes under /mnt/root
-            echo "Removing nested subvolumes under /mnt/root..."
+          mount -o subvol=/ /dev/mapper/cryptroot /mnt
 
-            for sub in $(btrfs subvolume list /mnt/root | grep -oP '\S+$' | sort -r); do
-              echo "Deleting /mnt/root/$sub"
-              btrfs subvolume delete "/mnt/root/$sub" || true
-            done
-
+          # Delete all nested subvolumes under /mnt/root
+          echo "Removing nested subvolumes under /mnt/root..."
+          btrfs subvolume list -o /mnt/root |
+            cut -f9 -d' ' |
+            while read subvolume; do
+              echo "Deleting /$subvolume subvolume..."
+              btrfs subvolume delete "/mnt/$subvolume"
+            done &&
+            echo "Deleting /root subvolume..." &&
             btrfs subvolume delete /mnt/root
-            btrfs subvolume snapshot /mnt/root-blank /mnt/root
-            echo "Rollback successful"
-          else
-            echo "ERROR: root-blank snapshot missing!"
-            exit 1
-          fi
+          echo "Restoring blank /root subvolume"
+          btrfs subvolume snapshot /mnt/root-blank /mnt/root
+          echo "Rollback successful"
+
           umount /mnt
         '';
       };
@@ -62,7 +61,9 @@
     tmp.cleanOnBoot = true;
 
     consoleLogLevel = 3;
-    kernelParams = ["quiet" "systemd.show_status=auto" "rd.udev.log_level=3"];
+    kernelParams = ["quiet" "systemd.show_status=auto" "rd.udev.log_level=3" "init=/bin/sh" "systemd.unit=emergency.target" ];
+
+    resumeDevice = "/dev/mapper/cryptswap";
 
     loader = {
       efi.canTouchEfiVariables = true;
@@ -73,10 +74,6 @@
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  fileSystems."/" = {
-    fsType = "btrfs";
-    options = ["subvol=root" "compress=zstd" "noatime"];
-  };
 
   environment.systemPackages = [pkgs.linuxPackages_latest.cpupower pkgs.sbctl];
 }
