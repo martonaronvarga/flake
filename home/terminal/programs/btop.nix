@@ -6,8 +6,8 @@
 
   xdg.configFile = {
     "btop/themes/greyscale.theme".source = pkgs.fetchurl {
-      url = "https://github.com/aristocratos/btop/blob/bfe8c20ebe3d180f7e0b6b2ac016c749ad3a996a/themes/greyscale.theme";
-      hash = "sha256-Uk0Vpt+gyZ6nhrS1xd2UQdsAwzg427GmKkPwyoB+M5o=";
+      url = "https://raw.githubusercontent.com/aristocratos/btop/refs/heads/main/themes/greyscale.theme";
+      sha256 = "1adfjmd0lrgrklg0aqvb3c4a40w0jqbm34c67cx6x0yc9dfm6kgh";
     };
   };
 }
