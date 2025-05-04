@@ -58,6 +58,8 @@
   };
 
   fileSystems."/persist".neededForBoot = true;
+  fileSystems."/nix".neededForBoot = true;
+  fileSystems."/boot".neededForBoot = true;
 
   security.sudo.extraConfig = ''
     Defaults lecture = never
