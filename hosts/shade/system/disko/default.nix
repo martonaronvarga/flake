@@ -28,8 +28,8 @@
                 content = { type = "swap"; };
               };
             };
-            luks = {
-              label = "luks";
+            root = {
+              label = "root";
               size = "100%";
               content = {
                 type = "luks";

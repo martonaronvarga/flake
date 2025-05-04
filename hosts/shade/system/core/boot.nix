@@ -19,7 +19,7 @@
         device = "/dev/disk/by-partlabel/swap";
       };
       luks.devices."cryptroot" = {
-        device = "/dev/disk/by-partlabel/luks";
+        device = "/dev/disk/by-partlabel/root";
         allowDiscards = true;
       };
       supportedFilesystems = ["btrfs"];
@@ -61,7 +61,7 @@
     tmp.cleanOnBoot = true;
 
     consoleLogLevel = 3;
-    kernelParams = ["quiet" "systemd.show_status=auto" "rd.udev.log_level=3" "init=/bin/sh" "systemd.unit=emergency.target" ];
+    kernelParams = ["quiet" "systemd.show_status=auto" "rd.udev.log_level=3" ];
 
     resumeDevice = "/dev/mapper/cryptswap";
 
