@@ -23,8 +23,5 @@
       trusted-users = [ "root" "wheel" ];
     };
 
-    generateRegistryFromInputs = true;
-    generateNixPathFromInputs = true;
-    linkInputs = true;
   };
 }

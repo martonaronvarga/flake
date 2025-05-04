@@ -38,7 +38,9 @@
       "float, class: ^(Zotero)$"
       "float, class: ^Bluetooth-Devices$"
       "float, class: fuzzel"
-      "float, class: pavucontrol"
+      "float, class: ^(blueman-manager)$"
+      "float, class: ^(xdg-desktop-portal-gtk)$"
+      "float, title: pavucontrol"
       # make Firefox/Zen PiP window floating and sticky
       "float, title:^(Picture-in-Picture)$"
       "pin, title:^(Picture-in-Picture)$"

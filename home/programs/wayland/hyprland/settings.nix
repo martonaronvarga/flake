@@ -41,8 +41,8 @@ in {
 
       blur = {
         enabled = true;
-        size = 10;
-        passes = 3;
+        size = 2;
+        passes = 1;
         brightness = 1.0;
         vibrancy = 1.0;
         popups = true;
@@ -84,6 +84,9 @@ in {
 
     input = {
       kb_layout = "us";
+      kb_options = "caps:escape";
+      repeat_rate = 50;
+      repeat_delay = 240;
 
       # focus change on cursor move
       follow_mouse = 1;
