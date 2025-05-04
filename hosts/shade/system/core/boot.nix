@@ -19,7 +19,7 @@
         device = "/dev/disk/by-partlabel/swap";
       };
       luks.devices."cryptroot" = {
-        device = "/dev/disk/by-partlabel/root";
+        device = "/dev/disk/by-partlabel/luks";
         allowDiscards = true;
       };
       supportedFilesystems = ["btrfs"];
