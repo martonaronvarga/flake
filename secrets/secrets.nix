@@ -1,5 +1,6 @@
 let
-  usu = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILPV/ur0bttQ5BA/Hzr2zulipcQh+KHZGpgqx29qkAgu martonaronvarga@gmail.com";
+  usu = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade
+";
 in {
   "usu.age".publicKeys = [usu];
 }
