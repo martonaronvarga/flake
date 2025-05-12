@@ -13,5 +13,6 @@
     ./xdg.nix
     ./hx.nix
     ./neofetch.nix
+    ./tmux.nix
   ];
 }

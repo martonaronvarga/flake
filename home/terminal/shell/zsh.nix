@@ -63,6 +63,7 @@
     };
 
     initExtra = ''
+      eval "$(starship init zsh)"
       bindkey "''${key[Up]}" up-line-or-search
 
       if [[ $(tty) == /dev/tty1 ]]; then

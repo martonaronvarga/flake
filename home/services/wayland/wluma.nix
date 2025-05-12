@@ -17,8 +17,7 @@
   };
 
   xdg.configFile."wluma/config.toml".source = (pkgs.formats.toml {}).generate "wluma-config" {
-    als.iio = {
-      path = "/sys/bus/iio/devices";
+    als.webcam = {
       thresholds = {
         "0" = "night";
         "20" = "dark";
@@ -31,7 +30,7 @@
 
     output.backlight = [
       {
-        capturer = "none";
+        capturer = "wayland";
         name = "eDP-1";
         path = "/sys/class/backlight/intel_backlight";
       }
