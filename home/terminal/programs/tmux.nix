@@ -7,5 +7,10 @@
     keyMode = "vi";
     mouse = true;
     newSession = true;
+    plugins = with pkgs.tmuxPlugins; [
+      resurrect
+      yank
+      tmux-thumbs
+    ];
   };
 }
