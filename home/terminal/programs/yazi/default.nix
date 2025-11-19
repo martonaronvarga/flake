@@ -23,7 +23,8 @@
     enableZshIntegration = config.programs.zsh.enable or false;
 
     settings = {
-      manager = {
+      mgr = {
+        #manager = {
         layout = [1 4 3];
         sort_by = "alphabetical";
         sort_sensitive = true;

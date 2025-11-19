@@ -5,7 +5,7 @@
   inputs,
   ...
 }: {
-  programs.kitty = lib.mkForce {
+  programs.kitty = {
     enable = true;
     package = pkgs.kitty;
     shellIntegration.enableZshIntegration = true;
@@ -16,7 +16,6 @@
     };
 
     extraConfig = ''
-      wayland_window_title kitty
       hide_window_decorations titlebar-only
       adjust_column_width 0
       disable_ligatures never
