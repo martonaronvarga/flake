@@ -11,6 +11,7 @@ in {
       "XCURSOR_THEME, ${cursorName}"
       "XCURSOR_SIZE, ${toString pointer.size}"
       "XDG_CURRENT_DESKTOP,Hyprland"
+      "XDG_SESSION_TYPE,wayland"
     ];
 
     exec-once = [
