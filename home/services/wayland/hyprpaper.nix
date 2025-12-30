@@ -1,7 +1,6 @@
 {
   pkgs,
   inputs,
-  config,
   ...
 }: let
   wallpaper = builtins.path {
@@ -9,14 +8,20 @@
     name = "wallpaper";
   };
 in {
+  # imports = [../../../overlays/hm-hyprpaper-newsyntax.nix];
   services.hyprpaper = {
     enable = true;
-    package = inputs.hyprpaper.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    package = inputs.hyprpaper.packages.${pkgs.stdenv.hostPlatform.system}.hyprpaper;
 
     settings = {
       splash = false;
-      preload = ["${wallpaper}"];
-      wallpaper = ", ${wallpaper}";
+      wallpaper = [
+        {
+          monitor = "";
+          path = "${wallpaper}";
+          fit_mode = "cover";
+        }
+      ];
     };
   };
 }
