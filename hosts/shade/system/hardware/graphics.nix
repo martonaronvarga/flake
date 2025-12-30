@@ -9,8 +9,8 @@
 
     extraPackages = with pkgs; [
       vpl-gpu-rt
-      vaapiIntel
-      vaapiVdpau
+      intel-vaapi-driver
+      libva-vdpau-driver
       libvdpau-va-gl
       libva
       mesa
@@ -18,6 +18,6 @@
       intel-media-driver
     ];
 
-    extraPackages32 = with pkgs.pkgsi686Linux; [vaapiVdpau libvdpau-va-gl];
+    extraPackages32 = with pkgs.pkgsi686Linux; [intel-vaapi-driver libvdpau-va-gl];
   };
 }

@@ -101,17 +101,12 @@
     ...
   }: let
     lib = nixpkgs.lib;
-    pkgs = import nixpkgs {
-      system = "x86_64-linux";
-      config.allowUnfree = true;
-      overlays = [
-      ];
-    };
+    system = "x86_64-linux";
   in {
     nixosConfigurations = {
       #nix build .#nixosConfigurations.img-shade.config.system.build.isoImage
       img-shade = lib.nixosSystem {
-        system = "x86_64-linux";
+        inherit system;
         specialArgs = {inherit inputs self lib;};
         modules = [
           agenix.nixosModules.default
@@ -124,23 +119,24 @@
       };
 
       shade = lib.nixosSystem {
+        inherit system;
         specialArgs = {inherit inputs self lib;};
-        system = "x86_64-linux";
         modules = [
           disko.nixosModules.default
           impermanence.nixosModules.impermanence
           lanzaboote.nixosModules.lanzaboote
-          home-manager.nixosModules.home-manager
-          nixos-hardware.nixosModules.lenovo-thinkpad-x1-6th-gen
           agenix.nixosModules.default
           nvf.nixosModules.default
+
+          home-manager.nixosModules.home-manager
+          nixos-hardware.nixosModules.lenovo-thinkpad-x1-6th-gen
+
           ./hosts/shade
           ./modules
-          {home-manager.extraSpecialArgs = {inherit inputs self pkgs;};}
+
           {
-            home-manager = {
-              users.usu = import ./home/default.nix;
-            };
+            home-manager.extraSpecialArgs = {inherit inputs self;};
+            home-manager.users.usu = import ./home/default.nix;
           }
         ];
       };
