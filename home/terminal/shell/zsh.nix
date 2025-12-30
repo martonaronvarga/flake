@@ -15,7 +15,7 @@
     syntaxHighlighting.enable = true;
     autosuggestion.enable = true;
     autocd = true;
-    dotDir = ".config/zsh";
+    dotDir = config.xdg.configHome + "/zsh";
 
     history = {
       expireDuplicatesFirst = true;
@@ -62,7 +62,7 @@
       ip = "ip --color";
     };
 
-    initExtra = ''
+    initContent = ''
       eval "$(starship init zsh)"
       bindkey "''${key[Up]}" up-line-or-search
 
