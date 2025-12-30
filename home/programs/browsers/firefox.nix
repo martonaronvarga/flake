@@ -1,5 +1,9 @@
-{ pkgs, config, inputs, ...}: {
-
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}: {
   programs.firefox = {
     enable = true;
     policies = {
@@ -70,7 +74,7 @@
           "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" = false;
           "extensions.htmlaboutaddons.recommendations.enabled" = false;
           "extensions.htmlaboutaddons.discover.enabled" = false;
-          "extensions.getAddons.showPane" = false;  # uses Google Analytics
+          "extensions.getAddons.showPane" = false; # uses Google Analytics
           "browser.discovery.enabled" = false;
           # Reduce File IO / SSD abuse
           # Otherwise, Firefox bombards the HD with writes. Not so nice for SSDs.
@@ -129,7 +133,7 @@
           # Disable crash reports
           "breakpad.reportURL" = "";
           "browser.tabs.crashReporting.sendReport" = false;
-          "browser.crashReports.unsubmittedCheck.autoSubmit2" = false;  # don't submit backlogged reports
+          "browser.crashReports.unsubmittedCheck.autoSubmit2" = false; # don't submit backlogged reports
 
           # Disable Form autofill
           # https://wiki.mozilla.org/Firefox/Features/Form_Autofill
@@ -143,30 +147,38 @@
         search = {
           force = true;
           default = "Startpage";
-          order = [ "Startpage" "Google" "Nix Packages" "NixOS Wiki" ];
+          order = ["Startpage" "google" "Nix Packages" "NixOS Wiki"];
           engines = {
             "Nix Packages" = {
-              urls = [{
-                template = "https://search.nixos.org/packages";
-                params = [
-                  { name = "type"; value = "packages"; }
-                  { name = "query"; value = "{searchTerms}";}
-                ];
-              }];
+              urls = [
+                {
+                  template = "https://search.nixos.org/packages";
+                  params = [
+                    {
+                      name = "type";
+                      value = "packages";
+                    }
+                    {
+                      name = "query";
+                      value = "{searchTerms}";
+                    }
+                  ];
+                }
+              ];
               icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-              definedAliasas = [ "@np" ];
+              definedAliasas = ["@np"];
             };
             "NixOS Wiki" = {
-                urls = [{ template = "https://nixos.wiki/index.php?search={searchTerms}"; }];
-                icon = "https://nixos.wiki/favicon.png";
-                updateInterval = 24 * 60 * 60 * 1000; # every day
-                definedAliases = [ "@nw" ];
+              urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
+              icon = "https://nixos.wiki/favicon.png";
+              updateInterval = 24 * 60 * 60 * 1000; # every day
+              definedAliases = ["@nw"];
             };
             "Startpage" = {
-              urls = [{ template = "https://www.startpage.com/do/search?query={searchTerms}"; }];
+              urls = [{template = "https://www.startpage.com/do/search?query={searchTerms}";}];
               icon = "https://www.startpage.com/favicon.ico";
               updateInterval = 24 * 60 * 60 * 1000; # every day
-              defunedAliases = [ "@sp" ];
+              defunedAliases = ["@sp"];
             };
             "bing".metaData.hidden = true;
             "google".metaData.alias = "@g";

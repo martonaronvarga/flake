@@ -35,7 +35,7 @@
         systems.follows = "hyprland/systems";
       };
     };
-    
+
     hyprland-contrib = {
       url = "github:hyprwm/contrib";
       inputs.nixpkgs.follows = "hyprland/nixpkgs";
@@ -75,65 +75,78 @@
       };
     };
 
-
     nvf.url = "github:notashelf/nvf";
     nvf.inputs.nixpkgs.follows = "nixpkgs";
-
   };
 
-  outputs = inputs @ { self, nixpkgs, nixos-hardware, utils, disko, lanzaboote
-    , impermanence, home-manager, agenix, alejandra, hyprland, hypridle, hyprland-plugins
-    , hyprland-contrib, hyprlock, hyprpaper, hyprcursor, nvf, ... }:
-      let
-        lib = nixpkgs.lib;
-        pkgs = import nixpkgs {
-          system = "x86_64-linux";
-          config.allowUnfree = true;
-          overlays = [
-          ];
-        };
-
-      in {
-      nixosConfigurations = {
-        #nix build .#nixosConfigurations.img-shade.config.system.build.isoImage       
-        img-shade = lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs self lib; };
-          modules = [
-      	    agenix.nixosModules.default
-            "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-            ./hosts/img-shade
-            {
-              environment.systemPackages = [ agenix.packages.x86_64-linux.default ];
-            }
-          ];
-        };
-        
-        
-        shade = lib.nixosSystem {
-          specialArgs = { inherit inputs self lib; };
-          system = "x86_64-linux";
-          modules = [
-            disko.nixosModules.default
-            impermanence.nixosModules.impermanence
-            lanzaboote.nixosModules.lanzaboote
-            home-manager.nixosModules.home-manager
-      	    nixos-hardware.nixosModules.lenovo-thinkpad-x1-6th-gen
-            agenix.nixosModules.default
-            nvf.nixosModules.default
-            ./hosts/shade
-            ./modules
-            {home-manager.extraSpecialArgs = { inherit inputs self pkgs;};}
-            { 
-              home-manager = {
-                users.usu = import ./home/default.nix;
-              };
-            }
-          ];
-        };
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    nixos-hardware,
+    utils,
+    disko,
+    lanzaboote,
+    impermanence,
+    home-manager,
+    agenix,
+    alejandra,
+    hyprland,
+    hypridle,
+    hyprland-plugins,
+    hyprland-contrib,
+    hyprlock,
+    hyprpaper,
+    hyprcursor,
+    nvf,
+    ...
+  }: let
+    lib = nixpkgs.lib;
+    pkgs = import nixpkgs {
+      system = "x86_64-linux";
+      config.allowUnfree = true;
+      overlays = [
+      ];
+    };
+  in {
+    nixosConfigurations = {
+      #nix build .#nixosConfigurations.img-shade.config.system.build.isoImage
+      img-shade = lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {inherit inputs self lib;};
+        modules = [
+          agenix.nixosModules.default
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+          ./hosts/img-shade
+          {
+            environment.systemPackages = [agenix.packages.x86_64-linux.default];
+          }
+        ];
       };
 
-      shade = self.nixosConfigurations.shade.config.system.build.toplevel;
-      img-shade = self.nixosConfigurations.img-shade.config.system.build.toplevel;
+      shade = lib.nixosSystem {
+        specialArgs = {inherit inputs self lib;};
+        system = "x86_64-linux";
+        modules = [
+          disko.nixosModules.default
+          impermanence.nixosModules.impermanence
+          lanzaboote.nixosModules.lanzaboote
+          home-manager.nixosModules.home-manager
+          nixos-hardware.nixosModules.lenovo-thinkpad-x1-6th-gen
+          agenix.nixosModules.default
+          nvf.nixosModules.default
+          ./hosts/shade
+          ./modules
+          {home-manager.extraSpecialArgs = {inherit inputs self pkgs;};}
+          {
+            home-manager = {
+              users.usu = import ./home/default.nix;
+            };
+          }
+        ];
+      };
     };
+
+    packages.x86_64-linux.shade = self.nixosConfigurations.shade.config.system.build.toplevel;
+    packages.x86_64-linux.img-shade = self.nixosConfigurations.img-shade.config.system.build.toplevel;
+  };
 }
