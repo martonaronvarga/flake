@@ -24,7 +24,7 @@
     alejandra.url = "github:kamadorueda/alejandra/3.0.0";
     alejandra.inputs.nixpkgs.follows = "nixpkgs";
 
-    hyprland.url = "github:hyprwm/hyprland";
+    hyprland.url = "github:hyprwm/Hyprland?submodules=1";
 
     hypridle = {
       url = "github:hyprwm/hypridle";
