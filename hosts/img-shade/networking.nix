@@ -1,9 +1,8 @@
-{ pkgs, ... }: {
-
+{lib, ...}: {
   networking.networkmanager = {
     enable = true;
     wifi.scanRandMacAddress = true;
   };
-  networking.wireless.enable = false;
+  networking.wireless.enable = lib.mkDefault false;
   networking.hostName = "img-shade";
 }

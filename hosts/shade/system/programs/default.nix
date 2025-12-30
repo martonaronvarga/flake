@@ -21,7 +21,7 @@
       waylandCompositors = {
         hyprland = {
           prettyName = "Hyprland";
-          binPath = lib.mkForce "${inputs.hyprland.packages.${pkgs.system}.default}/bin/Hyprland";
+          binPath = lib.mkForce "${inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/Hyprland";
         };
       };
     };

@@ -5,7 +5,7 @@
       # icon fonts
       material-symbols
       # Sans(Serif) fonts
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       roboto
       nerd-fonts.roboto-mono
       nerd-fonts.noto
