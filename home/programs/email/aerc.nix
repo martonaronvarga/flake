@@ -269,21 +269,20 @@ in {
     cat > ${aercAccountConf} <<EOF
     [personal]
     source = imaps+oauthbearer://${username}@imap.gmail.com?token_endpoint=https%3A%2F%2Foauth2.googleapis.com%2Ftoken&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET
-    outgoing = smpts+oauthbearer://${username}@imap.gmail.com?token_endpoint=https%3A%2F%2Foauth2.googleapis.com%2Ftoken&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET
+    outgoing = smtps+oauthbearer://${username}@imap.gmail.com?token_endpoint=https%3A%2F%2Foauth2.googleapis.com%2Ftoken&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET
     source-cred-cmd = ${lib.getExe quoteSecret} /run/agenix/aerc-refresh-token
     outgoing-cred-cmd = ${lib.getExe quoteSecret} /run/agenix/aerc-refresh-token
     carddav-source = https://${username}@www.googleapis.com/carddav/v1/principals/martonaronvarga@gmail.com/lists/default
     carddav-source-cred-cmd = ${lib.getExe quoteSecret} /run/agenix/aerc-refresh-token
     default = INBOX
     folders-sort = INBOX
-    folders-map = ${pkgs.writeText "map.txt" "* = [Gmail]/*"}
+    folders-map = ${pkgs.writeText "map.txt" "* = [Gmail]/\*"}
     postpone = Drafts
     from = ${name} <martonaronvarga@gmail.com>
     cache-headers = true
     check-mail = 5m
     copy-to = Sent
     pgp-auto-sign = true
-    pgp-attach-key = true
     send-as-utc = true
     signature-cmd = echo -e '\n-- \nMarton Aron Varga\nMetascience Lab\nELTE Eötvös Loránd University\nmartonaronvarga@gmail.com'
     EOF

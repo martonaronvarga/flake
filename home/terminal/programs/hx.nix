@@ -12,6 +12,7 @@ in {
       theme = theme;
 
       editor = {
+        shell = ["zsh" "-c"];
         line-number = "absolute";
         mouse = true;
         true-color = true;
@@ -19,19 +20,22 @@ in {
         undercurl = true;
         auto-pairs = true;
         cursorline = true;
+        gutters = ["diagnostics" "line-numbers" "spacer" "diff"];
+        auto-format = true;
         cursor-shape = {
           insert = "bar";
           normal = "block";
           select = "block";
         };
         completion-trigger-len = 1;
+        completion-replace = true;
         rulers = [80];
         bufferline = "always";
         scrolloff = 8;
         statusline = {
-          left = ["mode" "spinner" "file-name"];
+          left = ["mode" "selections" "spinner" "file-name"];
           center = ["diagnostics"];
-          right = ["position" "position-percentage" "file-encoding"];
+          right = ["file-encoding" "file-type" "position" "position-percentage" "file-encoding"];
         };
         indent-guides = {
           render = true;
@@ -42,13 +46,16 @@ in {
 
       keys.normal = {
         "space" = {
+          "f" = "file_picker";
+          "S" = "global_search";
           "w" = ":w";
           "q" = ":q";
           "x" = ":x";
-          "c" = ":config-open";
-          "r" = ":config-reload";
-          "e" = ":open ~/.config/helix/config.toml";
-          "f" = ":open ~/.config/helix";
+          "n" = {
+            "n" = ":lsp-execute-command zk.newNote";
+            "l" = ":lsp-execute-comand zk.insertLink";
+            "b" = ":lsp-execute-command zk.showBacklinks";
+          };
         };
         "H" = "goto_previous_buffer";
         "L" = "goto_next_buffer";
@@ -64,13 +71,68 @@ in {
 
     languages = {
       language-server = {
+        bash-language-server = {
+          command = "bash-language-server";
+          args = ["start"];
+        };
+
+        clangd = {
+          command = "clangd";
+        };
+        idris2-lsp = {
+          command = "idris2-lsp";
+        };
+        julia = {
+          comand = "julia";
+          timeout = 60;
+          args = ["--startup-file=no" "--history-file=no" "--quiet" "-e" "using LanguageServer;" "runserver()"];
+        };
         rust-analyzer = {
           command = "rust-analyzer";
+          config.rust-analyzer = {
+            "inlayHints.closingBraceHints.minLines" = 10;
+            "inlayHints.closureReturnTypeHints.enable" = "with_block";
+            "inlayHints.discriminantHints.enable" = "fieldless";
+            files = {
+              watcher = "server";
+            };
+            check = {
+              command = "clippy";
+            };
+            checkOnSave.command = "clippy";
+            procMacro.enable = true;
+            lens = {
+              references = true;
+              methodReferences = true;
+            };
+            completion.autoimport.enable = true;
+            experimental.procAttrMacros = true;
+            cargo = {
+              loadOutDirsFromCheck = true;
+              features = "all";
+            };
+          };
+        };
+
+        typescript-language-server = {
+          command = "typescript-language-server";
+          args = ["--stdio"];
+          config.hostInfo = "helix";
+        };
+
+        svelteserver = {
+          command = "svelteserver";
+          args = ["--stdio"];
         };
 
         pyright = {
           command = "pyright-langserver";
           args = ["--stdio"];
+        };
+
+        ruff = {
+          command = "ruff";
+          args = ["server"];
         };
 
         r-languageserver = {
@@ -81,37 +143,275 @@ in {
         nil = {
           command = "nil";
         };
+
+        marksman = {
+          command = "marksman";
+          args = ["server"];
+        };
+
+        texlab = {
+          command = "texlab";
+        };
+
+        tailwindcss-ls = {
+          command = "tailwindcss-language-server";
+          args = ["--stdio"];
+        };
       };
 
       language = [
         {
+          name = "bash";
+          scope = "source.bash";
+          injection-regex = "(shell|bash|zsh|sh)";
+          file-types = [
+            "sh"
+            "bash"
+            "zsh"
+            "zshenv"
+            "zshrc"
+            "Renviron"
+            {glob = ".Renviron";}
+          ];
+          shebangs = ["sh" "bash" "zsh"];
+          comment-token = "#";
+          language-servers = ["bash-language-server"];
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+          formatter = "${pkgs.shfmt}/bin/shfmt";
+          args = ["-i" "4" "-s" "-ci" "-sr"];
+        }
+        {
           name = "rust";
+          scope = "source.rust";
+          injection-regex = "rs|rust";
+          file-types = ["rs"];
+          roots = ["Cargo.toml" "Cargo.lock"];
+          shebangs = ["rust-script" "cargo"];
           auto-format = true;
+          comment-tokens = ["//" "///" "//!"];
+          block-comment-tokens = [
+            {
+              start = "/*";
+              end = "*/";
+            }
+            {
+              start = "/**";
+              end = "*/";
+            }
+            {
+              start = "/*!";
+              end = "*/";
+            }
+          ];
           formatter = {
             command = "rustfmt";
           };
           language-servers = ["rust-analyzer"];
+          indent = {
+            tab-width = 4;
+            unit = "    ";
+          };
+          persistent-diagnostic-sources = ["rustc" "clippy"];
+        }
+
+        {
+          name = "cpp";
+          scope = "source.cpp";
+          injection-regex = "cpp";
+          file-types = ["cc" "hh" "c++" "cpp" "hpp" "h" "ipp" "cxx" "hxx" "ixx" "txx" "ino" "C" "H" "cu" "cuh" "cppm" "h++" "ii" "inl" {glob = ".hpp.in";} {glob = ".h.in";}];
+          comment-token = "//";
+          block-comment-tokens = {
+            start = "/*";
+            end = "*/";
+          };
+          language-servers = ["clangd"];
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
         }
 
         {
           name = "python";
+          scope = "source.python";
+          injection-regex = "py(thon)?";
+          file-types = ["py" "pyi" "py3" "pyw" "ptl" "rpy" "cpy" "ipy" "pyt" {glob = ".python_history";} {glob = ".pythonstartup";} {glob = ".pythonrc";} {glob = "*SConstruct";} {glob = "*SConscript";} {glob = "*sconstruct";}];
+          shebangs = ["python" "uv"];
+          roots = ["pyproject.toml" "setup.py" "poetry.lock" "pyrightconfig.json"];
+          comment-token = "#";
           auto-format = true;
-          language-servers = ["pyright"];
+          language-servers = ["pyright" "ruff"];
+          indent = {
+            tab-width = 4;
+            unit = "    ";
+          };
         }
 
         {
           name = "r";
+          scope = "source.r";
+          injection-regex = "(r|R)";
+          file-types = ["r" "R" {glob = ".Rprofile";} {glob = "Rprofile.site";} {glob = ".RHistory";}];
+          shebangs = ["r" "R"];
+          comment-tokens = ["#" "#'"];
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+          auto-format = true;
+          language-servers = ["r-languageserver"];
+        }
+
+        {
+          name = "rmarkdown";
+          scope = "source.rmd";
+          language-id = "rmd";
+          injection-regex = "(r|R)md";
+          file-types = ["rmd" "Rmd"];
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+          grammar = "markdown";
+          block-comment-tokens = {
+            start = "<!--";
+            end = "-->";
+          };
           language-servers = ["r-languageserver"];
         }
 
         {
           name = "nix";
+          scope = "source.nix";
+          injection-regex = "nix";
+          file-types = ["nix"];
+          shebangs = [];
+          comment-token = "#";
+          block-comment-tokens = {
+            start = "/*";
+            end = "*/";
+          };
           auto-format = true;
           formatter = {
             command = "alejandra";
             args = ["-"];
           };
           language-servers = ["nil"];
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+        }
+
+        {
+          name = "markdown";
+          scope = "source.md";
+          injection-regex = "md|markdown";
+          file-types = ["md" "livemd" "markdown" "mdx" "mkd" "mkdn" "mdwn" "mdown"];
+          roots = [".marksman.toml"];
+          soft-wrap.enable = true;
+          soft-wrap.wrap-at-text-width = true;
+          soft-wrap.max-wrap = 80;
+          language-servers = ["marksman"];
+          block-comment-tokens = {
+            start = "<!--";
+            end = "-->";
+          };
+          "word-completion.trigger-length" = 4;
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+        }
+
+        {
+          name = "latex";
+          scope = "source.tex";
+          injection-regex = "tex";
+          file-tupes = ["tex" "sty" "cls" "Rd" "bbx" "cbx"];
+          comment-token = "%";
+          language-servers = ["texlab"];
+          indent = {
+            tab-width = 4;
+            unit = "\t";
+          };
+        }
+
+        {
+          name = "bibtex";
+          scope = "source.bib";
+          injection-regex = "bib";
+          file-tupes = ["bib"];
+          comment-token = "%";
+          language-servers = ["texlab"];
+          indent = {
+            tab-width = 4;
+            unit = "\t";
+          };
+          auto-format = true;
+          formatter = {
+            command = "bibtex-tidy";
+            args = ["-" "--curly" "--drop-all-caps" "--remove-empty-fields" "--sort-fields" "--sort=year,author,id" "--strip-enclosing-braces" "--trailing-commas"];
+          };
+        }
+
+        {
+          name = "julia";
+          scope = "source.julia";
+          injection-regex = "julia";
+          file-types = ["jl"];
+          shebangs = ["julia"];
+          roots = ["Manifest.toml" "Project.toml"];
+          comment-token = "#";
+          block-comment-tokens = {
+            start = "#=";
+            end = "=#";
+          };
+          language-servers = ["julia"];
+          indent = {
+            tab-width = 4;
+            unit = "    ";
+          };
+        }
+
+        {
+          name = "typescript";
+          scope = "source.ts";
+          injection-regex = "(ts|typescript)";
+          language-id = "typescript";
+          file-types = ["ts" "mts" "cts"];
+          shebangs = ["deno" "bun" "ts-node"];
+          roots = ["package.json" "tsconfig.json"];
+          comment-token = "//";
+          block-comment-tokens = {
+            start = "/*";
+            end = "*/";
+          };
+          language-servers = ["typescript-language-server"];
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+        }
+
+        {
+          name = "svelte";
+          scope = "source.svelte";
+          injection-regex = "svelte";
+          file-types = ["svelte"];
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+          comment-token = "//";
+          block-comment-tokens = {
+            start = "/*";
+            end = "*/";
+          };
+          language-servers = ["svelteserver"];
         }
       ];
     };
@@ -428,12 +728,21 @@ in {
   };
 
   home.packages = with pkgs; [
-    helix
     nil
     rust-analyzer
     rustfmt
     pyright
+    typescript-language-server
+    svelte-language-server
+    bash-language-server
     R
     tree-sitter
+    clang-tools
+    julia
+    idris2Packages.idris2Lsp
+    ruff
+    marksman
+    texlab
+    tailwindcss-language-server
   ];
 }

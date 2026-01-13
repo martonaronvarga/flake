@@ -110,9 +110,10 @@
           exec = ''
             hyprctl devices -j |
             jq -r '.keyboards[] | .active_keymap' |
+            tail -n2 |
             head -n1 |
             cut -c1-2 |
-            tr 'a-z' 'A-Z' || echo "--"
+            tr 'a-z' 'A-Z' 2>/dev/null || echo "--"
           '';
         };
 

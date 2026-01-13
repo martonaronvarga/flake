@@ -53,16 +53,16 @@ in {
     cacheHome = "${config.home.homeDirectory}/.local/cache";
 
     portal = {
-      enable = true;
+      enable = false; # nixos module is authoritative in hyprland
       xdgOpenUsePortal = true;
       config = {
         common.default = ["gtk"];
-        common."org.freedesktop.portal.OpenURI" = ["gtk"];
+        common."org.freedesktop.portal.OpenURI" = ["hyprland"];
         hyprland = {
           default = ["hyprland" "gtk"];
           "org.freedesktop.portal.impl.portal.Screenshot" = ["hyprland"];
           "org.freedesktop.portal.impl.portal.ScreenCast" = ["hyprland"];
-          "org.freedesktip.portal.impl.portal.OpenURI" = ["gtk"];
+          "org.freedesktip.portal.impl.portal.OpenURI" = ["hyprland"];
         };
       };
 

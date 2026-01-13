@@ -6,8 +6,12 @@
 }: {
   programs.hyprland = {
     enable = true;
-    portalPackage = pkgs.xdg-desktop-portal-hyprland;
+    withUWSM = true;
+    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
+
+  environment.pathsToLink = ["/share/icons"];
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 }

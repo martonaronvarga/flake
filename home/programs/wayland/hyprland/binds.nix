@@ -13,19 +13,18 @@
     )
     10);
 
-  toggle = program: service: let
+  toggle = program: let
     prog = builtins.substring 0 14 program;
-    runserv = lib.optionalString service "systemd-run --user --collect";
-  in "pkill ${prog} || ${runserv} ${program}";
+  in "pkill ${prog} || uwsm app -- ${program}";
 
-  runOnce = program: "pgrep ${program} || ${program}";
+  runOnce = program: "pgrep ${program} || uwsp app -- ${program}";
 in {
   wayland.windowManager.hyprland.settings = {
     # binds
     bind =
       [
         # compositor commands
-        "$mod SHIFT, E, exec, hyprctl dispatch exit"
+        "$mod SHIFT, E, exec, uwsm stop"
         "$mod, Q, killactive,"
         "$mod, F, fullscreen,"
         "$mod SHIFT, F, fullscreen, 0"
@@ -35,15 +34,16 @@ in {
         "$mod, R, togglesplit,"
         "$mod, T, togglefloating,"
         "$mod, P, pseudo,"
+        "$mod ALT, ,resizeactive,"
 
         # utility
         "$mod, B, exec, firefox"
         # terminal
-        "$mod, Return, exec, kitty"
+        "$mod, Return, exec, uwsm app -- kitty"
         # logout menu
-        "$mod, Escape, exec, ${toggle "wlogout" true} -p layer-shell"
+        "$mod, Escape, exec, ${toggle "wlogout"} -p layer-shell"
         # lock screen
-        "$mod, L, exec, pgrep hyprlock || hyprlock"
+        "$mod, L, exec, loginctl lock-session"
         # fuzzel
         "$mod, D, exec, fuzzel"
 
@@ -52,6 +52,8 @@ in {
         "$mod, right, movefocus, r"
         "$mod, up, movefocus, u"
         "$mod, down, movefocus, d"
+        "$mod, Tab, cyclenext"
+        "$mod, Tab, alterzorder"
 
         # screenshot
         # area
@@ -107,6 +109,7 @@ in {
 
     bindm = [
       "$mod, mouse:273, resizewindow"
+      "$mod ALT, mouse:272, resizewindow"
       "$mod, mouse:272, movewindow"
     ];
   };
