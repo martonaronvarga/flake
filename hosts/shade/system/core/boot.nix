@@ -33,6 +33,8 @@
         wantedBy = ["initrd.target"];
         serviceConfig = {
           Type = "oneshot";
+          StandardOutput = "journal+console";
+          StandardError = "journal+console";
         };
         script = ''
           set -euo pipefail
@@ -61,7 +63,7 @@
     tmp.cleanOnBoot = true;
 
     consoleLogLevel = 3;
-    kernelParams = ["quiet" "systemd.show_status=auto" "rd.udev.log_level=3" ];
+    kernelParams = ["quiet" "systemd.show_status=auto" "rd.udev.log_level=3"];
 
     resumeDevice = "/dev/mapper/cryptswap";
 
@@ -73,7 +75,6 @@
 
     kernelPackages = pkgs.linuxPackages_latest;
   };
-
 
   environment.systemPackages = [pkgs.linuxPackages_latest.cpupower pkgs.sbctl];
 }

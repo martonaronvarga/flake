@@ -1,24 +1,28 @@
-{ pkgs, inputs, lib, config, ...}: {
+{
+  pkgs,
+  inputs,
+  lib,
+  config,
+  ...
+}: {
   services.dunst = {
     enable = true;
     settings = {
       global = {
         font = "Terminess Nerd Font 12";
-        allow_markup = "yes";
-        format = "<b>%s</b>\\\n%b";
+        format = "<b>%s</b>\n%b";
         sort = "yes";
         indicate_hidden = "yes";
         alignment = "left";
-        bounce_freq = 0;
         ellipsize = "middle";
         show_age_threshold = -1;
         word_wrap = "yes";
         ignore_newline = "no";
 
-        width = 320;
-        height = 150;
-        origin = "top_right";
-        offset = "10x12";
+        width = "(0, 320)";
+        height = "(0, 150)";
+        origin = "top-right";
+        offset = "(10, 12)";
         progress_bar = true;
         progress_bar_height = 14;
         progress_bar_frame_width = 1;
@@ -39,7 +43,6 @@
         text_icon_padding = 16;
         separator_color = "frame";
 
-        startup_notification = "no";
         icon_position = "left";
 
         min_icon_size = 32;
@@ -47,9 +50,7 @@
 
         corner_radius = 15;
         always_run_script = true;
-      };
 
-      shortcuts = {
         mouse_left_click = "close_current";
         mouse_middle_click = "do_action, close_current";
         mouse_right_click = "close_all";
@@ -99,10 +100,6 @@
         summary = "Volume Unmuted";
         highlight = "#00ff00";
       };
-
-
-
-
     };
   };
 }

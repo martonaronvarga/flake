@@ -14,6 +14,7 @@
 
   gtk = {
     enable = true;
+    colorScheme = "dark";
 
     font = {
       name = "Terminess Nerd Font";
@@ -33,6 +34,4 @@
       package = pkgs.adw-gtk3;
     };
   };
-
-  xdg.configFile."gtk-4.0/gtk.css".enable = lib.mkForce false;
 }
