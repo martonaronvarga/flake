@@ -1,69 +1,35 @@
-{
-  lib,
-  config,
-  pkgs,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
-    ./system
+    ./hardware.nix
+    ./disko.nix
   ];
 
-  documentation.dev.enable = true;
-
-  environment.persistence."/persist" = {
-    hideMounts = true;
-    directories = [
-      "/var/log"
-      "/var/lib/bluetooth"
-      "/var/lib/colord"
-      "/var/lib/nixos"
-      "/etc/NetworkManager/system-connections"
-      "/var/lib/NetworkManager/"
-      "/var/lib/systemd/coredump"
-      "/secrets"
-    ];
-    files = [
-      "/etc/machine-id"
-      "/etc/ssh/ssh_host_ed25519_key.pub"
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/etc/ssh/ssh_host_rsa_key.pub"
-      "/etc/ssh/ssh_host_rsa_key"
-    ];
-    users.usu = {
-      directories = [
-        "Documents"
-        "Downloads"
-        "Music"
-        "Pictures"
-        "Videos"
-        "Zotero"
-        ".zotero"
-        ".config/zsh/.zsh_history"
-        {
-          directory = ".gnupg";
-          mode = "0700";
-        }
-        {
-          directory = ".ssh";
-          mode = "0700";
-        }
-        {
-          directory = ".local/share/keyrings";
-          mode = "0700";
-        }
-        ".local/share/direnv"
-      ];
-    };
+  users.mutableUsers = false;
+  users.users.usu = {
+    isNormalUser = true;
+    hashedPassword = "$y$j9T$MdAORfTDZl7kOH5hldBAU.$W8czUSqOHSCSlfEGuSTXzt.aKyQX5iQdfudxxuL6hk7";
+    shell = pkgs.zsh;
+    extraGroups = ["wheel" "networkmanager" "video" "audio" "input" "tty" "docker"];
   };
 
-  fileSystems."/persist".neededForBoot = true;
-  fileSystems."/nix".neededForBoot = true;
-  fileSystems."/boot".neededForBoot = true;
+  services.getty.autologinUser = "usu";
 
-  security.sudo.extraConfig = ''
-    Defaults lecture = never
-  '';
+  local.networking.privacyDns = {
+    enable = true;
+    exactSsids = ["Buba"];
+    ssidPrefixes = ["Telekom"];
+  };
+
+  environment.persistence."/persist" = {
+    directories = [
+      "/var/lib/bluetooth"
+      "/var/lib/colord"
+      "/etc/NetworkManager/system-connections"
+      "/var/lib/NetworkManager"
+    ];
+  };
+
+  fileSystems."/home".neededForBoot = true;
 
   services.btrbk.instances.snapshot = {
     # snapshot on the start and the middle of every hour.
@@ -82,12 +48,14 @@
     };
   };
 
+  documentation.dev.enable = true;
+
   i18n = {
     defaultLocale = "en_US.UTF-8";
     supportedLocales = ["en_US.UTF-8/UTF-8" "hu_HU.UTF-8/UTF-8"];
   };
 
-  time.timeZone = lib.mkDefault "Europe/Budapest";
+  time.timeZone = "Europe/Budapest";
 
   system.stateVersion = "25.05";
 }

@@ -1,0 +1,172 @@
+diff --git a/contrib/carddav-query b/contrib/carddav-query
+index 8e4f59c9..b0cde269 100755
+--- a/contrib/carddav-query
++++ b/contrib/carddav-query
+@@ -13,6 +13,7 @@ import os
+ import re
+ import subprocess
+ import sys
++import json
+ import xml.etree.ElementTree as xml
+ from urllib import error, parse, request
+ 
+@@ -47,6 +48,7 @@ def main():
+             "REPORT",
+             args.server_url,
+             query,
++            auth_mode=args.auth_mode,
+             username=args.username,
+             password=args.password,
+             debug=args.verbose,
+@@ -69,6 +71,7 @@ def http_request_xml(
+     method: str,
+     url: str,
+     data: xml.Element,
++    auth_mode: str = None,
+     username: str = None,
+     password: str = None,
+     debug: bool = False,
+@@ -83,7 +86,26 @@ def http_request_xml(
+         },
+         data=xml.tostring(data, encoding="utf-8", xml_declaration=True),
+     )
+-    if username is not None and password is not None:
++    if auth_mode == "bearer":
++        if not password:
++            raise ValueError(
++                "bearer auth requires refresh token output via carddav-source-cred-cmd or --password"
++            )
++        else:
++            # Assume it's a refresh token; require CLIENT_ID/SECRET from url
++            u = parse.urlparse(url)
++            q = parse.parse_qs(u.query)
++            client_id = q.get("client_id", [None])[0]
++            client_secret = q.get("client_secret", [None])[0]
++            if not client_id or not client_secret:
++                raise ValueError(
++                    "client_id and client_secret must be set to use refresh token"
++                )
++            access_token = get_access_token_from_refresh(
++                password, client_id, client_secret, debug
++            )
++        req.add_header("Authorization", f"Bearer {access_token}")
++    elif username is not None and password is not None:
+         auth = f"{username}:{password}"
+         auth = base64.standard_b64encode(auth.encode("utf-8")).decode("ascii")
+         req.add_header("Authorization", f"Basic {auth}")
+@@ -105,6 +127,40 @@ def http_request_xml(
+     return xml.fromstring(data)
+ 
+ 
++def get_access_token_from_refresh(refresh_token, client_id, client_secret, debug):
++    """
++    Exchange a Google OAuth2 refresh token for an access token.
++    Returns the access token as a string.
++    """
++    data = parse.urlencode(
++        {
++            "grant_type": "refresh_token",
++            "refresh_token": refresh_token,
++            "client_id": client_id,
++            "client_secret": client_secret,
++        }
++    ).encode("utf-8")
++    req = request.Request(
++        "https://oauth2.googleapis.com/token",
++        data=data,
++        headers={"Content-Type": "application/x-www-form-urlencoded"},
++        method="POST",
++    )
++
++    try:
++        with request.urlopen(req) as resp:
++            if debug:
++                debug_response(resp)
++            resp_data = resp.read().decode("utf-8")
++            token_json = json.loads(resp_data)
++            if "access_token" not in token_json:
++                raise ValueError(f"Failed to obtain access token: {resp_data}")
++            return token_json["access_token"]
++    except error.HTTPError as e:
++        body = e.read().decode("utf-8")
++        raise ValueError(f"HTTP error while obtaining access token: {e.code} {body}")
++
++
+ def debug_response(resp):
+     print(f"< HTTP/1.1 {resp.code}", file=sys.stderr)
+     for name, value in resp.headers.items():
+@@ -121,7 +177,9 @@ def parse_vcard(txt):
+         if line.startswith("FN:"):
+             name = line[len("FN:") :].replace("\\,", ",")
+             continue
+-        match = re.match(r"^(?:\w+\.)?EMAIL(?:;[\w-]+=[^;:]+)*:(.+@.+)$", line, flags=re.I)
++        match = re.match(
++            r"^(?:\w+\.)?EMAIL(?:;[\w-]+=[^;:]+)*:(.+@.+)$", line, flags=re.I
++        )
+         if match:
+             email = match.group(1).lower().replace("\\,", ",")
+             if email not in emails:
+@@ -203,6 +261,17 @@ def parse_args():
+         CardDAV server URL endpoint. Overrides configuration file.
+         """,
+     )
++    parser.add_argument(
++        "-a",
++        "--config-auth-mode",
++        metavar="AUTH_MODE",
++        default="carddav-auth-mode",
++        help="""
++        INI configuration key to lookup in CONFIG_SECTION from CONFIG_FILE.
++        The value is basic if you authenticate with username/password, and
++        bearer if you rely on OAuth2.
++        """,
++    )
+     parser.add_argument(
+         "-u",
+         "--username",
+@@ -214,7 +283,7 @@ def parse_args():
+         "-p",
+         "--password",
+         help="""
+-        Password for the specified user. Overrides configuration file.
++        Password or refresh token (if auth_mode = bearer) for the specified user. Overrides configuration file.
+         """,
+     )
+     parser.add_argument(
+@@ -230,19 +299,26 @@ def parse_args():
+ 
+     cfg = configparser.RawConfigParser(strict=False)
+     cfg.read([args.config_file])
+-    source = cred_cmd = None
++    source = cred_cmd = auth_mode = None
+     if args.config_section:
+         source = cfg.get(args.config_section, args.config_key_source, fallback=None)
+         cred_cmd = cfg.get(args.config_section, args.config_key_cred_cmd, fallback=None)
++        auth_mode = cfg.get(args.config_section, args.config_auth_mode, fallback=None)
+     else:
+         for sec in cfg.sections():
+             source = cfg.get(sec, args.config_key_source, fallback=None)
+             if source is not None:
+                 cred_cmd = cfg.get(sec, args.config_key_cred_cmd, fallback=None)
++                auth_mode = cfg.get(sec, args.config_auth_mode, fallback=None)
+                 break
+     if source is not None:
+         try:
+             u = parse.urlparse(source)
++
++            if auth_mode:
++                args.auth_mode = auth_mode
++            elif args.config_auth_mode:
++                args.auth_mode = args.config_auth_mode
+             if args.username is None and u.username is not None:
+                 args.username = parse.unquote(u.username)
+             if args.password is None and u.password is not None:
+@@ -256,6 +332,8 @@ def parse_args():
+                 if u.port is not None:
+                     args.server_url += f":{u.port}"
+                 args.server_url += u.path
++                if u.query:
++                    args.server_url += f"?{u.query}"
+         except ValueError as e:
+             parser.error(f"{args.config_file}: {e}")
+     if args.server_url is None:

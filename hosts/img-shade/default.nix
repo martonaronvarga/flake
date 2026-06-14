@@ -1,17 +1,21 @@
-{ config, lib, pkgs, inputs, ... }: {
-
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ./networking.nix
   ];
 
-
   config = {
-    system.stateVersion = "24.11";
+    system.stateVersion = "26.05";
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
-    boot.supportedFilesystems = lib.mkForce [ "btrfs" "vfat" "reiserfs" "f2fs" "xfs" "ntfs" "cifs"];
+    boot.supportedFilesystems = lib.mkForce ["btrfs" "vfat" "reiserfs" "f2fs" "xfs" "ntfs" "cifs"];
 
-    boot.kernelParams = [ "nomodeset" "intel_pstate=disable" "acpi_osi=Linux" "pci=noaer"];
+    boot.kernelParams = ["nomodeset" "intel_pstate=disable" "acpi_osi=Linux" "pci=noaer"];
 
     console = {
       font = "Lat2-Terminus16";
@@ -21,23 +25,20 @@
       inputMethod = {
         enable = true;
         type = "ibus";
-        ibus.engines = with pkgs.ibus-engines; [ libpinyin typing-booster ];
+        ibus.engines = with pkgs.ibus-engines; [libpinyin typing-booster];
       };
     };
 
-   
-
-   services.displayManager.autoLogin = {
+    services.displayManager.autoLogin = {
       enable = true;
       user = "nixos";
     };
 
-    environment.systemPackages = with pkgs;
-    [
+    environment.systemPackages = with pkgs; [
       coreutils-full
       git
-      stress-ng
       wget
+      curl
       vim
     ];
 

@@ -1,0 +1,20 @@
+diff --git a/carddav-query b/carddav-query
+index 1234567..abcdef0 100755
+--- a/carddav-query
++++ b/carddav-query
+@@ -84,6 +84,7 @@ def http_request_xml(
+     username: str = None,
+     password: str = None,
++    bearer_token: str = None,
+     debug: bool = False,
+     **headers,
+ ) -> xml.Element:
+@@ -99,7 +100,9 @@ def http_request_xml(
+     )
+-    if username is not None and password is not None:
++    if bearer_token is not None:
++        req.add_header("Authorization", f"Bearer {bearer_token}")
++    elif username is not None and password is not None:
+         auth = f"{username}:{password}"
+         auth = base64.standard_b64encode(auth.encode("utf-8")).decode("ascii")
+         req.add_header("Authorization", f"Basic {auth}")
