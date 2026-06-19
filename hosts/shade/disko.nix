@@ -44,9 +44,18 @@
                       trap 'umount "$MNTPOINT" && rm -rf "$MNTPOINT"' EXIT
                       if btrfs subvolume show "$MNTPOINT/root" >/dev/null 2>&1; then
                         btrfs subvolume snapshot -r "$MNTPOINT/root" "$MNTPOINT/root-blank" ||
-                          { echo "Snapshot failed!" >&2; exit 1; }
+                          { echo "Root snapshot failed!" >&2; exit 1; }
                       else
                         echo "Root subvolume missing!" >&2
+                        exit 1
+                      fi
+
+                      if btrfs subvolume show "$MNTPOINT/home" >/dev/null 2>&1; then
+                        install -d -m 0700 -o 1000 -g 100 "$MNTPOINT/home/usu"
+                        btrfs subvolume snapshot -r "$MNTPOINT/home" "$MNTPOINT/home-blank" ||
+                          { echo "Home snapshot failed!" >&2; exit 1; }
+                      else
+                        echo "Home subvolume missing!" >&2
                         exit 1
                       fi
                     } || {
