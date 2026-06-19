@@ -1,7 +1,10 @@
 {pkgs, ...}: {
-  hardware.enableAllFirmware = true;
-  hardware.enableRedistributableFirmware = true;
-  hardware.cpu.intel.updateMicrocode = true;
+  hardware = {
+    enableAllFirmware = true;
+    enableRedistributableFirmware = true;
+    cpu.intel.updateMicrocode = true;
+  };
+
   services.fwupd.enable = true;
 
   boot = {

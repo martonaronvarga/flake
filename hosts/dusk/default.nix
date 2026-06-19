@@ -2,6 +2,7 @@
   imports = [
     ./hardware.nix
     ./disko.nix
+    ./services/wireguard.nix
   ];
 
   # Persistence for server
