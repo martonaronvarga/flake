@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./hardware.nix
     ./disko.nix
@@ -7,18 +11,49 @@
   users.mutableUsers = false;
   users.users.usu = {
     isNormalUser = true;
-    hashedPassword = "$y$j9T$MdAORfTDZl7kOH5hldBAU.$W8czUSqOHSCSlfEGuSTXzt.aKyQX5iQdfudxxuL6hk7";
+    hashedPasswordFile = config.age.secrets.usu-password-hash.path;
     shell = pkgs.zsh;
-    extraGroups = ["wheel" "networkmanager" "video" "audio" "input" "tty" "docker"];
+    extraGroups = ["wheel" "networkmanager" "video" "audio" "input" "tty"];
   };
 
-  services.getty.autologinUser = "usu";
+  local = {
+    flakePath = "/persist/home/usu/flake";
 
-  local.networking.privacyDns = {
-    enable = true;
-    exactSsids = ["Buba"];
-    ssidPrefixes = ["Telekom"];
+    agenix = {
+      identityPaths = ["/persist/home/usu/.ssh/id_ed25519"];
+      secrets = {
+        usu = {
+          file = ../../secrets/usu.age;
+          owner = "usu";
+          mode = "600";
+        };
+        usu-password-hash.file = ../../secrets/usu_password_hash.age;
+        aerc-client-id = {
+          file = ../../secrets/aerc_client_id.age;
+          owner = "usu";
+          path = "/run/agenix/aerc-client-id";
+        };
+        aerc-client-secret = {
+          file = ../../secrets/aerc_client_secret.age;
+          owner = "usu";
+          path = "/run/agenix/aerc-client-secret";
+        };
+        aerc-refresh-token = {
+          file = ../../secrets/aerc_refresh_token.age;
+          owner = "usu";
+          path = "/run/agenix/aerc-refresh-token";
+        };
+      };
+    };
+
+    networking.privacyDns = {
+      enable = true;
+      exactSsids = ["Buba"];
+      ssidPrefixes = ["Telekom"];
+    };
   };
+
+  boot.kernel.sysctl."vm.swappiness" = 10;
 
   environment.persistence."/persist" = {
     directories = [
