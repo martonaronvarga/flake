@@ -9,10 +9,8 @@
 
   console = {
     font = "Lat2-Terminus16";
-    keymap = "us";
+    keyMap = "us";
   };
-
-  environment.noXlibs = true;
 
   environment.systemPackages = with pkgs; [
     vim

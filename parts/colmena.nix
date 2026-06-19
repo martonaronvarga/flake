@@ -29,7 +29,5 @@
     }
     // lib.mapAttrs mkNode deployableHosts);
 in {
-  perSystem = _: {
-    legacyPackages.colmenaHive = hive;
-  };
+  flake.colmenaHive = hive;
 }

@@ -104,7 +104,7 @@
         ./parts/topology.nix
       ];
 
-      systems = ["x86_64-linux"];
+      systems = ["x86_64-linux" "aarch64-linux"];
 
       flake = {
         inherit lib;
@@ -114,7 +114,27 @@
         pkgs,
         system,
         ...
-      }: {
+      }: let
+        nixpkgsLib = inputs.nixpkgs.lib;
+        inherit (nixpkgsLib) fileset;
+        nixFiles = fileset.toSource {
+          root = ./.;
+          fileset = fileset.unions [
+            ./flake.nix
+            ./hosts
+            ./lib
+            ./modules
+            ./parts
+            ./profiles
+            ./secrets/secrets.nix
+          ];
+        };
+        mkCheck = name: package: command:
+          pkgs.runCommandLocal name {nativeBuildInputs = [package];} ''
+            ${command} ${nixFiles}
+            touch $out
+          '';
+      in {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           overlays = [inputs.nix-topology.overlays.default];
@@ -122,6 +142,12 @@
         };
 
         formatter = pkgs.alejandra;
+
+        checks = nixpkgsLib.optionalAttrs (system == "x86_64-linux") {
+          alejandra = mkCheck "alejandra-check" pkgs.alejandra "alejandra --check";
+          statix = mkCheck "statix-check" pkgs.statix "statix check";
+          deadnix = mkCheck "deadnix-check" pkgs.deadnix "deadnix --fail";
+        };
       };
     });
 }

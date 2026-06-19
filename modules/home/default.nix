@@ -1,4 +1,8 @@
-{...}: {
+{
+  homeDirectory,
+  homeUser,
+  ...
+}: {
   imports = [
     ./persistence.nix
     ./programs
@@ -7,8 +11,8 @@
   ];
 
   home = {
-    username = "usu";
-    homeDirectory = "/home/usu";
+    username = homeUser;
+    inherit homeDirectory;
     stateVersion = "24.11";
     extraOutputsToInstall = ["doc" "devdoc"];
   };

@@ -15,6 +15,7 @@
         alejandra
         deadnix
         nix-output-monitor
+        dix
         statix
         nil
         git-cliff
@@ -36,7 +37,7 @@
       shellHook = ''
         echo "flake devshell"
         echo "availables:"
-        echo "  nix-tree, nix-du, nix-index, alejandra, deadnix, statix, nom, nil, git-cliff"
+        echo "  nix-tree, nix-du, nix-index, alejandra, deadnix, statix, nom, dix, nil, git-cliff"
         echo "  colmena, agenix, openssh"
         echo "  git, coreutils, traceroute, iproute2, tcpdump, jq"
       '';

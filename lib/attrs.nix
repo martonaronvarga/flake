@@ -17,8 +17,8 @@
   }:
     with lib;
     with fileset; let
-      excludedFiles = filter (path: pathIsRegularFile path) exclude;
-      excludedDirs = filter (path: pathIsDirectory path) exclude;
+      excludedFiles = filter pathIsRegularFile exclude;
+      excludedDirs = filter pathIsDirectory exclude;
       isExcluded = path:
         if elem path excludedFiles
         then true
@@ -56,7 +56,7 @@
         )
         ++ (
           if recursive
-          then concatMap (path: toList path) (unique include)
+          then concatMap toList (unique include)
           else unique include
         )
       );

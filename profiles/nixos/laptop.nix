@@ -26,5 +26,4 @@
   hardware.brillo.enable = lib.mkDefault true;
 
   security.sudo.extraConfig = lib.mkDefault "Defaults lecture = never";
-  security.sudo.wheelNeedsPassword = lib.mkDefault false;
 }

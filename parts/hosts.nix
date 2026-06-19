@@ -10,19 +10,29 @@
 
   profiles = {
     base = ../profiles/nixos/base.nix;
+    audio = ../profiles/nixos/audio.nix;
     desktop = ../profiles/nixos/desktop.nix;
+    graphical = ../profiles/nixos/graphical.nix;
     headless = ../profiles/nixos/headless.nix;
+    hyprland = ../profiles/nixos/hyprland.nix;
     laptop = ../profiles/nixos/laptop.nix;
     laptop-server = ../profiles/nixos/laptop-server.nix;
     server = ../profiles/nixos/server.nix;
   };
 
-  mkHomeManager = user: homeModule: {
+  mkHome = {
+    user,
+    homeDirectory ? "/home/${user}",
+    module,
+  }: {
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
-      extraSpecialArgs = {inherit inputs;};
-      users.${user} = homeModule;
+      extraSpecialArgs = {
+        inherit inputs homeDirectory;
+        homeUser = user;
+      };
+      users.${user} = module;
     };
 
     systemd.services."home-manager-${user}" = {
@@ -35,11 +45,10 @@
     shade = {
       system = "x86_64-linux";
       tags = ["laptop" "desktop" "personal"];
-      profiles = ["base" "laptop" "desktop"];
+      profiles = ["base" "laptop" "graphical" "hyprland" "audio"];
       externalModules = [
         inputs.disko.nixosModules.default
         inputs.impermanence.nixosModules.impermanence
-        inputs.lanzaboote.nixosModules.lanzaboote
         inputs.agenix.nixosModules.default
         inputs.nvf.nixosModules.default
         inputs.home-manager.nixosModules.home-manager
@@ -50,7 +59,11 @@
         ../hosts/shade
         ../modules/nixos/agenix.nix
         ../modules/nixos/neovim.nix
-        (mkHomeManager "usu" (import ../modules/home))
+        (mkHome {
+          user = "usu";
+          homeDirectory = "/home/usu";
+          module = import ../modules/home;
+        })
       ];
     };
 
@@ -73,6 +86,27 @@
         targetUser = "root";
         buildOnTarget = false;
         allowLocalDeployment = true;
+      };
+    };
+
+    gloam = {
+      system = "aarch64-linux";
+      tags = ["oracle" "server" "edge"];
+      profiles = ["base" "headless" "server"];
+      externalModules = [
+        inputs.disko.nixosModules.default
+        inputs.impermanence.nixosModules.impermanence
+        inputs.agenix.nixosModules.default
+        inputs.nix-topology.nixosModules.default
+      ];
+      modules = [
+        ../hosts/gloam
+      ];
+      deployment = {
+        targetHost = "gloam";
+        targetPort = 22;
+        targetUser = "root";
+        buildOnTarget = true;
       };
     };
   };
