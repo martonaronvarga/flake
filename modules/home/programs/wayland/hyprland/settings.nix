@@ -108,8 +108,6 @@ in {
     };
 
     dwindle = {
-      # keep floating dimensions while tiling
-      pseudotile = true;
       preserve_split = true;
     };
 
