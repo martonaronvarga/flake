@@ -1,10 +1,19 @@
 {
-  pkgs,
   lib,
-  config,
-  inputs,
+  pkgs,
   ...
-}: {
+}: let
+  blackMetal = import ../../theme/black-metal.nix;
+in {
+  xdg.configFile =
+    lib.mapAttrs' (
+      name: theme: {
+        name = "kitty/themes/${name}.conf";
+        value.text = theme.kitty;
+      }
+    )
+    blackMetal.themes;
+
   programs.kitty = {
     enable = true;
     package = pkgs.kitty;
@@ -19,7 +28,12 @@
       hide_window_decorations titlebar-only
       adjust_column_width 0
       disable_ligatures never
-      scrollback_lines 10000
+      scrollback_lines 4000
+      wheel_scroll_multiplier 8.0
+      touch_scroll_multiplier 2.5
+      repaint_delay 8
+      input_delay 0
+      sync_to_monitor yes
       cursor_shape beam
       cursor_blink_interval 0.5
       cursor_stop_blinking_after 15.0
@@ -75,7 +89,6 @@
       color13 #dddddd
       color14 #33aa77
       color15 #ffffff
-
 
       map kitty_mod+t new_tab_with_cwd
 

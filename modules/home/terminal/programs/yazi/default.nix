@@ -1,8 +1,6 @@
 {
   config,
   pkgs,
-  lib,
-  inputs,
   ...
 }: {
   imports = [
@@ -60,11 +58,9 @@
       ashen = ashenFlavor;
     };
 
-    theme = {
-      flavor = {
-        dark = "ashen";
-        light = "ashen";
-      };
+    theme.flavor = {
+      dark = "ashen";
+      light = "ashen";
     };
   };
 }
