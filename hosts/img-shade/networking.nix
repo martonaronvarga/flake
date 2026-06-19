@@ -1,8 +1,10 @@
 {lib, ...}: {
-  networking.networkmanager = {
-    enable = true;
-    wifi.scanRandMacAddress = true;
+  networking = {
+    hostName = "img-shade";
+    networkmanager = {
+      enable = true;
+      wifi.scanRandMacAddress = true;
+    };
+    wireless.enable = lib.mkDefault false;
   };
-  networking.wireless.enable = lib.mkDefault false;
-  networking.hostName = "img-shade";
 }

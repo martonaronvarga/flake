@@ -1,8 +1,6 @@
 {
-  config,
   lib,
   pkgs,
-  inputs,
   ...
 }: {
   imports = [
@@ -11,11 +9,11 @@
 
   config = {
     system.stateVersion = "26.05";
-    boot.kernelPackages = pkgs.linuxPackages_latest;
-
-    boot.supportedFilesystems = lib.mkForce ["btrfs" "vfat" "reiserfs" "f2fs" "xfs" "ntfs" "cifs"];
-
-    boot.kernelParams = ["nomodeset" "intel_pstate=disable" "acpi_osi=Linux" "pci=noaer"];
+    boot = {
+      kernelPackages = pkgs.linuxPackages_latest;
+      supportedFilesystems = lib.mkForce ["btrfs" "vfat" "reiserfs" "f2fs" "xfs" "ntfs" "cifs"];
+      kernelParams = ["nomodeset" "intel_pstate=disable" "acpi_osi=Linux" "pci=noaer"];
+    };
 
     console = {
       font = "Lat2-Terminus16";
