@@ -1,4 +1,4 @@
-{ pkgs, config, lib, ...}: {
+{...}: {
   imports = [
     ./media/playerctl.nix
     ./system/polkit-agent.nix

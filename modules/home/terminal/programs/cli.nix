@@ -2,7 +2,6 @@
   shellNavigation = with pkgs; [
     eza
     fd
-    fzf
     ripgrep
     tree
     zoxide
@@ -58,6 +57,10 @@ in {
 
   programs = {
     eza.enable = true;
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+    };
     zoxide = {
       enable = true;
       enableZshIntegration = true;

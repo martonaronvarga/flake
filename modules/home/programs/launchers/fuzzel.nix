@@ -1,9 +1,4 @@
-{
-  pkgs,
-  config,
-  inputs,
-  ...
-}: {
+_: {
   programs.fuzzel = {
     enable = true;
     settings = {

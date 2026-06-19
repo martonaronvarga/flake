@@ -1,17 +1,23 @@
 _: {
   home.persistence."/persist" = {
     directories = [
-      "Documents"
-      "Downloads"
-      "Music"
-      "Pictures"
-      "Videos"
-      "Zotero"
+      "desktop"
+      "documents"
+      "downloads"
+      "music"
+      "pictures"
+      "public"
+      "templates"
+      "videos"
+      "zotero"
       ".zotero"
       ".mozilla/firefox"
       ".local/share/zoxide"
       ".tmux/resurrect"
-      ".cargo/bin"
+      {
+        directory = ".cargo";
+        mode = "0700";
+      }
       {
         directory = ".gnupg";
         mode = "0700";
@@ -27,10 +33,6 @@ _: {
       ".local/share/direnv"
     ];
 
-    files = [
-      ".cargo/config.toml"
-      ".cargo/credentials.toml"
-      ".cargo/env"
-    ];
+    files = [];
   };
 }

@@ -76,9 +76,9 @@
     '';
 
     shellAliases = {
-      eltehpc = "kitty +kitten ssh usumusu@atlasz.elte.hu";
-      eltevpn = "sudo openfortivpn fw1.vpn.elte.hu:4443 -u usumusu --ca-file=/home/usu/Downloads/elte-ca.crt";
-      eltevpnstop = "sudo killall openfortivpn";
+      eltehpc = "kitty +kitten ssh atlasz";
+      eltevpn = "nmcli connection up elte-vpn";
+      eltevpnstop = "nmcli connection down elte-vpn";
       ssh = "kitty +kitten ssh";
       xopen = "xdg-open";
       c = "clear";
@@ -96,7 +96,8 @@
       l = "ls -l";
       la = "ls -a";
       lla = "ls -la";
-      cat = "bat --color=always --plain --paging=never";
+      cat = "bat --color=auto --plain --paging=never";
+      batp = "bat --color=always --plain --paging=never";
       grep = "grep --color=auto";
       mv = "mv -v";
       cp = "cp -vr";
@@ -207,6 +208,14 @@
         fi
         session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) && tmux $change -t "$session" || echo "No sessions found."
       '';
+      eltevpn-setup = ''
+        nmcli connection show elte-vpn >/dev/null 2>&1 || \
+          nmcli connection add type vpn vpn-type fortisslvpn con-name elte-vpn ifname "*" user usumusu -- \
+            vpn.data "gateway=fw1.vpn.elte.hu:4443"
+        local uuid
+        uuid="$(nmcli --get-values connection.uuid connection show elte-vpn)" || return
+        nm-connection-editor --edit "$uuid" >/dev/null 2>&1 &!
+      '';
       gco = ''
         git checkout "$(git branch --all | sed 's/^[* ] //' | fzf \
         --preview 'git log -n 20 --color=always {}')"
@@ -232,9 +241,7 @@
     ];
 
     initContent = ''
-      eval "$(starship init zsh)"
       bindkey "''${key[Up]}" up-line-or-search
-      source <(fzf --zsh)
 
       if [[ $(tty) == /dev/tty1 ]]; then
         if uwsm check may-start; then

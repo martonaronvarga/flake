@@ -1,10 +1,4 @@
-{
-  pkgs,
-  inputs,
-  lib,
-  config,
-  ...
-}: {
+_: {
   services.dunst = {
     enable = true;
     settings = {

@@ -6,6 +6,9 @@
     enableZshIntegration = true;
     settings = {
       add_newline = false;
+      command_timeout = 80;
+      scan_timeout = 20;
+
       username = {
         style_user = "bright-white bold";
         style_root = "bright-red bold";
@@ -18,6 +21,11 @@
       };
 
       git_status = {
+        untracked = "";
+        conflicted = "";
+        ahead = "";
+        behind = "";
+        diverged = "";
         deleted = "✗";
         modified = "✶";
         staged = "✓";
@@ -27,7 +35,7 @@
       nix_shell = {
         symbol = "  ";
         format = "[$symbol$name]($style)";
-        heuristic = true;
+        heuristic = false;
       };
 
       shlvl = {

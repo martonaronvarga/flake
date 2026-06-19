@@ -2,5 +2,4 @@
   home.packages = [
     pkgs.hyprpolkitagent
   ];
-
 }

@@ -1,9 +1,4 @@
-{
-  pkgs,
-  inputs,
-  lib,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./launchers/fuzzel.nix
     ./browsers/firefox.nix
@@ -12,11 +7,10 @@
     ./email/aerc.nix
     ./media
     ./gtk.nix
-    ./office
   ];
 
   home.packages = with pkgs; [
+    networkmanagerapplet
     openfortivpn
   ];
-
 }
