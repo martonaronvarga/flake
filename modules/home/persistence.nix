@@ -10,7 +10,6 @@ _: {
       "templates"
       "videos"
       "zotero"
-      ".zotero"
       ".local/share/zoxide"
       ".tmux/resurrect"
       {

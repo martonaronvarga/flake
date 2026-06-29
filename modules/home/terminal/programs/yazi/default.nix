@@ -126,8 +126,8 @@
 
         [filetype]
         rules = [
-          { name = "*/", fg = "${white}", bold = true },
-          { name = "*", fg = "${white}" },
+          { url = "*/", fg = "${white}", bold = true },
+          { url = "*", fg = "${white}" },
         ]
       '';
     };
