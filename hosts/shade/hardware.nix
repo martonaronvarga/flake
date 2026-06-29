@@ -76,7 +76,6 @@ in {
     bootspec.enable = true;
 
     initrd = {
-      systemd.enable = true;
       luks.devices."cryptswap" = {
         device = "/dev/disk/by-partlabel/swap";
         allowDiscards = true;
@@ -87,97 +86,113 @@ in {
       };
       supportedFilesystems = ["btrfs"];
       availableKernelModules = ["xhci_pci" "nvme" "usb_storage" "sd_mod"];
-      kernelModules = ["kvm-intel"];
+      kernelModules = ["btrfs" "kvm-intel"];
 
-      systemd.services = {
-        "btrfs-rollback" = {
-          description = "Rollback root filesystem to pristine state";
-          before = ["sysroot.mount"];
-          after = ["cryptsetup.target"];
-          wantedBy = ["initrd.target"];
-          serviceConfig = {
-            Type = "oneshot";
-            StandardOutput = "journal+console";
-            StandardError = "journal+console";
-          };
-          script = ''
-            set -euo pipefail
-            mkdir -p /mnt
-            mount -o subvol=/ /dev/mapper/cryptroot /mnt
+      systemd = {
+        enable = true;
+        initrdBin = with pkgs; [
+          btrfs-progs
+          coreutils
+          findutils
+          gnugrep
+          gnused
+          util-linux
+        ];
 
-            echo "Removing nested subvolumes under /mnt/root..."
-            btrfs subvolume list -o /mnt/root |
-              cut -f9 -d' ' |
-              while read subvolume; do
-                echo "Deleting /$subvolume subvolume..."
-                btrfs subvolume delete "/mnt/$subvolume"
-              done &&
-              echo "Deleting /root subvolume..." &&
-              btrfs subvolume delete /mnt/root
-            echo "Restoring blank /root subvolume"
-            btrfs subvolume snapshot /mnt/root-blank /mnt/root
-            echo "Rollback successful"
+        services = {
+          "btrfs-rollback" = {
+            description = "Rollback root filesystem to pristine state";
+            before = ["sysroot.mount"];
+            after = ["cryptsetup.target"];
+            wantedBy = ["initrd.target"];
+            serviceConfig = {
+              Type = "oneshot";
+              StandardOutput = "journal+console";
+              StandardError = "journal+console";
+            };
+            script = ''
+              set -euo pipefail
+              mkdir -p /mnt
+              mount -o subvol=/ /dev/mapper/cryptroot /mnt
 
-            umount /mnt
-          '';
-        };
-
-        "btrfs-home-rollback" = {
-          description = "Rollback home filesystem to pristine state when requested";
-          before = ["sysroot-home.mount"];
-          after = ["btrfs-rollback.service" "cryptsetup.target"];
-          wantedBy = ["initrd.target"];
-          serviceConfig = {
-            Type = "oneshot";
-            StandardOutput = "journal+console";
-            StandardError = "journal+console";
-          };
-          script = ''
-            set -euo pipefail
-
-            if ! grep -qw shade.rollback_home=1 /proc/cmdline; then
-              echo "Skipping /home rollback; add shade.rollback_home=1 to the kernel command line to run it"
-              exit 0
-            fi
-
-            mkdir -p /mnt
-            mount -o subvol=/ /dev/mapper/cryptroot /mnt
-
-            cleanup() {
-              umount /mnt 2>/dev/null || true
-            }
-            trap cleanup EXIT
-
-            if ! btrfs subvolume show /mnt/home-blank >/dev/null 2>&1; then
-              echo "Missing /mnt/home-blank; run shade-home-rollback-prepare first" >&2
-              exit 1
-            fi
-
-            if [[ ! -d /mnt/persist/home/usu ]]; then
-              echo "Missing /mnt/persist/home/usu; refusing to wipe /home" >&2
-              exit 1
-            fi
-
-            if btrfs subvolume show /mnt/home >/dev/null 2>&1; then
-              echo "Removing nested subvolumes under /mnt/home..."
-              btrfs subvolume list -o /mnt/home |
+              echo "Removing nested subvolumes under /mnt/root..."
+              btrfs subvolume list -o /mnt/root |
                 cut -f9 -d' ' |
                 while read subvolume; do
                   echo "Deleting /$subvolume subvolume..."
                   btrfs subvolume delete "/mnt/$subvolume"
-                done
+                done &&
+                echo "Deleting /root subvolume..." &&
+                btrfs subvolume delete /mnt/root
+              echo "Restoring blank /root subvolume"
+              btrfs subvolume snapshot /mnt/root-blank /mnt/root
+              echo "Rollback successful"
 
-              echo "Deleting /home subvolume..."
-              btrfs subvolume delete /mnt/home
-            elif [[ -e /mnt/home ]]; then
-              echo "/mnt/home exists but is not a Btrfs subvolume" >&2
-              exit 1
-            fi
+              umount /mnt
+            '';
+          };
 
-            echo "Restoring blank /home subvolume"
-            btrfs subvolume snapshot /mnt/home-blank /mnt/home
-            echo "/home rollback successful"
-          '';
+          "btrfs-home-rollback" = {
+            description = "Rollback home filesystem to pristine state when requested";
+            before = ["sysroot-home.mount"];
+            after = ["btrfs-rollback.service" "cryptsetup.target"];
+            wantedBy = ["initrd.target"];
+            serviceConfig = {
+              Type = "oneshot";
+              StandardOutput = "journal+console";
+              StandardError = "journal+console";
+            };
+            script = ''
+              set -euo pipefail
+
+              cmdline="$(</proc/cmdline)"
+              case " $cmdline " in
+                *" shade.rollback_home=1 "*) ;;
+                *)
+                  echo "Skipping /home rollback; add shade.rollback_home=1 to the kernel command line to run it"
+                  exit 0
+                  ;;
+              esac
+
+              mkdir -p /mnt
+              mount -o subvol=/ /dev/mapper/cryptroot /mnt
+
+              cleanup() {
+                umount /mnt 2>/dev/null || true
+              }
+              trap cleanup EXIT
+
+              if ! btrfs subvolume show /mnt/home-blank >/dev/null 2>&1; then
+                echo "Missing /mnt/home-blank; run shade-home-rollback-prepare first" >&2
+                exit 1
+              fi
+
+              if [[ ! -d /mnt/persist/home/usu ]]; then
+                echo "Missing /mnt/persist/home/usu; refusing to wipe /home" >&2
+                exit 1
+              fi
+
+              if btrfs subvolume show /mnt/home >/dev/null 2>&1; then
+                echo "Removing nested subvolumes under /mnt/home..."
+                btrfs subvolume list -o /mnt/home |
+                  cut -f9 -d' ' |
+                  while read subvolume; do
+                    echo "Deleting /$subvolume subvolume..."
+                    btrfs subvolume delete "/mnt/$subvolume"
+                  done
+
+                echo "Deleting /home subvolume..."
+                btrfs subvolume delete /mnt/home
+              elif [[ -e /mnt/home ]]; then
+                echo "/mnt/home exists but is not a Btrfs subvolume" >&2
+                exit 1
+              fi
+
+              echo "Restoring blank /home subvolume"
+              btrfs subvolume snapshot /mnt/home-blank /mnt/home
+              echo "/home rollback successful"
+            '';
+          };
         };
       };
     };
