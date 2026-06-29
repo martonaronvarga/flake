@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  flakePath,
+  pkgs,
+  ...
+}: let
   blackMetal = import ../../theme/black-metal.nix;
 in {
   programs.helix = {
@@ -141,15 +145,15 @@ in {
           command = "nixd";
           config.nixd = {
             nixpkgs.expr = ''
-              import (builtins.getFlake "/home/usu/flake").inputs.nixpkgs { }
+              import (builtins.getFlake "${flakePath}").inputs.nixpkgs { }
             '';
             formatting.command = ["alejandra"];
             options = {
               nixos.expr = ''
-                (builtins.getFlake "/home/usu/flake").nixosConfigurations.shade.options
+                (builtins.getFlake "${flakePath}").nixosConfigurations.shade.options
               '';
               home-manager.expr = ''
-                (builtins.getFlake "/home/usu/flake").nixosConfigurations.shade.options.home-manager.users.type.getSubOptions []
+                (builtins.getFlake "${flakePath}").nixosConfigurations.shade.options.home-manager.users.type.getSubOptions []
               '';
             };
           };
@@ -493,7 +497,6 @@ in {
             g_12 = "#151515";
           };
         in {
-          ## Syntax highlighting
           "attribute" = palette.g_4;
           "type" = palette.blue;
           "type.builtin" = palette.blue;
@@ -777,10 +780,11 @@ in {
     nil
     rustfmt
     pyright
-    tree-sitter
     clang-tools
     ruff
     texlab
     tex-fmt
+    nixd
+    zls
   ];
 }

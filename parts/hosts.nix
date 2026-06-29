@@ -24,12 +24,13 @@
     user,
     homeDirectory ? "/home/${user}",
     module,
-  }: {
+  }: {config, ...}: {
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
       extraSpecialArgs = {
         inherit inputs homeDirectory;
+        flakePath = config.local.flakePath;
         homeUser = user;
       };
       users.${user} = module;
