@@ -12,7 +12,8 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [22];
-      allowedUDPPorts = [51820]; # WireGuard
+      allowedUDPPorts = []; # do not expose
+      trustedInterfaces = ["wg0"];
     };
   };
 

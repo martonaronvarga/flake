@@ -11,7 +11,6 @@ _: {
       "videos"
       "zotero"
       ".zotero"
-      ".mozilla/firefox"
       ".local/share/zoxide"
       ".tmux/resurrect"
       {

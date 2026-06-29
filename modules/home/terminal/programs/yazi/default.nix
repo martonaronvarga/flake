@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   imports = [
@@ -43,11 +44,11 @@
     };
     flavors = let
       rawAshenFlavor = pkgs.fetchFromGitHub {
-        owner = "ficcdaf";
+        owner = "ficd0";
         repo = "ashen";
         sparseCheckout = ["ashen.yazi"];
-        rev = "7f8cf4a0db595d0a573ed4ac63e69d6fff638a7e";
-        hash = "sha256-JzdO1kNePzIcMPchKHYxQygeAvonOVWn9m5uCr1OJqg=";
+        rev = "2da901f3ce7f233c7a2437cb2b824afd2a01f2aa";
+        hash = "sha256-qDL7LNOwL2RistiiEZkdzOUY7vHZs71i8Kb+/jb2pr0=";
       };
 
       ashenFlavor = pkgs.runCommand "flatten" {} ''

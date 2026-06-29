@@ -6,12 +6,12 @@ _: {
       mainBar = {
         layer = "top";
         position = "top";
-        height = 10;
+        height = 15;
         margin-left = 10;
         margin-right = 10;
         margin-top = 5;
         margin-bottom = 0;
-        spacing = 10;
+        spacing = 8;
         modules-left = ["cpu" "memory" "hyprland/workspaces"];
         modules-center = ["custom/media"];
         modules-right = ["tray" "custom/keyboard" "network" "backlight" "battery" "pulseaudio" "clock" "custom/quit"];
@@ -33,8 +33,8 @@ _: {
         };
 
         tray = {
-          spacing = 8;
-          icon-size = 7;
+          spacing = 6;
+          icon-size = 13;
           icon-limit = 5;
           scroll = true;
         };
@@ -67,7 +67,7 @@ _: {
           states = {
             good = 95;
             warning = 30;
-            cricital = 15;
+            critical = 15;
           };
 
           bat = "BAT0";
@@ -77,7 +77,7 @@ _: {
           format = "{icon} {capacity}%";
           format-charging = "󱐋 {capacity}%";
           format-plugged = " {capacity}%";
-          format-discharging = " {capacity}%";
+          format-discharging = "  {capacity}%";
           format-alt = "{icon} {time}";
           format-icons = [" " " " " " " " " "];
         };
@@ -89,7 +89,7 @@ _: {
           format-disconnected = "Disconnected ";
           format-alt = "{ifname}: {ipaddr}/{cidr}";
           tooltip-format-wifi = "{signalStrength}%";
-          max-length = 20;
+          max-length = 25;
         };
 
         "custom/media" = {
@@ -116,11 +116,11 @@ _: {
           format-bluetooth = " {volume}";
           format-muted = "  {volume}";
           format-icons = {
-            headphone = "";
-            phone = "";
+            headphone = " ";
+            phone = " ";
             headset = "";
-            car = "";
-            default = ["" "" ""];
+            car = " ";
+            default = ["" " " " "];
           };
           scroll-step = 1;
           on-click = "pavucontrol";
@@ -135,16 +135,16 @@ _: {
 
     style = ''
       * {
-        font-size: 12px;
+        font-size: 13px;
         font-family: "Terminess Nerd Font";
         border: none;
-        min-height: 0px;
+        min-height: 0;
         border-radius: 2px;
       }
 
       window#waybar {
-          background: rgba(0,0,0,0);
-          color: #ffffff;
+        background: rgba(0,0,0,0);
+        color: #ffffff;
       }
 
       #battery {
@@ -165,13 +165,13 @@ _: {
       }
 
       #battery.critical:not(.charging) {
-          background-color: #f53c3c;
-          color: #ffffff;
-          animation-name: blink;
-          animation-duration: 0.5s;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          animation-direction: alternate;
+        background-color: #f53c3c;
+        color: #ffffff;
+        animation-name: blink;
+        animation-duration: 5s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
       }
 
       label:focus {
@@ -219,7 +219,7 @@ _: {
       }
 
       #cpu {
-       /* background-color: #000000; */
+        /* background-color: #000000; */
         color: #ffffff;
       }
 
@@ -235,7 +235,7 @@ _: {
 
       #workspaces button:hover {
         background: rgba(0, 0, 0, 0.9);
-        box-shadow: inset 0 -3px #fffff;
+        box-shadow: inset 0 -3px #ffffff;
       }
 
       #workspaces button.focused {

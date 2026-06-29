@@ -23,21 +23,22 @@
     };
 
     envExtra = ''
-      BAT_THEME=base16
-      FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
-      FZF_CTRL_T_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
-      FZF_ALT_C_COMMAND='fd --type d --strip-cwd-prefix --hidden --follow --exclude .git'
-      FZF_DEFAULT_OPTS="
-        --height ~100%
-        --tmux 100%,100%
+      export BAT_THEME=base16
+      export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
+      export FZF_CTRL_T_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
+      export FZF_ALT_C_COMMAND='fd --type d --strip-cwd-prefix --hidden --follow --exclude .git'
+
+      export FZF_DEFAULT_OPTS='
+        --height=80%
         --layout=reverse
         --border
         --info=inline
-        --prompt=
-        --scrollbar=
-        --separator=
-        --pointer='>'
-        --marker='*'
+        --prompt=>\
+        --scrollbar=|
+        --separator=-
+        --no-bold
+        --pointer=>
+        --marker=*
         --preview-window=right:50%:border-left
         --color=border:#1a1a1a
         --color=bg:#000000
@@ -53,25 +54,43 @@
         --color=spinner:#e25303
         --color=header:#5e676e
         --bind "ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)"
-      "
-      FZF_CTRL_T_OPTS="
-        --ansi --preview 'bat -n --color=always --style=numbers --line-range :300 {}'
+        --bind=ctrl-j:down,ctrl-k:up,ctrl-n:down,ctrl-p:up
+        --bind=tab:down,btab:up
+      '
+
+      export FZF_CTRL_T_OPTS='
+        --ansi
+        --preview "bat -n --color=always --style=numbers --line-range :300 {}"
+        --preview-window=right:50%:border-left
         --walker-skip .git,node_modules,target
-        --bind 'ctrl-/:change-preview-window(down|hidden|)'
-      "
-      FZF_CTRL_R_OPTS="
-        --bind 'ctrl-y:execute-silent(echo -n {2..} | wl-copy)+abort'
+        --bind "ctrl-/:change-preview-window(down|hidden|)"
+      '
+
+      export FZF_CTRL_R_OPTS='
+        --height=60%
+        --layout=reverse
+        --border=rounded
+        --info=inline
+        --prompt=history>\
+        --pointer=>
+        --marker=*
+        --no-multi
+        --bind=ctrl-j:down,ctrl-k:up,ctrl-n:down,ctrl-p:up
+        --bind=tab:down,btab:up
+        --bind "ctrl-y:execute-silent(echo -n {2..} | wl-copy)+abort"
         --color header:italic
-        --header 'Press CTRL-Y to copy command into clipboard'
-      "
+        --header "Press CTRL-Y to copy command into clipboard"
+      '
 
-      FZF_ALT_C_OPTS="
-        --ansi --preview 'eza --tree --color=always --icons {} | head -200'
+      export FZF_ALT_C_OPTS='
+        --ansi
+        --preview "eza --tree --color=always --icons {} | head -200"
         --walker-skip .git,node_modules,target
-      "
+        --preview-window=right:50%:border-left
+      '
 
-      FZF_COMPLETION_PATH_OPTS="--walker file,dir,follow,hidden"
-      FZF_COMPLETION_DIR_OPTS="--walker dir,follow"
+      export FZF_COMPLETION_PATH_OPTS='--walker file,dir,follow,hidden'
+      export FZF_COMPLETION_DIR_OPTS='--walker dir,follow'
 
     '';
 

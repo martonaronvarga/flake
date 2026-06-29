@@ -42,15 +42,15 @@
         disabled = false;
         format = "$shlvl ▼ ";
         style = "bright bold yellow";
-        threshold = 4;
+        threshold = 3;
       };
       # Nerdfonts
-      aws = {symbol = "  ";};
+      aws = {symbol = " ";};
       buf = {symbol = " ";};
       c = {symbol = " ";};
       conda = {symbol = " ";};
       dart = {symbol = " ";};
-      directory = {read_only = " ";};
+      directory = {read_only = " ";};
       docker_context = {symbol = " ";};
       elixir = {symbol = " ";};
       elm = {symbol = " ";};

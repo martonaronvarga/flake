@@ -14,8 +14,8 @@ in {
     env = [
       "HYPRCURSOR_THEME,${cursorName}"
       "HYPRCURSOR_SIZE,${toString pointer.size}"
-      "XCURSOR_THEME, ${cursorName}"
-      "XCURSOR_SIZE, ${toString pointer.size}"
+      "XCURSOR_THEME,${cursorName}"
+      "XCURSOR_SIZE,${toString pointer.size}"
       "XDG_CURRENT_DESKTOP,Hyprland"
       "XDG_SESSION_TYPE,wayland"
     ];
@@ -27,7 +27,6 @@ in {
       "blueman-applet"
       "dunst"
       "waybar"
-      "loginctl --lock-session"
     ];
 
     general = {
@@ -84,6 +83,12 @@ in {
     ];
 
     group = {
+      auto_group = false;
+      drag_into_group = 0;
+      merge_groups_on_drag = false;
+      merge_groups_on_groupbar = false;
+      merge_floated_into_tiled_on_groupbar = false;
+      group_on_movetoworkspace = false;
       groupbar = {
         font_size = 10;
         gradients = false;
@@ -135,10 +140,9 @@ in {
     gesture = [
       "3, horizontal, workspace"
       "3, up, scale: 1.5, fullscreen"
-      "2, swipe, mod: $mod, move"
+      "3, swipe, mod: $mod, move"
       "2, pinchin, mod: $mod, float, tile"
       "2, pinchout, mod: $mod, float, float"
-
       "4, left, dispatcher, movewindow, mon:-1"
       "4, right, dispatcher, movewindow, mon:+1"
     ];
@@ -149,6 +153,7 @@ in {
       "${lib.escapeRegex (lib.getExe pkgs.grim)}, screencopy, allow"
       # allow hyprlock to screenshot
       "${lib.escapeRegex (lib.getExe config.programs.hyprlock.package)}, screencopy, allow"
+      "${lib.escapeRegex "${pkgs.wluma}/bin/.wluma-wrapped"}, screencopy, allow"
       # Optionally allow non-pipewire capturing
       "${lib.escapeRegex (lib.getExe pkgs.wl-screenrec)}, screencopy, allow"
     ];

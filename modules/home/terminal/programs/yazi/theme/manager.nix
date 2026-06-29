@@ -1,5 +1,5 @@
 {
-  programs.yazi.theme.manager = {
+  programs.yazi.theme.mgr = {
     cwd = {fg = "#e25303";};
 
     # Hovered
@@ -18,6 +18,7 @@
       fg = "#e25303";
       italic = true;
     };
+
     find_position = {
       fg = "#e25303";
       bg = "reset";
@@ -52,10 +53,6 @@
     # Border;
     border_symbol = "│";
     border_style = {fg = "gray";};
-
-    # Offset;
-    folder_offset = [1 0 1 0];
-    preview_offset = [1 1 1 1];
 
     # Highlighting;
     syntect_theme = "";

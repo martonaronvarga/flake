@@ -1,6 +1,7 @@
 {pkgs, ...}: let
   shadeSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
   # Bootstrap value; replace with dusk's generated public key after first activation.
+  # TODO
   duskWireGuardPublicKey = "IujkG119YPr2cVQzJkSLYCdjpHIDjvr/qH1w1tdKswY=";
 in {
   imports = [
@@ -8,6 +9,7 @@ in {
     ./disko.nix
   ];
 
+  networking.hostName = "gloam";
   local.flakePath = "/persist/etc/nixos";
 
   networking = {
@@ -22,7 +24,7 @@ in {
     wg-quick.interfaces.wg0 = {
       address = ["10.200.200.1/24"];
       listenPort = 51820;
-      privateKeyFile = "/persist/etc/wireguard/wg0.key";
+      privateKeyFile = "/persist/etc/wireguard/gloam.key";
       generatePrivateKeyFile = true;
       peers = [
         {
@@ -65,5 +67,5 @@ in {
 
   time.timeZone = "Etc/UTC";
 
-  system.stateVersion = "26.05";
+  system.stateVersion = "26.11";
 }

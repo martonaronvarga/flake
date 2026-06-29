@@ -3,7 +3,10 @@
     ./hardware.nix
     ./disko.nix
     ./services/wireguard.nix
+    ./services/monitoring.nix
   ];
+
+  networking.hostName = "dusk";
 
   # Persistence for server
   environment.persistence."/persist" = {
@@ -28,7 +31,7 @@
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [22];
-    allowedUDPPorts = [51820]; # WireGuard
+    allowedUDPPorts = []; # not enabled here
   };
 
   security.sudo.wheelNeedsPassword = false;
@@ -40,5 +43,5 @@
 
   time.timeZone = "Europe/Budapest";
 
-  system.stateVersion = "26.05";
+  system.stateVersion = "26.11";
 }

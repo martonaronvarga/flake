@@ -16,15 +16,16 @@ _: {
       "atlasz eltehpc" = {
         HostName = "atlasz.elte.hu";
         User = "usumusu";
-        IdentityFile = "~/.ssh/atlasz";
+        IdentityFile = "~/.ssh/id_ed25519";
         IdentitiesOnly = true;
         ServerAliveInterval = 30;
         ServerAliveCountMax = 3;
       };
 
-      "dusk dusk.oraclevcn.com" = {
-        HostName = "dusk.oraclevcn.com";
-        User = "usu";
+      gloam = {
+        HostName = "129.159.11.56";
+        User = "ubuntu";
+        Port = 22;
         IdentityFile = "~/.ssh/id_ed25519";
         IdentitiesOnly = true;
         ServerAliveInterval = 30;
@@ -33,7 +34,7 @@ _: {
 
       oracle = {
         HostName = "vps.example.com";
-        User = "ubuntu";
+        User = "todo";
         IdentityFile = "~/.ssh/oracle";
         IdentitiesOnly = true;
         ServerAliveInterval = 30;

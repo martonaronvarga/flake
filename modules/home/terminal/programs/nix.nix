@@ -13,7 +13,6 @@
     nix-diff # nix diffs
     nix-index # database
     nix-fast-build # parallel build
-    nix-prefetch # source checksums
 
     nixfmt # formatting
     yq # yaml/xml/toml for jq

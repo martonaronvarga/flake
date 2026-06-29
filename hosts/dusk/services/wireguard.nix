@@ -1,8 +1,8 @@
 {pkgs, ...}: let
-  gloamWireGuardPublicKey = "k5k91pOO8k0a+O8qB1Eq0gARW3XtJ5n6V2Tzur69eUg=";
+  gloamWireGuardPublicKey = "kwwH2C4zxQ+tFyATlJJ7M8YG2XEvb9gtpthocK+4CGQ=";
 in {
   networking.wg-quick.interfaces.wg0 = {
-    address = ["10.200.200.2/24"];
+    address = ["10.200.200.2/32"];
     privateKeyFile = "/persist/etc/wireguard/wg0.key";
     generatePrivateKeyFile = true;
     dns = ["1.1.1.1" "9.9.9.9"];
@@ -10,8 +10,8 @@ in {
     peers = [
       {
         publicKey = gloamWireGuardPublicKey;
-        endpoint = "141.147.15.161:51820";
-        allowedIPs = ["0.0.0.0/0" "::/0"];
+        endpoint = "129.159.11.56:51820"; # gloam
+        allowedIPs = ["10.200.200.1/32"]; # do not route all trafic
         persistentKeepalive = 25;
       }
     ];

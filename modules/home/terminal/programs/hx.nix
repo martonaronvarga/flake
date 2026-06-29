@@ -1,11 +1,11 @@
-let
+{pkgs, ...}: let
   blackMetal = import ../../theme/black-metal.nix;
 in {
   programs.helix = {
     enable = true;
 
     settings = {
-      theme = "ashen";
+      theme = "ashenblack";
 
       editor = {
         shell = ["zsh" "-c"];
@@ -29,9 +29,9 @@ in {
         bufferline = "always";
         scrolloff = 8;
         statusline = {
-          left = ["mode" "selections" "spinner" "file-name"];
+          left = ["mode" "spinner" "file-name"];
           center = ["diagnostics"];
-          right = ["file-encoding" "file-type" "position" "position-percentage" "file-encoding"];
+          right = ["file-type" "position" "position-percentage" "file-encoding"];
         };
         indent-guides = {
           render = true;
@@ -47,15 +47,11 @@ in {
           "w" = ":w";
           "q" = ":q";
           "x" = ":x";
-          "n" = {
-            "n" = ":lsp-execute-command zk.newNote";
-            "l" = ":lsp-execute-comand zk.insertLink";
-            "b" = ":lsp-execute-command zk.showBacklinks";
-          };
         };
         "H" = "goto_previous_buffer";
         "L" = "goto_next_buffer";
         "U" = "redo";
+        "C-p" = ":! glow -p -w %{buffer_name}";
       };
 
       editor.whitespace.render = {
@@ -166,6 +162,35 @@ in {
 
         texlab = {
           command = "texlab";
+          config = {
+            texlab = {
+              chktex = {
+                onOpenAndSave = true;
+                onEdit = true;
+              };
+              forwardSearch = {
+                executable = "zathura";
+                args = ["--synctex-forward" "%l:%c:%f" "%p"];
+              };
+              build = {
+                auxDirectory = "build";
+                logDirectory = "build";
+                pdfDirectory = "build";
+                forwardSearchAfter = true;
+                onSave = true;
+                executable = "tectonic";
+                args = [
+                  "-X"
+                  "compile"
+                  "--synctex"
+                  "--keep-logs"
+                  "--keep-intermediates"
+                  "--outdir=build"
+                  "%f"
+                ];
+              };
+            };
+          };
         };
 
         tailwindcss-ls = {
@@ -335,11 +360,11 @@ in {
             max-wrap = 80;
           };
           language-servers = ["marksman"];
+          comment-tokens = ["-" "+" "*" "1." ">" "- [ ]"];
           block-comment-tokens = {
             start = "<!--";
             end = "-->";
           };
-          "word-completion.trigger-length" = 4;
           indent = {
             tab-width = 2;
             unit = "  ";
@@ -350,7 +375,7 @@ in {
           name = "latex";
           scope = "source.tex";
           injection-regex = "tex";
-          file-tupes = ["tex" "sty" "cls" "Rd" "bbx" "cbx"];
+          file-types = ["tex" "sty" "cls" "Rd" "bbx" "cbx"];
           comment-token = "%";
           language-servers = ["texlab"];
           indent = {
@@ -363,7 +388,7 @@ in {
           name = "bibtex";
           scope = "source.bib";
           injection-regex = "bib";
-          file-tupes = ["bib"];
+          file-types = ["bib"];
           comment-token = "%";
           language-servers = ["texlab"];
           indent = {
@@ -747,4 +772,15 @@ in {
       }
       // builtins.mapAttrs (_: theme: theme.helix) blackMetal.themes;
   };
+
+  home.packages = with pkgs; [
+    nil
+    rustfmt
+    pyright
+    tree-sitter
+    clang-tools
+    ruff
+    texlab
+    tex-fmt
+  ];
 }

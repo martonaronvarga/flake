@@ -23,6 +23,8 @@
         # Deployment
         inputs.colmena.packages.${system}.colmena
         inputs.agenix.packages.${system}.default
+        opentofu
+        oci-cli
         openssh
 
         # General
@@ -38,7 +40,7 @@
         echo "flake devshell"
         echo "availables:"
         echo "  nix-tree, nix-du, nix-index, alejandra, deadnix, statix, nom, dix, nil, git-cliff"
-        echo "  colmena, agenix, openssh"
+        echo "  colmena, agenix, opentofu, oci-cli, openssh"
         echo "  git, coreutils, traceroute, iproute2, tcpdump, jq"
       '';
     };

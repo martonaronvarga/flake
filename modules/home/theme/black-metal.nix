@@ -442,7 +442,7 @@ let
     "diagnostic.info" = {underline = {color = "base0D";};};
     "diagnostic.hint" = {underline = {color = "base0C";};};
   };
-in rec {
+in {
   names = builtins.attrNames palettes;
   themes =
     builtins.mapAttrs (slug: palette: {

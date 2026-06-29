@@ -15,19 +15,21 @@
       default = {
         id = 0;
         name = "default";
+        path = "default";
         isDefault = true;
         settings = {
+          "browser.startup.page" = 3;
           "browser.startup.homepage" = "https://startpage.com";
           "browser.search.defaultenginename" = "Startpage";
           "browser.search.order.1" = "Startpage";
           "browser.translations.automaticallyPopup" = false;
           "browser.contentblocking.category" = "strict";
           "privacy.donottrackheader.enabled" = true;
-          "privaty.donottrackheader.value" = 1;
+          "privacy.donottrackheader.value" = 1;
           "privacy.purge_trackers.enabled" = true;
           "services.sync.prefs.sync.uiCustomization.state" = true;
           "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
-          "browser.download.dir" = "$HOME/downloads";
+          "browser.download.dir" = "${config.home.homeDirectory}/downloads";
           "signon.rememberSignons" = false;
           "browser.shell.checkDefaultBrowser" = false;
           "browser.newtabpage.enabled" = false;
@@ -166,7 +168,7 @@
                 }
               ];
               icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-              definedAliasas = ["@np"];
+              definedAliases = ["@np"];
             };
             "NixOS Wiki" = {
               urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
@@ -178,7 +180,7 @@
               urls = [{template = "https://www.startpage.com/do/search?query={searchTerms}";}];
               icon = "https://www.startpage.com/favicon.ico";
               updateInterval = 24 * 60 * 60 * 1000; # every day
-              defunedAliases = ["@sp"];
+              definedAliases = ["@sp"];
             };
             "bing".metaData.hidden = true;
             "google".metaData.alias = "@g";

@@ -4,7 +4,7 @@ _: {
     settings = {
       global = {
         font = "Terminess Nerd Font 12";
-        format = "<b>%s</b>\n%b";
+        format = "<b>%s</b>\\n%b";
         sort = "yes";
         indicate_hidden = "yes";
         alignment = "left";
