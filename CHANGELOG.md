@@ -5,12 +5,23 @@ All notable infrastructure changes are recorded here.
 ## [unreleased]
 
 
+### Documentation
+
+- Docs: update changelog
+
+
 ### Features
+
+- Feat(home): add monochrome yazi theme
 
 - Feat(hosts): add gloam inventory and profiles
 
 
 ### Fixes
+
+- Fix(config): derive flake paths from config
+
+- Fix(hosts): harden shade rollback initrd
 
 - Fix(hyprland): update rules for current syntax
 
@@ -25,6 +36,11 @@ All notable infrastructure changes are recorded here.
 ### Hosts
 
 - Host(shade): add guarded home rollback
+
+
+### Maintenance
+
+- Chore(home): update desktop and terminal config
 
 
 ### Modules and Architecture
