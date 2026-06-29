@@ -22,10 +22,8 @@ in {
 
     exec-once = [
       "uwsm finalize"
-      "systemctl --user enable --now hyprpolkitagent.service"
       "hyprctl setcursor ${cursorName} ${toString pointer.size}"
       "blueman-applet"
-      "dunst"
       "waybar"
     ];
 

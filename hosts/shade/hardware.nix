@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   inputs,
   ...
@@ -52,6 +53,9 @@ in {
     enableAllFirmware = true;
     enableRedistributableFirmware = true;
     cpu.intel.updateMicrocode = true;
+    # The imported X1C6 profile writes TrackPoint sysfs attributes that are
+    # absent on this boot path; Hyprland/libinput owns pointer tuning here.
+    trackpoint.enable = lib.mkForce false;
 
     graphics = {
       enable = true;
@@ -71,10 +75,11 @@ in {
   };
 
   services.fwupd.enable = true;
+  # Keep SMT enabled for interactive performance. Kernel CPU vulnerability
+  # notices (MDS/MMIO/VMSCAPE) are accepted on this host instead of adding nosmt.
+  security.allowSimultaneousMultithreading = true;
 
   boot = {
-    bootspec.enable = true;
-
     initrd = {
       luks.devices."cryptswap" = {
         device = "/dev/disk/by-partlabel/swap";
@@ -199,7 +204,7 @@ in {
 
     tmp.cleanOnBoot = true;
     consoleLogLevel = 3;
-    kernelParams = ["quiet" "systemd.show_status=auto" "rd.udev.log_level=3"];
+    kernelParams = ["quiet" "systemd.show_status=auto" "rd.udev.log_level=3" "shade.rollback_home=1"];
     resumeDevice = "/dev/mapper/cryptswap";
 
     loader = {

@@ -1,8 +1,12 @@
 {
+  lib,
   pkgs,
   config,
   ...
-}: {
+}: let
+  firefoxConfigPath = "${config.xdg.configHome}/mozilla/firefox";
+  defaultProfilePath = "${firefoxConfigPath}/default";
+in {
   programs.firefox = {
     enable = true;
     policies = {
@@ -10,7 +14,7 @@
       DisablePocket = true;
       DisableAppUpdate = true;
     };
-    configPath = "${config.xdg.configHome}/mozilla/firefox";
+    configPath = firefoxConfigPath;
     profiles = {
       default = {
         id = 0;
@@ -188,5 +192,13 @@
         };
       };
     };
+  };
+
+  home.file = {
+    # Firefox may create these before Home Manager owns the profile. Replace
+    # them during activation so persisted browser state does not block login.
+    "${firefoxConfigPath}/profiles.ini".force = lib.mkForce true;
+    "${defaultProfilePath}/user.js".force = lib.mkForce true;
+    "${defaultProfilePath}/search.json.mozlz4".force = lib.mkForce true;
   };
 }

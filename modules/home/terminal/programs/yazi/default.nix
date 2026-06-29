@@ -41,90 +41,93 @@
         cache_dir = config.xdg.cacheHome;
       };
     };
-    flavors = {
+    flavors = let
+      black = "#000000";
+      white = "#ffffff";
+    in {
       kitty-mono = pkgs.writeTextDir "flavor.toml" ''
         [manager]
-        cwd = { fg = "#ffffff", bold = true }
-        hovered = { fg = "#ffffff", bg = "#1a1a1a", bold = true }
-        preview_hovered = { fg = "#ffffff", bg = "#1a1a1a", bold = true }
-        find_keyword = { fg = "#ffffff", bold = true, italic = true, underline = true }
-        find_position = { fg = "#888888", bg = "reset", bold = true, italic = true }
-        marker_copied = { fg = "#d0d0d0", bg = "#d0d0d0" }
-        marker_cut = { fg = "#888888", bg = "#888888" }
-        marker_marked = { fg = "#ffffff", bg = "#ffffff" }
-        marker_selected = { fg = "#ffffff", bg = "#ffffff" }
-        tab_active = { fg = "#ffffff", bg = "#000000", bold = true }
-        tab_inactive = { fg = "#888888", bg = "#000000" }
+        cwd = { fg = "${white}", bold = true }
+        hovered = { fg = "${black}", bg = "${white}", bold = true }
+        preview_hovered = { fg = "${black}", bg = "${white}", bold = true }
+        find_keyword = { fg = "${black}", bg = "${white}", bold = true, italic = true, underline = true }
+        find_position = { fg = "${white}", bg = "${black}", bold = true, italic = true }
+        marker_copied = { fg = "${white}", bg = "${white}" }
+        marker_cut = { fg = "${white}", bg = "${white}" }
+        marker_marked = { fg = "${white}", bg = "${white}" }
+        marker_selected = { fg = "${white}", bg = "${white}" }
+        tab_active = { fg = "${black}", bg = "${white}", bold = true }
+        tab_inactive = { fg = "${white}", bg = "${black}" }
         tab_width = 1
-        count_copied = { fg = "#000000", bg = "#d0d0d0" }
-        count_cut = { fg = "#000000", bg = "#888888" }
-        count_selected = { fg = "#000000", bg = "#ffffff" }
+        count_copied = { fg = "${black}", bg = "${white}" }
+        count_cut = { fg = "${black}", bg = "${white}" }
+        count_selected = { fg = "${black}", bg = "${white}" }
         border_symbol = "│"
-        border_style = { fg = "#888888" }
+        border_style = { fg = "${white}" }
 
         [mode]
-        normal_main = { fg = "#000000", bg = "#ffffff", bold = true }
-        normal_alt = { fg = "#d0d0d0", bg = "#000000" }
-        select_main = { fg = "#000000", bg = "#d0d0d0", bold = true }
-        select_alt = { fg = "#d0d0d0", bg = "#000000" }
-        unset_main = { fg = "#000000", bg = "#888888", bold = true }
-        unset_alt = { fg = "#888888", bg = "#000000" }
+        normal_main = { fg = "${black}", bg = "${white}", bold = true }
+        normal_alt = { fg = "${white}", bg = "${black}" }
+        select_main = { fg = "${black}", bg = "${white}", bold = true }
+        select_alt = { fg = "${white}", bg = "${black}" }
+        unset_main = { fg = "${black}", bg = "${white}", bold = true }
+        unset_alt = { fg = "${white}", bg = "${black}" }
 
         [status]
         separator_open = ""
         separator_close = ""
-        progress_label = { fg = "#ffffff", bold = true }
-        progress_normal = { fg = "#ffffff", bg = "#1a1a1a" }
-        progress_error = { fg = "#ffffff", bg = "#1a1a1a", bold = true }
-        perm_sep = { fg = "#888888", bold = true }
-        perm_type = { fg = "#888888" }
-        perm_read = { fg = "#d0d0d0", bold = true }
-        perm_write = { fg = "#ffffff", bold = true }
-        perm_exec = { fg = "#ffffff", bold = true }
+        progress_label = { fg = "${white}", bold = true }
+        progress_normal = { fg = "${black}", bg = "${white}" }
+        progress_error = { fg = "${black}", bg = "${white}", bold = true }
+        perm_sep = { fg = "${white}", bold = true }
+        perm_type = { fg = "${white}" }
+        perm_read = { fg = "${white}", bold = true }
+        perm_write = { fg = "${white}", bold = true }
+        perm_exec = { fg = "${white}", bold = true }
 
         [pick]
-        border = { fg = "#888888" }
-        active = { fg = "#ffffff", bold = true }
+        border = { fg = "${white}" }
+        active = { fg = "${black}", bg = "${white}", bold = true }
         inactive = {}
 
         [input]
-        border = { fg = "#888888" }
+        border = { fg = "${white}" }
         title = {}
         value = {}
         selected = { reversed = true }
 
         [completion]
-        border = { fg = "#888888" }
+        border = { fg = "${white}" }
 
         [tasks]
-        border = { fg = "#888888" }
+        border = { fg = "${white}" }
         title = {}
-        hovered = { fg = "#ffffff", underline = true }
+        hovered = { fg = "${black}", bg = "${white}", underline = true }
 
         [which]
-        mask = { bg = "#000000" }
-        cand = { fg = "#ffffff" }
-        rest = { fg = "#d0d0d0" }
-        desc = { fg = "#888888" }
+        mask = { bg = "${black}" }
+        cand = { fg = "${white}" }
+        rest = { fg = "${white}" }
+        desc = { fg = "${white}" }
         separator = "  "
-        separator_style = { fg = "#888888" }
+        separator_style = { fg = "${white}" }
 
         [help]
-        on = { fg = "#ffffff" }
-        run = { fg = "#d0d0d0" }
-        desc = { fg = "#888888" }
+        on = { fg = "${white}" }
+        run = { fg = "${white}" }
+        desc = { fg = "${white}" }
         hovered = { reversed = true, bold = true }
-        footer = { fg = "#ffffff", bg = "#000000" }
+        footer = { fg = "${white}", bg = "${black}" }
 
         [notify]
-        title_info = { fg = "#d0d0d0" }
-        title_warn = { fg = "#ffffff", bold = true }
-        title_error = { fg = "#ffffff", bold = true }
+        title_info = { fg = "${white}" }
+        title_warn = { fg = "${white}", bold = true }
+        title_error = { fg = "${white}", bold = true }
 
         [filetype]
         rules = [
-          { name = "*/", fg = "#ffffff", bold = true },
-          { name = "*", fg = "#d0d0d0" },
+          { name = "*/", fg = "${white}", bold = true },
+          { name = "*", fg = "${white}" },
         ]
       '';
     };
