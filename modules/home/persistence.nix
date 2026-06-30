@@ -11,6 +11,7 @@ _: {
       "videos"
       "zotero"
       ".local/share/zoxide"
+      ".config/mozilla/firefox"
       ".tmux/resurrect"
       {
         directory = ".cargo";
