@@ -2622,7 +2622,8 @@
     }
     {
       url = "*/";
-      fg = "#008787";
+      fg = "#ffffff";
+      bold = true;
     }
     {
       url = "*";

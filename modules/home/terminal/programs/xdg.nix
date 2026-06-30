@@ -66,6 +66,7 @@ in {
       download = "${config.home.homeDirectory}/downloads";
       music = "${config.home.homeDirectory}/music";
       pictures = "${config.home.homeDirectory}/pictures";
+      projects = null;
       publicShare = "${config.home.homeDirectory}/public";
       templates = "${config.home.homeDirectory}/templates";
       videos = "${config.home.homeDirectory}/videos";

@@ -1,491 +1,577 @@
-{
-  programs.yazi.theme.icon.rules = [
-    # Home
-    {
-      name = ".config/";
-      text = " ";
-    }
-    {
-      name = ".ssh/";
-      text = "󰢬 ";
-    }
-    {
-      name = "documents/";
-      text = " ";
-    }
-    {
-      name = "downloads/";
-      text = "󰉍 ";
-    }
-    {
-      name = "library/";
-      text = " ";
-    }
-    {
-      name = "movies/";
-      text = " ";
-    }
-    {
-      name = "music/";
-      text = "󱍙 ";
-    }
-    {
-      name = "pictures/";
-      text = "󰉏 ";
-    }
-    {
-      name = "videos/";
-      text = " ";
-    }
-    {
-      name = "public/";
-      text = " ";
-    }
-    {
-      name = "templates/";
-      text = "󰈔 ";
-    }
+let
+  white = "#ffffff";
+in {
+  programs.yazi.theme.icon = {
+    prepend_dirs = [
+      {
+        name = "desktop";
+        text = " ";
+        fg = white;
+      }
+      {
+        name = ".config";
+        text = " ";
+        fg = white;
+      }
+      {
+        name = ".ssh";
+        text = "󰢬 ";
+        fg = white;
+      }
+      {
+        name = "documents";
+        text = " ";
+        fg = white;
+      }
+      {
+        name = "downloads";
+        text = "󰉍 ";
+        fg = white;
+      }
+      {
+        name = "library";
+        text = " ";
+        fg = white;
+      }
+      {
+        name = "movies";
+        text = " ";
+        fg = white;
+      }
+      {
+        name = "music";
+        text = "󱍙 ";
+        fg = white;
+      }
+      {
+        name = "pictures";
+        text = "󰉏 ";
+        fg = white;
+      }
+      {
+        name = "videos";
+        text = " ";
+        fg = white;
+      }
+      {
+        name = "public";
+        text = " ";
+        fg = white;
+      }
+      {
+        name = "templates";
+        text = "󰈔 ";
+        fg = white;
+      }
+      {
+        name = "zotero";
+        text = "󰂺 ";
+        fg = white;
+      }
+      {
+        name = ".git";
+        text = " ";
+        fg = white;
+      }
+    ];
 
-    # Git
-    {
-      name = ".git/";
-      text = " ";
-    }
-    {
-      name = ".gitignore";
-      text = " ";
-    }
-    {
-      name = ".gitmodules";
-      text = " ";
-    }
-    {
-      name = ".gitattributes";
-      text = " ";
-    }
+    prepend_conds = [
+      {
+        "if" = "dir";
+        text = "󰉋 ";
+        fg = white;
+      }
+    ];
 
-    # Dotfiles
-    {
-      name = ".bashrc";
-      text = " ";
-    }
-    {
-      name = ".bashprofile";
-      text = " ";
-    }
-    {
-      name = ".zshrc";
-      text = " ";
-    }
-    {
-      name = ".zshenv";
-      text = " ";
-    }
-    {
-      name = ".zprofile";
-      text = " ";
-    }
+    rules = [
+      # Home
+      {
+        name = ".config/";
+        text = " ";
+      }
+      {
+        name = ".ssh/";
+        text = "󰢬 ";
+      }
+      {
+        name = "documents";
+        text = " ";
+      }
+      {
+        name = "downloads";
+        text = "󰉍 ";
+      }
+      {
+        name = "library";
+        text = " ";
+      }
+      {
+        name = "movies";
+        text = " ";
+      }
+      {
+        name = "music";
+        text = "󱍙 ";
+      }
+      {
+        name = "pictures";
+        text = "󰉏 ";
+      }
+      {
+        name = "videos";
+        text = " ";
+      }
+      {
+        name = "public";
+        text = " ";
+      }
+      {
+        name = "templates";
+        text = "󰈔 ";
+      }
 
-    # Text
-    {
-      name = "*.txt";
-      text = " ";
-    }
-    {
-      name = "*.md";
-      text = " ";
-    }
-    {
-      name = "*.rst";
-      text = " ";
-    }
-    {
-      name = "COPYING";
-      text = "󰿃 ";
-    }
-    {
-      name = "LICENSE";
-      text = "󰿃 ";
-    }
+      # Git
+      {
+        name = ".git/";
+        text = " ";
+      }
+      {
+        name = ".gitignore";
+        text = " ";
+      }
+      {
+        name = ".gitmodules";
+        text = " ";
+      }
+      {
+        name = ".gitattributes";
+        text = " ";
+      }
 
-    # Archives
-    {
-      name = "*.zip";
-      text = " ";
-    }
-    {
-      name = "*.tar";
-      text = " ";
-    }
-    {
-      name = "*.gz";
-      text = " ";
-    }
-    {
-      name = "*.7z";
-      text = " ";
-    }
-    {
-      name = "*.bz2";
-      text = " ";
-    }
-    {
-      name = "*.xz";
-      text = " ";
-    }
+      # Dotfiles
+      {
+        name = ".bashrc";
+        text = " ";
+      }
+      {
+        name = ".bashprofile";
+        text = " ";
+      }
+      {
+        name = ".zshrc";
+        text = " ";
+      }
+      {
+        name = ".zshenv";
+        text = " ";
+      }
+      {
+        name = ".zprofile";
+        text = " ";
+      }
 
-    # Documents
-    {
-      name = "*.csv";
-      text = " ";
-    }
-    {
-      name = "*.doc";
-      text = " ";
-    }
-    {
-      name = "*.doct";
-      text = " ";
-    }
-    {
-      name = "*.docx";
-      text = " ";
-    }
-    {
-      name = "*.dot";
-      text = " ";
-    }
-    {
-      name = "*.ods";
-      text = " ";
-    }
-    {
-      name = "*.ots";
-      text = " ";
-    }
-    {
-      name = "*.pdf";
-      text = " ";
-    }
-    {
-      name = "*.pom";
-      text = " ";
-    }
-    {
-      name = "*.pot";
-      text = " ";
-    }
-    {
-      name = "*.ppm";
-      text = " ";
-    }
-    {
-      name = "*.pps";
-      text = " ";
-    }
-    {
-      name = "*.ppt";
-      text = " ";
-    }
-    {
-      name = "*.potx";
-      text = " ";
-    }
-    {
-      name = "*.ppmx";
-      text = " ";
-    }
-    {
-      name = "*.ppsx";
-      text = " ";
-    }
-    {
-      name = "*.pptx";
-      text = " ";
-    }
-    {
-      name = "*.xlc";
-      text = " ";
-    }
-    {
-      name = "*.xlm";
-      text = " ";
-    }
-    {
-      name = "*.xls";
-      text = " ";
-    }
-    {
-      name = "*.xlt";
-      text = " ";
-    }
-    {
-      name = "*.xlsm";
-      text = " ";
-    }
-    {
-      name = "*.xlsx";
-      text = " ";
-    }
+      # Text
+      {
+        name = "*.txt";
+        text = " ";
+      }
+      {
+        name = "*.md";
+        text = " ";
+      }
+      {
+        name = "*.rst";
+        text = " ";
+      }
+      {
+        name = "COPYING";
+        text = "󰿃 ";
+      }
+      {
+        name = "LICENSE";
+        text = "󰿃 ";
+      }
 
-    # Audio
-    {
-      name = "*.mp3";
-      text = " ";
-    }
-    {
-      name = "*.flac";
-      text = " ";
-    }
-    {
-      name = "*.wav";
-      text = " ";
-    }
-    {
-      name = "*.aac";
-      text = " ";
-    }
-    {
-      name = "*.ogg";
-      text = " ";
-    }
-    {
-      name = "*.m4a";
-      text = " ";
-    }
-    {
-      name = "*.mp2";
-      text = " ";
-    }
+      # Archives
+      {
+        name = "*.zip";
+        text = " ";
+      }
+      {
+        name = "*.tar";
+        text = " ";
+      }
+      {
+        name = "*.gz";
+        text = " ";
+      }
+      {
+        name = "*.7z";
+        text = " ";
+      }
+      {
+        name = "*.bz2";
+        text = " ";
+      }
+      {
+        name = "*.xz";
+        text = " ";
+      }
 
-    # Movies
-    {
-      name = "*.mp4";
-      text = " ";
-    }
-    {
-      name = "*.mkv";
-      text = " ";
-    }
-    {
-      name = "*.avi";
-      text = " ";
-    }
-    {
-      name = "*.mov";
-      text = " ";
-    }
-    {
-      name = "*.webm";
-      text = " ";
-    }
+      # Documents
+      {
+        name = "*.csv";
+        text = " ";
+      }
+      {
+        name = "*.doc";
+        text = " ";
+      }
+      {
+        name = "*.doct";
+        text = " ";
+      }
+      {
+        name = "*.docx";
+        text = " ";
+      }
+      {
+        name = "*.dot";
+        text = " ";
+      }
+      {
+        name = "*.ods";
+        text = " ";
+      }
+      {
+        name = "*.ots";
+        text = " ";
+      }
+      {
+        name = "*.pdf";
+        text = " ";
+      }
+      {
+        name = "*.pom";
+        text = " ";
+      }
+      {
+        name = "*.pot";
+        text = " ";
+      }
+      {
+        name = "*.ppm";
+        text = " ";
+      }
+      {
+        name = "*.pps";
+        text = " ";
+      }
+      {
+        name = "*.ppt";
+        text = " ";
+      }
+      {
+        name = "*.potx";
+        text = " ";
+      }
+      {
+        name = "*.ppmx";
+        text = " ";
+      }
+      {
+        name = "*.ppsx";
+        text = " ";
+      }
+      {
+        name = "*.pptx";
+        text = " ";
+      }
+      {
+        name = "*.xlc";
+        text = " ";
+      }
+      {
+        name = "*.xlm";
+        text = " ";
+      }
+      {
+        name = "*.xls";
+        text = " ";
+      }
+      {
+        name = "*.xlt";
+        text = " ";
+      }
+      {
+        name = "*.xlsm";
+        text = " ";
+      }
+      {
+        name = "*.xlsx";
+        text = " ";
+      }
 
-    # Images
-    {
-      name = "*.jpg";
-      text = " ";
-    }
-    {
-      name = "*.jpeg";
-      text = " ";
-    }
-    {
-      name = "*.png";
-      text = " ";
-    }
-    {
-      name = "*.gif";
-      text = " ";
-    }
-    {
-      name = "*.webp";
-      text = " ";
-    }
-    {
-      name = "*.avif";
-      text = " ";
-    }
-    {
-      name = "*.bmp";
-      text = " ";
-    }
-    {
-      name = "*.ico";
-      text = " ";
-    }
-    {
-      name = "*.svg";
-      text = " ";
-    }
-    {
-      name = "*.xcf";
-      text = " ";
-    }
-    {
-      name = "*.HEIC";
-      text = " ";
-    }
+      # Audio
+      {
+        name = "*.mp3";
+        text = " ";
+      }
+      {
+        name = "*.flac";
+        text = " ";
+      }
+      {
+        name = "*.wav";
+        text = " ";
+      }
+      {
+        name = "*.aac";
+        text = " ";
+      }
+      {
+        name = "*.ogg";
+        text = " ";
+      }
+      {
+        name = "*.m4a";
+        text = " ";
+      }
+      {
+        name = "*.mp2";
+        text = " ";
+      }
 
-    # Programming
-    {
-      name = "*.c";
-      text = " ";
-    }
-    {
-      name = "*.cpp";
-      text = " ";
-    }
-    {
-      name = "*.h";
-      text = " ";
-    }
-    {
-      name = "*.hpp";
-      text = " ";
-    }
-    {
-      name = "*.rs";
-      text = " ";
-    }
-    {
-      name = "*.go";
-      text = " ";
-    }
-    {
-      name = "*.py";
-      text = " ";
-    }
-    {
-      name = "*.hs";
-      text = " ";
-    }
-    {
-      name = "*.js";
-      text = " ";
-    }
-    {
-      name = "*.ts";
-      text = " ";
-    }
-    {
-      name = "*.tsx";
-      text = " ";
-    }
-    {
-      name = "*.jsx";
-      text = " ";
-    }
-    {
-      name = "*.rb";
-      text = " ";
-    }
-    {
-      name = "*.php";
-      text = " ";
-    }
-    {
-      name = "*.java";
-      text = " ";
-    }
-    {
-      name = "*.sh";
-      text = " ";
-    }
-    {
-      name = "*.fish";
-      text = " ";
-    }
-    {
-      name = "*.swift";
-      text = " ";
-    }
-    {
-      name = "*.vim";
-      text = " ";
-    }
-    {
-      name = "*.lua";
-      text = " ";
-    }
-    {
-      name = "*.html";
-      text = " ";
-    }
-    {
-      name = "*.css";
-      text = " ";
-    }
-    {
-      name = "*.sass";
-      text = " ";
-    }
-    {
-      name = "*.scss";
-      text = " ";
-    }
-    {
-      name = "*.json";
-      text = " ";
-    }
-    {
-      name = "*.toml";
-      text = " ";
-    }
-    {
-      name = "*.yml";
-      text = "";
-    }
-    {
-      name = "*.yaml";
-      text = "";
-    }
-    {
-      name = "*.ini";
-      text = " ";
-    }
-    {
-      name = "*.conf";
-      text = " ";
-    }
-    {
-      name = "*.lock";
-      text = " ";
-    }
-    {
-      name = "*.nix";
-      text = " ";
-    }
-    {
-      name = "Containerfile";
-      text = "󰡨 ";
-    }
-    {
-      name = "Dockerfile";
-      text = "󰡨 ";
-    }
+      # Movies
+      {
+        name = "*.mp4";
+        text = " ";
+      }
+      {
+        name = "*.mkv";
+        text = " ";
+      }
+      {
+        name = "*.avi";
+        text = " ";
+      }
+      {
+        name = "*.mov";
+        text = " ";
+      }
+      {
+        name = "*.webm";
+        text = " ";
+      }
 
-    # Misc
-    {
-      name = "*.bin";
-      text = " ";
-    }
-    {
-      name = "*.exe";
-      text = " ";
-    }
-    {
-      name = "*.pkg";
-      text = " ";
-    }
+      # Images
+      {
+        name = "*.jpg";
+        text = " ";
+      }
+      {
+        name = "*.jpeg";
+        text = " ";
+      }
+      {
+        name = "*.png";
+        text = " ";
+      }
+      {
+        name = "*.gif";
+        text = " ";
+      }
+      {
+        name = "*.webp";
+        text = " ";
+      }
+      {
+        name = "*.avif";
+        text = " ";
+      }
+      {
+        name = "*.bmp";
+        text = " ";
+      }
+      {
+        name = "*.ico";
+        text = " ";
+      }
+      {
+        name = "*.svg";
+        text = " ";
+      }
+      {
+        name = "*.xcf";
+        text = " ";
+      }
+      {
+        name = "*.HEIC";
+        text = " ";
+      }
 
-    # Default
-    {
-      name = "*";
-      text = " ";
-    }
-    {
-      name = "*/";
-      text = "󰉋 ";
-    }
-  ];
+      # Programming
+      {
+        name = "*.c";
+        text = " ";
+      }
+      {
+        name = "*.cpp";
+        text = " ";
+      }
+      {
+        name = "*.h";
+        text = " ";
+      }
+      {
+        name = "*.hpp";
+        text = " ";
+      }
+      {
+        name = "*.rs";
+        text = " ";
+      }
+      {
+        name = "*.go";
+        text = " ";
+      }
+      {
+        name = "*.py";
+        text = " ";
+      }
+      {
+        name = "*.hs";
+        text = " ";
+      }
+      {
+        name = "*.js";
+        text = " ";
+      }
+      {
+        name = "*.ts";
+        text = " ";
+      }
+      {
+        name = "*.tsx";
+        text = " ";
+      }
+      {
+        name = "*.jsx";
+        text = " ";
+      }
+      {
+        name = "*.rb";
+        text = " ";
+      }
+      {
+        name = "*.php";
+        text = " ";
+      }
+      {
+        name = "*.java";
+        text = " ";
+      }
+      {
+        name = "*.sh";
+        text = " ";
+      }
+      {
+        name = "*.fish";
+        text = " ";
+      }
+      {
+        name = "*.swift";
+        text = " ";
+      }
+      {
+        name = "*.vim";
+        text = " ";
+      }
+      {
+        name = "*.lua";
+        text = " ";
+      }
+      {
+        name = "*.html";
+        text = " ";
+      }
+      {
+        name = "*.css";
+        text = " ";
+      }
+      {
+        name = "*.sass";
+        text = " ";
+      }
+      {
+        name = "*.scss";
+        text = " ";
+      }
+      {
+        name = "*.json";
+        text = " ";
+      }
+      {
+        name = "*.toml";
+        text = " ";
+      }
+      {
+        name = "*.yml";
+        text = "";
+      }
+      {
+        name = "*.yaml";
+        text = "";
+      }
+      {
+        name = "*.ini";
+        text = " ";
+      }
+      {
+        name = "*.conf";
+        text = " ";
+      }
+      {
+        name = "*.lock";
+        text = " ";
+      }
+      {
+        name = "*.nix";
+        text = " ";
+      }
+      {
+        name = "Containerfile";
+        text = "󰡨 ";
+      }
+      {
+        name = "Dockerfile";
+        text = "󰡨 ";
+      }
+
+      # Misc
+      {
+        name = "*.bin";
+        text = " ";
+      }
+      {
+        name = "*.exe";
+        text = " ";
+      }
+      {
+        name = "*.pkg";
+        text = " ";
+      }
+
+      # Default
+      {
+        name = "*";
+        text = " ";
+      }
+      {
+        name = "*/";
+        text = "󰉋 ";
+        fg = white;
+      }
+    ];
+  };
 }

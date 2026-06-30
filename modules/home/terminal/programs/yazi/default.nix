@@ -134,5 +134,13 @@
       dark = "kitty-mono";
       light = "kitty-mono";
     };
+
+    theme.filetype.rules = [
+      {
+        url = "*/";
+        fg = "#ffffff";
+        bold = true;
+      }
+    ];
   };
 }
