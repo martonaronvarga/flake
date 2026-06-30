@@ -5,7 +5,7 @@
 }: {
   imports = [
     # ./theme/filetype.nix
-    # ./theme/icons.nix
+    ./theme/icons.nix
     # ./theme/manager.nix
     # ./theme/status.nix
   ];
@@ -23,7 +23,6 @@
 
     settings = {
       mgr = {
-        #manager = {
         layout = [1 4 3];
         sort_by = "alphabetical";
         sort_sensitive = true;
@@ -58,7 +57,6 @@
         marker_selected = { fg = "${white}", bg = "${white}" }
         tab_active = { fg = "${black}", bg = "${white}", bold = true }
         tab_inactive = { fg = "${white}", bg = "${black}" }
-        tab_width = 1
         count_copied = { fg = "${black}", bg = "${white}" }
         count_cut = { fg = "${black}", bg = "${white}" }
         count_selected = { fg = "${black}", bg = "${white}" }
@@ -74,8 +72,8 @@
         unset_alt = { fg = "${white}", bg = "${black}" }
 
         [status]
-        separator_open = ""
-        separator_close = ""
+        separator_open = ""
+        separator_close = ""
         progress_label = { fg = "${white}", bold = true }
         progress_normal = { fg = "${black}", bg = "${white}" }
         progress_error = { fg = "${black}", bg = "${white}", bold = true }
