@@ -17,6 +17,7 @@ _: {
       ".local/share/wluma"
       ".cache/aerc"
       ".config/mozilla/firefox"
+      ".config/aerc/saved"
       ".tmux/resurrect"
       {
         directory = ".cargo";
@@ -34,7 +35,6 @@ _: {
         directory = ".local/share/keyrings";
         mode = "0700";
       }
-      ".local/share/direnv"
     ];
 
     files = [];

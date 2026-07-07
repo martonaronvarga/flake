@@ -58,7 +58,7 @@
       errfile="$(mktemp)"
       trap 'rm -f "$errfile"' EXIT
 
-      # Important: never print the token from a systemd service.
+      # never print the token from a systemd service
       if oama access "$email" >/dev/null 2>"$errfile"; then
         exit 0
       fi
@@ -84,7 +84,7 @@
 
     text = ''
       set -euo pipefail
-      exec oama authorize google "${account}"
+      exec oama authorize google ${lib.escapeShellArg account}
     '';
   };
 
@@ -95,10 +95,48 @@
         ../../../../overlays/patches/carddav_query_bearer.patch
       ];
   });
+
+  folderMap = pkgs.writeText "aerc-gmail-folder-map" ''
+    * = [Gmail]/*
+  '';
 in {
   programs.aerc = {
     enable = true;
     package = patchedAerc;
+
+    extraAccounts = {
+      personal = {
+        source = "imaps+oauthbearer://${username}@imap.gmail.com:993";
+        outgoing = "smtps+oauthbearer://${username}@smtp.gmail.com:465";
+
+        source-cred-cmd = lib.getExe aercOauthToken;
+        outgoing-cred-cmd = lib.getExe aercOauthToken;
+
+        outgoing-cred-cmd-cache = false;
+
+        carddav-source = "https://www.googleapis.com/carddav/v1/principals/${account}/lists/default";
+        carddav-source-cred-cmd = lib.getExe aercOauthToken;
+
+        default = "INBOX";
+        folders-sort = "INBOX";
+
+        folder-map = "${folderMap}";
+        postpone = "Drafts";
+        copy-to = "Sent";
+
+        from = "${name} <${account}>";
+        cache-headers = true;
+        check-mail = "5m";
+
+        pgp-auto-sign = true;
+        send-as-utc = true;
+
+        signature-cmd = ''
+          echo -e '\n-- \nMarton Aron Varga\nMetascience Lab\nELTE Eötvös Loránd University\n${account}'
+        '';
+      };
+    };
+
     extraBinds = {
       global = {
         "\\[t" = ":prev-tab<Enter>";
@@ -263,20 +301,25 @@ in {
         pgp-provider = "gpg";
         term = "xterm-kitty";
         enable-osc8 = true;
+        unsafe-accounts-conf = true;
       };
+
       ui = {
         sort = "-r date";
       };
+
       compose = {
-        address-book-cmd = "carddav-query -S martonaronvarga@gmail.com %s";
+        address-book-cmd = "carddav-query -S ${account} %s";
         file-picker-cmd = "yazi --chooser-file %f";
         reply-to-self = false;
         no-attachment-warning = "^[^>]*attach(ed|ment)";
         format-flowed = true;
       };
+
       multipart-converters = ''
         text/html=${lib.getExe pkgs.pandoc} -f markdown -t html --standalone
       '';
+
       filters = ''
         text/plain=fold -w $(tput cols) | colorize
         subject,~Git(hub|lab)=lolcat -f
@@ -286,51 +329,14 @@ in {
         message/rfc822=colorize
         .filename,~.*\.csv=column -t --separator=","
       '';
+
       hooks = {
         mail-received = ''
           dunstify "[$AERC_ACCOUNT/$AERC_FOLDER] New mail from $AERC_FROM_NAME" "$AERC_SUBJECT"
         '';
       };
     };
-    # templates = {
-    # };
-    # stylesets = {
-    #   default = {
-    #     ui = {
-    #       "tab.selected.reverse" = "toggle";
-    #     };
-    #   };
-    # };
   };
-
-  xdg.configFile."aerc/accounts.conf".text = ''
-    [personal]
-    source = imaps+oauthbearer://${username}@imap.gmail.com:993
-    outgoing = smtps+oauthbearer://${username}@smtp.gmail.com:465
-
-    source-cred-cmd = ${lib.getExe aercOauthToken}
-    outgoing-cred-cmd = ${lib.getExe aercOauthToken}
-
-    carddav-source = https://www.googleapis.com/carddav/v1/principals/${account}/lists/default
-    carddav-source-cred-cmd = ${lib.getExe aercOauthToken}
-
-    default = INBOX
-    folders-sort = INBOX
-    folders-map = ${pkgs.writeText "aerc-gmail-folder-map.txt" ''
-      * = [Gmail]/*
-    ''}
-
-    postpone = Drafts
-    from = ${name} <${account}>
-    cache-headers = true
-    check-mail = 5m
-    copy-to = Sent
-    pgp-auto-sign = true
-    send-as-utc = true
-    signature-cmd = echo -e '\n-- \nMarton Aron Varga\nMetascience Lab\nELTE Eötvös Loránd University\n${account}'
-  '';
-
-  home.file.".config/aerc/accounts.conf".force = true;
 
   home.packages = [
     pkgs.oama
