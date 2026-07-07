@@ -38,11 +38,6 @@
           owner = "usu";
           path = "/run/agenix/aerc-client-secret";
         };
-        aerc-refresh-token = {
-          file = ../../secrets/aerc_refresh_token.age;
-          owner = "usu";
-          path = "/run/agenix/aerc-refresh-token";
-        };
       };
     };
 

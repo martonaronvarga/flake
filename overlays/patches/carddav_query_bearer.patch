@@ -1,101 +1,61 @@
+From f63de4d07df1f7c5d6bbedd299297e597b8556b1 Mon Sep 17 00:00:00 2001
+From: "Marton A. Varga" <martonaronvarga@gmail.com>
+Date: Sat, 7 Feb 2026 20:13:03 +0100
+Subject: [PATCH aerc] contrib: add OAuth2 bearer auth support to carddav-query
+
+Extend carddav-query to support OAuth2 bearer authentication
+in addition to Basic Auth.
+
+---
+Changes in v2:
+- Use https+oauthbearer:// URL scheme instead of a separate auth-mode option.
+- Remove Google-specific OAuth2 token exchange.
+- Expect carddav-source-cred-cmd (e.g. oama) to provide the bearer token.
+- Format with ruff.
+- Wrap help text.
+
+Signed-off-by: Marton A. Varga <martonaronvarga@gmail.com>
+---
+ contrib/carddav-query   | 36 ++++++++++++++++++++++++++++--------
+ doc/carddav-query.1.scd | 19 ++++++++++++++-----
+ 2 files changed, 42 insertions(+), 13 deletions(-)
+
 diff --git a/contrib/carddav-query b/contrib/carddav-query
-index 8e4f59c9..b0cde269 100755
+index 8e4f59c9..5ed9a49f 100755
 --- a/contrib/carddav-query
 +++ b/contrib/carddav-query
-@@ -13,6 +13,7 @@ import os
- import re
- import subprocess
- import sys
-+import json
- import xml.etree.ElementTree as xml
- from urllib import error, parse, request
- 
-@@ -47,6 +48,7 @@ def main():
-             "REPORT",
-             args.server_url,
-             query,
-+            auth_mode=args.auth_mode,
-             username=args.username,
-             password=args.password,
-             debug=args.verbose,
-@@ -69,6 +71,7 @@ def http_request_xml(
-     method: str,
-     url: str,
-     data: xml.Element,
-+    auth_mode: str = None,
-     username: str = None,
-     password: str = None,
+@@ -74,6 +74,14 @@ def http_request_xml(
      debug: bool = False,
-@@ -83,7 +86,26 @@ def http_request_xml(
+     **headers,
+ ) -> xml.Element:
++    uri = parse.urlparse(url)
++    oauthbearer = uri.scheme.endswith("+oauthbearer")
++    if oauthbearer:
++        scheme = uri.scheme[: -len("+oauthbearer")]
++        if scheme not in ("http", "https"):
++            raise ValueError(f"unsupported OAuthBearer URL scheme: {uri.scheme}")
++        url = uri._replace(scheme=scheme).geturl()
++
+     req = request.Request(
+         url=url,
+         method=method,
+@@ -83,7 +91,14 @@ def http_request_xml(
          },
          data=xml.tostring(data, encoding="utf-8", xml_declaration=True),
      )
 -    if username is not None and password is not None:
-+    if auth_mode == "bearer":
++    if oauthbearer:
 +        if not password:
 +            raise ValueError(
-+                "bearer auth requires refresh token output via carddav-source-cred-cmd or --password"
++                "+oauthbearer requires a token via --password, "
++                "carddav-source, or carddav-source-cred-cmd"
 +            )
-+        else:
-+            # Assume it's a refresh token; require CLIENT_ID/SECRET from url
-+            u = parse.urlparse(url)
-+            q = parse.parse_qs(u.query)
-+            client_id = q.get("client_id", [None])[0]
-+            client_secret = q.get("client_secret", [None])[0]
-+            if not client_id or not client_secret:
-+                raise ValueError(
-+                    "client_id and client_secret must be set to use refresh token"
-+                )
-+            access_token = get_access_token_from_refresh(
-+                password, client_id, client_secret, debug
-+            )
-+        req.add_header("Authorization", f"Bearer {access_token}")
++        req.add_header("Authorization", f"Bearer {password}")
 +    elif username is not None and password is not None:
          auth = f"{username}:{password}"
          auth = base64.standard_b64encode(auth.encode("utf-8")).decode("ascii")
          req.add_header("Authorization", f"Basic {auth}")
-@@ -105,6 +127,40 @@ def http_request_xml(
-     return xml.fromstring(data)
- 
- 
-+def get_access_token_from_refresh(refresh_token, client_id, client_secret, debug):
-+    """
-+    Exchange a Google OAuth2 refresh token for an access token.
-+    Returns the access token as a string.
-+    """
-+    data = parse.urlencode(
-+        {
-+            "grant_type": "refresh_token",
-+            "refresh_token": refresh_token,
-+            "client_id": client_id,
-+            "client_secret": client_secret,
-+        }
-+    ).encode("utf-8")
-+    req = request.Request(
-+        "https://oauth2.googleapis.com/token",
-+        data=data,
-+        headers={"Content-Type": "application/x-www-form-urlencoded"},
-+        method="POST",
-+    )
-+
-+    try:
-+        with request.urlopen(req) as resp:
-+            if debug:
-+                debug_response(resp)
-+            resp_data = resp.read().decode("utf-8")
-+            token_json = json.loads(resp_data)
-+            if "access_token" not in token_json:
-+                raise ValueError(f"Failed to obtain access token: {resp_data}")
-+            return token_json["access_token"]
-+    except error.HTTPError as e:
-+        body = e.read().decode("utf-8")
-+        raise ValueError(f"HTTP error while obtaining access token: {e.code} {body}")
-+
-+
- def debug_response(resp):
-     print(f"< HTTP/1.1 {resp.code}", file=sys.stderr)
-     for name, value in resp.headers.items():
-@@ -121,7 +177,9 @@ def parse_vcard(txt):
+@@ -121,7 +136,9 @@ def parse_vcard(txt):
          if line.startswith("FN:"):
              name = line[len("FN:") :].replace("\\,", ",")
              continue
@@ -106,67 +66,99 @@ index 8e4f59c9..b0cde269 100755
          if match:
              email = match.group(1).lower().replace("\\,", ",")
              if email not in emails:
-@@ -203,6 +261,17 @@ def parse_args():
-         CardDAV server URL endpoint. Overrides configuration file.
+@@ -181,7 +198,7 @@ def parse_args():
+         help="""
+         INI configuration key to lookup in CONFIG_SECTION from CONFIG_FILE.
+         The value must respect the following format:
+-        https?://USERNAME[:PASSWORD]@HOSTNAME/PATH/TO/ADDRESSBOOK.
++        https?[+oauthbearer]://USERNAME[:PASSWORD]@HOSTNAME/PATH/TO/ADDRESSBOOK.
+         Both USERNAME and PASSWORD must be percent encoded.
          """,
      )
-+    parser.add_argument(
-+        "-a",
-+        "--config-auth-mode",
-+        metavar="AUTH_MODE",
-+        default="carddav-auth-mode",
-+        help="""
-+        INI configuration key to lookup in CONFIG_SECTION from CONFIG_FILE.
-+        The value is basic if you authenticate with username/password, and
-+        bearer if you rely on OAuth2.
-+        """,
-+    )
-     parser.add_argument(
-         "-u",
-         "--username",
-@@ -214,7 +283,7 @@ def parse_args():
+@@ -214,7 +231,8 @@ def parse_args():
          "-p",
          "--password",
          help="""
 -        Password for the specified user. Overrides configuration file.
-+        Password or refresh token (if auth_mode = bearer) for the specified user. Overrides configuration file.
++        Password or access token (if +oauthbearer) for the specified user.
++        Overrides configuration file.
          """,
      )
      parser.add_argument(
-@@ -230,19 +299,26 @@ def parse_args():
- 
-     cfg = configparser.RawConfigParser(strict=False)
-     cfg.read([args.config_file])
--    source = cred_cmd = None
-+    source = cred_cmd = auth_mode = None
-     if args.config_section:
-         source = cfg.get(args.config_section, args.config_key_source, fallback=None)
-         cred_cmd = cfg.get(args.config_section, args.config_key_cred_cmd, fallback=None)
-+        auth_mode = cfg.get(args.config_section, args.config_auth_mode, fallback=None)
-     else:
-         for sec in cfg.sections():
-             source = cfg.get(sec, args.config_key_source, fallback=None)
-             if source is not None:
-                 cred_cmd = cfg.get(sec, args.config_key_cred_cmd, fallback=None)
-+                auth_mode = cfg.get(sec, args.config_auth_mode, fallback=None)
-                 break
+@@ -243,6 +261,7 @@ def parse_args():
      if source is not None:
          try:
              u = parse.urlparse(source)
 +
-+            if auth_mode:
-+                args.auth_mode = auth_mode
-+            elif args.config_auth_mode:
-+                args.auth_mode = args.config_auth_mode
              if args.username is None and u.username is not None:
                  args.username = parse.unquote(u.username)
              if args.password is None and u.password is not None:
-@@ -256,6 +332,8 @@ def parse_args():
-                 if u.port is not None:
-                     args.server_url += f":{u.port}"
-                 args.server_url += u.path
-+                if u.query:
-+                    args.server_url += f"?{u.query}"
+@@ -252,10 +271,11 @@ def parse_args():
+                     cred_cmd, shell=True, text=True, encoding="utf-8"
+                 ).strip()
+             if args.server_url is None:
+-                args.server_url = f"{u.scheme}://{u.hostname}"
+-                if u.port is not None:
+-                    args.server_url += f":{u.port}"
+-                args.server_url += u.path
++                args.server_url = u._replace(
++                    netloc=u.netloc.rsplit("@", maxsplit=1)[-1],
++                    params="",
++                    fragment="",
++                ).geturl()
          except ValueError as e:
              parser.error(f"{args.config_file}: {e}")
      if args.server_url is None:
+diff --git a/doc/carddav-query.1.scd b/doc/carddav-query.1.scd
+index e12c680b..f745d5df 100644
+--- a/doc/carddav-query.1.scd
++++ b/doc/carddav-query.1.scd
+@@ -40,11 +40,15 @@ This tool has been tailored for use as *address-book-cmd* in *aerc-config*(5).
+ 	INI configuration key to lookup in _<section>_ from _<file>_. The value
+ 	must respect the following format:
+ 
+-		https?://_<username>_[:_<password>_]@_<hostname>_/_<path/to/addressbook>_
++		_<scheme>_://_<username>_[:_<password>_]@_<hostname>_/_<path/to/addressbook>_
++
++	Valid schemes are *http*, *https*, *http+oauthbearer* and
++	*https+oauthbearer*.
+ 
+ 	Both _<username>_ and _<password>_ must be percent encoded. If
+ 	_<password>_ is omitted, it can be provided via *--config-key-cred-cmd*
+-	or *--password*.
++	or *--password*. With *+oauthbearer*, _<password>_ must be an OAuth
++	bearer access token.
+ 
+ 	Default: _carddav-source_
+ 
+@@ -62,7 +66,8 @@ This tool has been tailored for use as *address-book-cmd* in *aerc-config*(5).
+ 	Username to authenticate on the server. Overrides configuration file.
+ 
+ *-p* _<password>_, *--password* _<password>_
+-	Password for the specified user. Overrides configuration file.
++	Password, or access token if *+oauthbearer* is used, for the specified
++	user. Overrides configuration file.
+ 
+ # POSITIONAL ARGUMENTS
+ 
+@@ -87,11 +92,15 @@ address-book-cmd = carddav-query -S fastmail %s
+ 
+ ```
+ [gmail]
+-carddav-source = https://johndoe%40gmail.com@www.googleapis.com/carddav/v1/principals/johndoe@gmail.com/lists/default
+-carddav-source-cred-cmd = pass gmail.com/johndoe
++carddav-source = https+oauthbearer://johndoe%40gmail.com@www.googleapis.com/carddav/v1/principals/johndoe@gmail.com/lists/default
++carddav-source-cred-cmd = oama access johndoe@gmail.com
+ address-book-cmd = carddav-query -S gmail %s
+ ```
+ 
++The *+oauthbearer* scheme sends the password or *carddav-source-cred-cmd*
++output as a bearer access token. A helper such as *oama* can be used to refresh
++OAuth tokens outside of *carddav-query*.
++
+ # SEE ALSO
+ 
+ *aerc-config*(5)
+-- 
+2.54.0
+

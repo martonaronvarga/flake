@@ -92,6 +92,8 @@
       export FZF_COMPLETION_PATH_OPTS='--walker file,dir,follow,hidden'
       export FZF_COMPLETION_DIR_OPTS='--walker dir,follow'
 
+      export GPG_TTY=$(tty)
+      gpg-connect-agent updatestartuptty /bye >/dev/null
     '';
 
     shellAliases = {

@@ -5,17 +5,88 @@
   ...
 }: let
   name = "Marton A. Varga";
-  username = "martonaronvarga%40gmail.com";
-  aercAccountConf = "${config.home.homeDirectory}/.config/aerc/accounts.conf";
+  account = "martonaronvarga@gmail.com";
+  username = builtins.replaceStrings ["@"] ["%40"] account;
+  gpgRecipient = "0xD7FC584814D84DA6";
 
-  quoteSecret = pkgs.writers.writePython3Bin "aerc-quote-secret" {libraries = [pkgs.python3Packages.setuptools];} ''
-    import sys
-    import urllib.parse
-    from pathlib import Path
+  aercOauthToken = pkgs.writeShellApplication {
+    name = "aerc-oauth-token";
+    runtimeInputs = [
+      pkgs.oama
+      pkgs.coreutils
+      pkgs.gnugrep
+      pkgs.libnotify
+    ];
+    text = ''
+      set -euo pipefail
 
-    token = Path(sys.argv[1]).read_text().strip()
-    print(urllib.parse.quote(token))
-  '';
+      email="${account}"
+      errfile="$(mktemp)"
+      trap 'rm -f "$errfile"' EXIT
+
+      if token="$(oama access "$email" 2>"$errfile")"; then
+        printf '%s\n' "$token"
+        exit 0
+      fi
+
+      err="$(cat "$errfile")"
+
+      if grep -Eqi 'invalid_grant|expired|revoked|InvalidGrant|reauthor' <<< "$err"; then
+        notify-send \
+          "Gmail OAuth reauthorization needed" \
+          "Run: aerc-oauth-reauth"
+      fi
+
+      printf '%s\n' "$err" >&2
+      exit 1
+    '';
+  };
+
+  aercOauthCheck = pkgs.writeShellApplication {
+    name = "aerc-oauth-check";
+    runtimeInputs = [
+      pkgs.oama
+      pkgs.coreutils
+      pkgs.gnugrep
+      pkgs.libnotify
+    ];
+
+    text = ''
+      set -euo pipefail
+
+      email="${account}"
+      errfile="$(mktemp)"
+      trap 'rm -f "$errfile"' EXIT
+
+      # Important: never print the token from a systemd service.
+      if oama access "$email" >/dev/null 2>"$errfile"; then
+        exit 0
+      fi
+
+      err="$(cat "$errfile")"
+
+      if grep -Eqi 'invalid_grant|expired|revoked|InvalidGrant|reauthor' <<< "$err"; then
+        notify-send \
+          "Gmail OAuth refresh failed" \
+          "Run: aerc-oauth-reauth"
+      fi
+
+      printf '%s\n' "$err" >&2
+      exit 1
+    '';
+  };
+
+  aercOauthReauth = pkgs.writeShellApplication {
+    name = "aerc-oauth-reauth";
+    runtimeInputs = [
+      pkgs.oama
+    ];
+
+    text = ''
+      set -euo pipefail
+      exec oama authorize google "${account}"
+    '';
+  };
 
   patchedAerc = pkgs.aerc.overrideAttrs (old: {
     patches =
@@ -232,32 +303,83 @@ in {
     # };
   };
 
-  home.activation.generateAercAccountsConf = lib.hm.dag.entryAfter ["checkLinkTargets"] ''
-    mkdir -p $HOME/.config/aerc
-    CLIENT_ID=$(${quoteSecret}/bin/aerc-quote-secret /run/agenix/aerc-client-id)
-    CLIENT_SECRET=$(${quoteSecret}/bin/aerc-quote-secret /run/agenix/aerc-client-secret)
-
-    cat > ${aercAccountConf} <<EOF
+  xdg.configFile."aerc/accounts.conf".text = ''
     [personal]
-    source = imaps+oauthbearer://${username}@imap.gmail.com?token_endpoint=https%3A%2F%2Foauth2.googleapis.com%2Ftoken&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET
-    outgoing = smtps+oauthbearer://${username}@smtp.gmail.com?token_endpoint=https%3A%2F%2Foauth2.googleapis.com%2Ftoken&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET
-    source-cred-cmd = ${lib.getExe quoteSecret} /run/agenix/aerc-refresh-token
-    outgoing-cred-cmd = ${lib.getExe quoteSecret} /run/agenix/aerc-refresh-token
-    carddav-source = https://${username}@www.googleapis.com/carddav/v1/principals/martonaronvarga@gmail.com/lists/default?client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET
-    carddav-source-cred-cmd = ${lib.getExe quoteSecret} /run/agenix/aerc-refresh-token
-    carddav-auth-mode = bearer
+    source = imaps+oauthbearer://${username}@imap.gmail.com:993
+    outgoing = smtps+oauthbearer://${username}@smtp.gmail.com:465
+
+    source-cred-cmd = ${lib.getExe aercOauthToken}
+    outgoing-cred-cmd = ${lib.getExe aercOauthToken}
+
+    carddav-source = https://www.googleapis.com/carddav/v1/principals/${account}/lists/default
+    carddav-source-cred-cmd = ${lib.getExe aercOauthToken}
+
     default = INBOX
     folders-sort = INBOX
-    folders-map = ${pkgs.writeText "map.txt" "* = [Gmail]/\*"}
+    folders-map = ${pkgs.writeText "aerc-gmail-folder-map.txt" ''
+      * = [Gmail]/*
+    ''}
+
     postpone = Drafts
-    from = ${name} <martonaronvarga@gmail.com>
+    from = ${name} <${account}>
     cache-headers = true
     check-mail = 5m
     copy-to = Sent
     pgp-auto-sign = true
     send-as-utc = true
-    signature-cmd = echo -e '\n-- \nMarton Aron Varga\nMetascience Lab\nELTE Eötvös Loránd University\nmartonaronvarga@gmail.com'
-    EOF
-    chmod 600 ${aercAccountConf}
+    signature-cmd = echo -e '\n-- \nMarton Aron Varga\nMetascience Lab\nELTE Eötvös Loránd University\n${account}'
   '';
+
+  home.file.".config/aerc/accounts.conf".force = true;
+
+  home.packages = [
+    pkgs.oama
+    aercOauthToken
+    aercOauthCheck
+    aercOauthReauth
+  ];
+
+  # look at logs with
+  # journalctl --identifier oama --identifier msmtp --identifier fdm -e
+  xdg.configFile."oama/config.yaml".text = ''
+    encryption:
+      tag: GPG
+      contents: '${gpgRecipient}'
+
+    services:
+      google:
+        # Mail for IMAP/SMTP, CardDAV for Google contacts.
+        # If Google rejects the carddav scope for your app, use:
+        # https://www.googleapis.com/auth/contacts
+        auth_scope: 'https://mail.google.com/ https://www.googleapis.com/auth/carddav'
+
+        client_id_cmd: 'cat /run/agenix/aerc-client-id'
+        client_secret_cmd: 'cat /run/agenix/aerc-client-secret'
+  '';
+
+  systemd.user.services.aerc-oauth-check = {
+    Unit = {
+      Description = "Check Gmail OAuth token for aerc";
+      After = ["graphical-session.target"];
+    };
+
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${lib.getExe aercOauthCheck}";
+    };
+  };
+
+  systemd.user.timers.aerc-oauth-check = {
+    Unit = {
+      Description = "Periodically check Gmail OAuth token for aerc";
+    };
+
+    Timer = {
+      OnBootSec = "2m";
+      OnUnitActiveSec = "30m";
+      Persistent = true;
+    };
+
+    Install.WantedBy = ["timers.target"];
+  };
 }

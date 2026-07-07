@@ -5,5 +5,4 @@ in {
   "usu_password_hash.age".publicKeys = [usu];
   "aerc_client_id.age".publicKeys = [usu];
   "aerc_client_secret.age".publicKeys = [usu];
-  "aerc_refresh_token.age".publicKeys = [usu];
 }

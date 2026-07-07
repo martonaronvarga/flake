@@ -11,6 +11,11 @@ _: {
       "videos"
       "zotero"
       ".local/share/zoxide"
+      ".local/share/FreesmLauncher"
+      ".local/share/direnv"
+      ".local/state/oama"
+      ".local/share/wluma"
+      ".cache/aerc"
       ".config/mozilla/firefox"
       ".tmux/resurrect"
       {
