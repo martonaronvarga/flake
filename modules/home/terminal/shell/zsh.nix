@@ -24,6 +24,8 @@
 
     envExtra = ''
       export BAT_THEME=base16
+      export OCI_CLI_CONFIG_FILE="$HOME/.config/oci/config"
+      export OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True
       export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
       export FZF_CTRL_T_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
       export FZF_ALT_C_COMMAND='fd --type d --strip-cwd-prefix --hidden --follow --exclude .git'

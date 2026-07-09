@@ -6,4 +6,6 @@ in {
   "usu_password_hash.age".publicKeys = [usu dusk];
   "aerc_client_id.age".publicKeys = [usu];
   "aerc_client_secret.age".publicKeys = [usu];
+  "oci_config.age".publicKeys = [usu];
+  "oci_private_key.age".publicKeys = [usu];
 }

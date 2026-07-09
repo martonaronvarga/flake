@@ -6,6 +6,7 @@
   imports = [
     ./persistence.nix
     ./programs
+    ./programs/cloud
     ./services
     ./terminal
   ];

@@ -38,6 +38,18 @@
           owner = "usu";
           path = "/run/agenix/aerc-client-secret";
         };
+        oci-config = {
+          file = ../../secrets/oci_config.age;
+          owner = "usu";
+          mode = "0400";
+          path = "/run/agenix/oci-config";
+        };
+        oci-private-key = {
+          file = ../../secrets/oci_private_key.age;
+          owner = "usu";
+          mode = "0400";
+          path = "/run/agenix/oci-private-key";
+        };
       };
     };
 
