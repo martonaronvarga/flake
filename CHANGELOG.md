@@ -12,6 +12,8 @@ All notable infrastructure changes are recorded here.
 
 ### Documentation
 
+- Docs: update changelog
+
 - Docs(dusk): document install and operations
 
 - Docs: update changelog
@@ -20,6 +22,8 @@ All notable infrastructure changes are recorded here.
 
 
 ### Features
+
+- Feat(dusk): serve domain placeholder through gloam
 
 - Feat(modules): Fall back to home-manager aerc module
 
