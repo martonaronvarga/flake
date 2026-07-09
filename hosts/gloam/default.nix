@@ -14,7 +14,7 @@ in {
     useDHCP = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [22];
+      allowedTCPPorts = [22 80 443];
       allowedUDPPorts = [51820];
       trustedInterfaces = ["wg0"];
     };
@@ -35,7 +35,21 @@ in {
 
   environment.persistence."/persist".directories = [
     "/etc/wireguard"
+    "/var/lib/acme"
+    "/var/lib/nginx"
   ];
+
+  services.nginx = {
+    enable = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
+    recommendedProxySettings = true;
+
+    virtualHosts."martonaronvarga.dev" = {
+      serverAliases = ["www.martonaronvarga.dev"];
+      locations."/".proxyPass = "http://10.200.200.2:8080";
+    };
+  };
 
   systemd.tmpfiles.rules = [
     "d /persist/etc/wireguard 0700 root root -"

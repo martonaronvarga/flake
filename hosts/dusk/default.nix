@@ -8,6 +8,7 @@
     ./disko.nix
     ./services/wireguard.nix
     ./services/monitoring.nix
+    ./services/website.nix
   ];
 
   networking.hostName = "dusk";
