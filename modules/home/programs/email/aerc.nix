@@ -1,13 +1,12 @@
 {
   pkgs,
-  config,
   lib,
   ...
 }: let
   name = "Marton A. Varga";
   account = "martonaronvarga@gmail.com";
   username = builtins.replaceStrings ["@"] ["%40"] account;
-  gpgRecipient = "0xD7FC584814D84DA6";
+  gpgRecipient = "29F264979A64F516D7CB007D804BD4BD3F715230!";
 
   aercOauthToken = pkgs.writeShellApplication {
     name = "aerc-oauth-token";
@@ -114,7 +113,7 @@ in {
 
         outgoing-cred-cmd-cache = false;
 
-        carddav-source = "https://www.googleapis.com/carddav/v1/principals/${account}/lists/default";
+        carddav-source = "https://${username}@www.googleapis.com/carddav/v1/principals/${account}/lists/default";
         carddav-source-cred-cmd = lib.getExe aercOauthToken;
 
         default = "INBOX";
@@ -122,7 +121,7 @@ in {
 
         folder-map = "${folderMap}";
         postpone = "Drafts";
-        copy-to = "Sent";
+        copy-to = "Sent Mail";
 
         from = "${name} <${account}>";
         cache-headers = true;
@@ -309,7 +308,7 @@ in {
       };
 
       compose = {
-        address-book-cmd = "carddav-query -S ${account} %s";
+        address-book-cmd = "carddav-query -S personal %s";
         file-picker-cmd = "yazi --chooser-file %f";
         reply-to-self = false;
         no-attachment-warning = "^[^>]*attach(ed|ment)";
