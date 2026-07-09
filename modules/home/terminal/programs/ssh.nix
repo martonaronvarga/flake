@@ -32,6 +32,15 @@ _: {
         ServerAliveCountMax = 3;
       };
 
+      dusk = {
+        HostName = "dusk.local";
+        User = "usu";
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
+      };
+
       oracle = {
         HostName = "vps.example.com";
         User = "todo";

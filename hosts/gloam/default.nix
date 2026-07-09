@@ -1,8 +1,6 @@
 {pkgs, ...}: let
   shadeSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
-  # Bootstrap value; replace with dusk's generated public key after first activation.
-  # TODO
-  duskWireGuardPublicKey = "IujkG119YPr2cVQzJkSLYCdjpHIDjvr/qH1w1tdKswY=";
+  duskWireGuardPublicKey = "5jfqQTM6Ms/JrcQLKOBFKT+LDWxlXv+NMj8fPG76iTI=";
 in {
   imports = [
     ./hardware.nix

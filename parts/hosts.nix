@@ -82,11 +82,14 @@
       ];
       modules = [
         ../hosts/dusk
+        ../modules/nixos/agenix.nix
       ];
       deployment = {
-        targetHost = "dusk.local";
+        targetHost = "10.200.200.2";
         targetPort = 22;
-        targetUser = "root";
+        targetUser = "usu";
+        privilegeEscalationCommand = ["sudo" "-H" "--"];
+        sshOptions = ["-F" "/dev/null" "-J" "ubuntu@129.159.11.56"];
         buildOnTarget = false;
         allowLocalDeployment = true;
       };
