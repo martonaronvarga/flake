@@ -1,6 +1,9 @@
-{pkgs, ...}: let
+{
+  infraNetwork,
+  pkgs,
+  ...
+}: let
   shadeSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
-  duskWireGuardPublicKey = "5jfqQTM6Ms/JrcQLKOBFKT+LDWxlXv+NMj8fPG76iTI=";
 in {
   imports = [
     ./hardware.nix
@@ -15,23 +18,29 @@ in {
     firewall = {
       enable = true;
       allowedTCPPorts = [22 80 443];
-      allowedUDPPorts = [51820];
-      trustedInterfaces = ["wg0"];
+      allowedUDPPorts = [infraNetwork.gloam.wireguard.port];
+      trustedInterfaces = [infraNetwork.wireguard.interface];
     };
 
-    wg-quick.interfaces.wg0 = {
-      address = ["10.200.200.1/24"];
-      listenPort = 51820;
+    wg-quick.interfaces.${infraNetwork.wireguard.interface} = {
+      address = [infraNetwork.gloam.wireguard.cidr];
+      listenPort = infraNetwork.gloam.wireguard.port;
       privateKeyFile = "/persist/etc/wireguard/gloam.key";
       generatePrivateKeyFile = true;
       peers = [
         {
-          publicKey = duskWireGuardPublicKey;
-          allowedIPs = ["10.200.200.2/32"];
+          publicKey = infraNetwork.dusk.wireguard.publicKey;
+          allowedIPs = [infraNetwork.dusk.wireguard.cidr];
+        }
+        {
+          publicKey = infraNetwork.shade.wireguard.publicKey;
+          allowedIPs = [infraNetwork.shade.wireguard.cidr];
         }
       ];
     };
   };
+
+  boot.kernel.sysctl."net.ipv4.ip_forward" = true;
 
   environment.persistence."/persist".directories = [
     "/etc/wireguard"
@@ -44,11 +53,26 @@ in {
     recommendedGzipSettings = true;
     recommendedOptimisation = true;
     recommendedProxySettings = true;
+    recommendedTlsSettings = true;
 
     virtualHosts."martonaronvarga.dev" = {
+      enableACME = true;
+      forceSSL = true;
       serverAliases = ["www.martonaronvarga.dev"];
-      locations."/".proxyPass = "http://10.200.200.2:8080";
+      locations."/".proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.website}";
     };
+
+    virtualHosts."vault.${infraNetwork.domain}" = {
+      enableACME = true;
+      forceSSL = true;
+      locations."/".proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.vaultwarden}";
+      locations."/".proxyWebsockets = true;
+    };
+  };
+
+  security.acme = {
+    acceptTerms = true;
+    defaults.email = "martonaronvarga@gmail.com";
   };
 
   systemd.tmpfiles.rules = [
@@ -67,6 +91,35 @@ in {
         openssh.authorizedKeys.keys = [shadeSshKey];
       };
       root.openssh.authorizedKeys.keys = [shadeSshKey];
+    };
+  };
+
+  programs.starship = {
+    enable = true;
+    settings = {
+      add_newline = false;
+      command_timeout = 80;
+      scan_timeout = 20;
+      username = {
+        format = "[$username]($style)";
+        show_always = true;
+        style_root = "bright-red bold";
+        style_user = "bright-white bold";
+      };
+      hostname = {
+        format = "[$ssh_symbol$hostname]($style) ";
+        ssh_only = false;
+        ssh_symbol = "ssh ";
+      };
+      character = {
+        error_symbol = "[>](bold red)";
+        success_symbol = "[>](bold white)";
+      };
+      nix_shell = {
+        format = "[$symbol$name]($style)";
+        heuristic = false;
+        symbol = "nix ";
+      };
     };
   };
 

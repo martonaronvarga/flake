@@ -19,6 +19,7 @@
         statix
         nil
         git-cliff
+        zsh
 
         # Deployment
         inputs.colmena.packages.${system}.colmena
@@ -42,6 +43,11 @@
         echo "  nix-tree, nix-du, nix-index, alejandra, deadnix, statix, nom, dix, nil, git-cliff"
         echo "  colmena, agenix, opentofu, oci-cli, openssh"
         echo "  git, coreutils, traceroute, iproute2, tcpdump, jq"
+
+        if [ -z "''${FLAKE_DEV_ZSH:-}" ] && [ -n "''${PS1:-}" ] && command -v zsh >/dev/null 2>&1; then
+          export FLAKE_DEV_ZSH=1
+          exec zsh
+        fi
       '';
     };
   };

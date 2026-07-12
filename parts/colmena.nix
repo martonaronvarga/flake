@@ -1,5 +1,6 @@
 {
   infraHosts,
+  infraNetwork,
   inputs,
   lib,
   self,
@@ -24,7 +25,7 @@
           system = "x86_64-linux";
           config.allowUnfree = true;
         };
-        specialArgs = {inherit inputs self;};
+        specialArgs = {inherit inputs infraNetwork self;};
       };
     }
     // lib.mapAttrs mkNode deployableHosts);

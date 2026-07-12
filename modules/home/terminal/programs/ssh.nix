@@ -1,4 +1,9 @@
-_: {
+{
+  infraNetwork,
+  lib,
+  pkgs,
+  ...
+}: {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
@@ -23,8 +28,8 @@ _: {
       };
 
       gloam = {
-        HostName = "129.159.11.56";
-        User = "ubuntu";
+        HostName = infraNetwork.gloam.publicIp;
+        User = infraNetwork.gloam.sshUser;
         Port = 22;
         IdentityFile = "~/.ssh/id_ed25519";
         IdentitiesOnly = true;
@@ -33,6 +38,25 @@ _: {
       };
 
       dusk = {
+        HostName = infraNetwork.dusk.wireguard.address;
+        User = "usu";
+        ProxyJump = "gloam";
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
+      };
+
+      dusk-wg = {
+        HostName = infraNetwork.dusk.wireguard.address;
+        User = "usu";
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
+      };
+
+      dusk-local = {
         HostName = "dusk.local";
         User = "usu";
         IdentityFile = "~/.ssh/id_ed25519";
@@ -51,4 +75,13 @@ _: {
       };
     };
   };
+
+  home.activation.materializeSshConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    config_path="$HOME/.ssh/config"
+    if [ -L "$config_path" ]; then
+      target="$(${pkgs.coreutils}/bin/readlink -f "$config_path")"
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm "$config_path"
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 600 "$target" "$config_path"
+    fi
+  '';
 }

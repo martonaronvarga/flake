@@ -61,7 +61,11 @@
       haskell = {symbol = " ";};
       haxe = {symbol = "⌘ ";};
       hg_branch = {symbol = " ";};
-      hostname = {ssh_symbol = " ";};
+      hostname = {
+        ssh_symbol = " ";
+        format = "[$ssh_symbol$hostname]($style) ";
+        ssh_only = true;
+      };
       java = {symbol = " ";};
       julia = {symbol = " ";};
       lua = {symbol = " ";};

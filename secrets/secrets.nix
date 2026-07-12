@@ -6,6 +6,11 @@ in {
   "usu_password_hash.age".publicKeys = [usu dusk];
   "aerc_client_id.age".publicKeys = [usu];
   "aerc_client_secret.age".publicKeys = [usu];
+  "grafana_admin_password.age".publicKeys = [usu dusk];
+  "grafana_secret_key.age".publicKeys = [usu dusk];
   "oci_config.age".publicKeys = [usu];
   "oci_private_key.age".publicKeys = [usu];
+  "restic_shade_password.age".publicKeys = [usu dusk];
+  "shade_wg_private_key.age".publicKeys = [usu];
+  "vaultwarden_env.age".publicKeys = [usu dusk];
 }

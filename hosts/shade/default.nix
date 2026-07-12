@@ -6,6 +6,9 @@
   imports = [
     ./hardware.nix
     ./disko.nix
+    ./services/wireguard.nix
+    ./services/monitoring.nix
+    ./services/restic.nix
   ];
 
   users.mutableUsers = false;
@@ -50,6 +53,18 @@
           mode = "0400";
           path = "/run/agenix/oci-private-key";
         };
+        restic-shade-password = {
+          file = ../../secrets/restic_shade_password.age;
+          owner = "usu";
+          mode = "0400";
+          path = "/run/agenix/restic-shade-password";
+        };
+        shade-wg-private-key = {
+          file = ../../secrets/shade_wg_private_key.age;
+          owner = "root";
+          mode = "0400";
+          path = "/run/agenix/shade-wg-private-key";
+        };
       };
     };
 
@@ -57,6 +72,12 @@
       enable = true;
       exactSsids = ["Buba"];
       ssidPrefixes = ["Telekom"];
+    };
+
+    bootSecurity = {
+      enableSecureBoot = true;
+      enableTpmUnlock = true;
+      luksDeviceNames = ["cryptroot" "cryptswap"];
     };
   };
 

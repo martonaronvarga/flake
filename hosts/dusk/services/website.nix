@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  infraNetwork,
+  pkgs,
+  ...
+}: let
   siteRoot = pkgs.writeTextDir "index.html" ''
     <!doctype html>
     <html lang="en">
@@ -55,8 +59,8 @@ in {
     virtualHosts."martonaronvarga.dev" = {
       listen = [
         {
-          addr = "10.200.200.2";
-          port = 8080;
+          addr = infraNetwork.dusk.wireguard.address;
+          port = infraNetwork.dusk.ports.website;
         }
       ];
       root = siteRoot;
@@ -66,5 +70,7 @@ in {
     };
   };
 
-  networking.firewall.interfaces.wg0.allowedTCPPorts = [8080];
+  networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
+    infraNetwork.dusk.ports.website
+  ];
 }

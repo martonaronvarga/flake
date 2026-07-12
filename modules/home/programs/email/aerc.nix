@@ -5,6 +5,11 @@
 }: let
   name = "Marton A. Varga";
   account = "martonaronvarga@gmail.com";
+  aliases = [
+    "contact@martonaronvarga.dev"
+    "research@martonaronvarga.dev"
+    "admin@martonaronvarga.dev"
+  ];
   username = builtins.replaceStrings ["@"] ["%40"] account;
   gpgRecipient = "29F264979A64F516D7CB007D804BD4BD3F715230!";
 
@@ -124,6 +129,7 @@ in {
         copy-to = "Sent Mail";
 
         from = "${name} <${account}>";
+        aliases = lib.concatMapStringsSep "," (alias: "${name} <${alias}>") aliases;
         cache-headers = true;
         check-mail = "5m";
 
