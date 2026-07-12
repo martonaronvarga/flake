@@ -14,6 +14,8 @@ All notable infrastructure changes are recorded here.
 
 - Docs: update changelog
 
+- Docs: update changelog
+
 - Docs(dusk): document install and operations
 
 - Docs: update changelog
@@ -22,6 +24,8 @@ All notable infrastructure changes are recorded here.
 
 
 ### Features
+
+- Feat(hosts): harden edge hosts and enable shade secure boot
 
 - Feat(dusk): serve domain placeholder through gloam
 
@@ -110,5 +114,7 @@ relogin and reboot.
 
 
 ### Secrets and Identity
+
+- Secret(oci): manage shade credentials with agenix
 
 - Secret(shade): move user password hash to agenix
