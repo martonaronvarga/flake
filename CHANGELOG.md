@@ -81,6 +81,8 @@ relogin and reboot.
 
 ### Home Manager
 
+- Home(git): configure default branch and workflow
+
 - Home(git): add forge remote shortcuts
 
 - Home(waybar): speed up critical battery blink

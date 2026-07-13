@@ -90,9 +90,47 @@ in {
         email = gitEmail;
       };
 
-      diff.colorMoved = "default";
+      apply.whitespace = "warn";
+      branch.sort = "-committerdate";
+      column.ui = "auto";
+      commit.verbose = true;
+      core.whitespace = "blank-at-eol,blank-at-eof,space-before-tab";
+      diff = {
+        algorithm = "histogram";
+        colorMoved = "default";
+        renames = "copies";
+        wsErrorHighlight = "all";
+      };
+      fetch = {
+        prune = true;
+        pruneTags = true;
+      };
+      init.defaultBranch = "main";
+      log = {
+        date = "iso";
+        decorate = "short";
+      };
       merge.conflictstyle = "diff3";
+      push = {
+        autoSetupRemote = true;
+        default = "current";
+        followTags = true;
+      };
       pull.rebase = true;
+      rebase = {
+        autoSquash = true;
+        autoStash = true;
+        updateRefs = true;
+      };
+      rerere = {
+        autoupdate = true;
+        enabled = true;
+      };
+      status = {
+        branch = true;
+        showStash = true;
+      };
+      tag.sort = "version:refname";
       gpg = {
         format = "ssh";
         ssh.allowedSignersFile = config.home.homeDirectory + "/" + config.xdg.configFile."git/allowed_signers".target;
@@ -178,7 +216,7 @@ in {
         h5 = "show HEAD^^^^^";
 
         p = "push";
-        pf = "push --force-with-lease";
+        pf = "push --force-with-lease --force-if-includes";
 
         pl = "pull";
 
