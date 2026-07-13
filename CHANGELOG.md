@@ -16,6 +16,8 @@ All notable infrastructure changes are recorded here.
 
 - Docs: update changelog
 
+- Docs: update changelog
+
 - Docs(dusk): document install and operations
 
 - Docs: update changelog
@@ -24,6 +26,10 @@ All notable infrastructure changes are recorded here.
 
 
 ### Features
+
+- Feat(dusk): customize forgejo homepage
+
+- Feat(dusk): host forgejo on git subdomain
 
 - Feat(hosts): harden edge hosts and enable shade secure boot
 

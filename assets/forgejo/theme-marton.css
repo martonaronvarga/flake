@@ -1,0 +1,213 @@
+:root,
+[data-theme="marton"] {
+  --color-primary: #f5f5f5;
+  --color-primary-dark-1: #e5e5e5;
+  --color-primary-dark-2: #d4d4d4;
+  --color-primary-dark-3: #a3a3a3;
+  --color-primary-dark-4: #737373;
+  --color-primary-dark-5: #525252;
+  --color-primary-dark-6: #404040;
+  --color-primary-dark-7: #262626;
+  --color-primary-light-1: #fafafa;
+  --color-primary-light-2: #ffffff;
+  --color-primary-light-3: #ffffff;
+  --color-primary-light-4: #ffffff;
+  --color-body: #050505;
+  --color-box-header: #101010;
+  --color-box-body: #0a0a0a;
+  --color-box-border: #343434;
+  --color-secondary: #151515;
+  --color-secondary-dark-1: #1f1f1f;
+  --color-secondary-dark-2: #2a2a2a;
+  --color-text: #f5f5f5;
+  --color-text-light: #dedede;
+  --color-text-light-1: #c4c4c4;
+  --color-text-light-2: #a3a3a3;
+  --color-text-light-3: #7a7a7a;
+  --color-link: #f5f5f5;
+  --color-link-hover: #ffffff;
+  --color-navbar: #000000;
+  --color-header-wrapper: #000000;
+  --color-footer: #000000;
+  --color-input-background: #0a0a0a;
+  --color-input-border: #4a4a4a;
+  --color-card: #0a0a0a;
+  --color-markup-code-block: #050505;
+  --color-code-bg: #050505;
+  --border-radius: 8px;
+  --fonts-regular: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --fonts-monospace: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.ui.primary.button,
+.ui.primary.buttons .button {
+  background: #f5f5f5;
+  color: #000000;
+}
+
+.ui.primary.button:hover,
+.ui.primary.buttons .button:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+.mav-forge-home {
+  background: #000000;
+  color: #f5f5f5;
+  font-family: var(--fonts-regular);
+  min-height: calc(100vh - 120px);
+  padding: 4rem 1.5rem 5rem;
+}
+
+.mav-forge-hero {
+  align-items: center;
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: minmax(140px, 220px) minmax(0, 720px);
+  margin: 0 auto;
+  max-width: 1060px;
+}
+
+.mav-forge-hero-mark {
+  align-items: center;
+  aspect-ratio: 1;
+  background: #080808;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.mav-forge-hero-mark img {
+  border-radius: 8px;
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.mav-forge-kicker {
+  color: #bdbdbd;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0 0 0.8rem;
+  text-transform: uppercase;
+}
+
+.mav-forge-hero h1 {
+  color: #ffffff;
+  font-size: 4rem;
+  line-height: 1;
+  margin: 0;
+}
+
+.mav-forge-lede {
+  color: #d4d4d4;
+  font-size: 1.22rem;
+  line-height: 1.65;
+  margin: 1.35rem 0 0;
+  max-width: 650px;
+}
+
+.mav-forge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.mav-forge-actions .button {
+  border-radius: 8px;
+  margin: 0;
+}
+
+.mav-forge-panels {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 4rem auto 0;
+  max-width: 1060px;
+}
+
+.mav-forge-panel {
+  background: #080808;
+  border: 1px solid #303030;
+  border-radius: 8px;
+  color: #f5f5f5;
+  display: block;
+  min-height: 11rem;
+  padding: 1.25rem;
+}
+
+.mav-forge-panel:hover {
+  border-color: #f5f5f5;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.mav-forge-panel-label {
+  color: #bdbdbd;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.mav-forge-panel-title {
+  color: #ffffff;
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-top: 0.8rem;
+}
+
+.mav-forge-panel-copy {
+  color: #c4c4c4;
+  display: block;
+  line-height: 1.55;
+  margin-top: 0.55rem;
+}
+
+.navbar .brand img,
+.navbar .brand .logo {
+  border-radius: 6px;
+}
+
+@media (max-width: 767px) {
+  .mav-forge-home {
+    padding: 2.75rem 1rem 3.5rem;
+  }
+
+  .mav-forge-hero {
+    gap: 1.75rem;
+    grid-template-columns: 1fr;
+  }
+
+  .mav-forge-hero-mark {
+    max-width: 9rem;
+  }
+
+  .mav-forge-hero h1 {
+    font-size: 2.65rem;
+  }
+
+  .mav-forge-lede {
+    font-size: 1.05rem;
+  }
+
+  .mav-forge-actions {
+    flex-direction: column;
+  }
+
+  .mav-forge-actions .button {
+    text-align: center;
+    width: 100%;
+  }
+
+  .mav-forge-panels {
+    grid-template-columns: 1fr;
+    margin-top: 2.5rem;
+  }
+}

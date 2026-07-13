@@ -1,0 +1,40 @@
+{{template "base/head" .}}
+<div role="main" aria-label="{{if .IsSigned}}{{ctx.Locale.Tr "dashboard"}}{{else}}{{ctx.Locale.Tr "home"}}{{end}}" class="page-content home mav-forge-home">
+	<section class="mav-forge-hero">
+		<div class="mav-forge-hero-mark">
+			<img src="{{AssetUrlPrefix}}/img/mav-snowflake.png" alt="" width="144" height="144">
+		</div>
+		<div class="mav-forge-hero-copy">
+			<p class="mav-forge-kicker">Personal software forge</p>
+			<h1>Marton A. Varga</h1>
+			<p class="mav-forge-lede">
+				Public repositories, experiments, infrastructure notes, and a small collaboration space.
+			</p>
+			<nav class="mav-forge-actions" aria-label="Forge navigation">
+				<a class="ui primary button" href="{{AppSubUrl}}/explore/repos">Browse public code</a>
+				<a class="ui button" href="{{AppSubUrl}}/usu">Profile</a>
+				<a class="ui button" href="https://github.com/martonaronvarga" rel="me">GitHub</a>
+				<a class="ui button" href="https://martonaronvarga.dev" rel="me">Website</a>
+			</nav>
+		</div>
+	</section>
+
+	<section class="mav-forge-panels" aria-label="Forge details">
+		<a class="mav-forge-panel" href="{{AppSubUrl}}/explore/repos">
+			<span class="mav-forge-panel-label">Explore</span>
+			<span class="mav-forge-panel-title">Repositories</span>
+			<span class="mav-forge-panel-copy">Public code and project history.</span>
+		</a>
+		<a class="mav-forge-panel" href="{{AppSubUrl}}/user/login">
+			<span class="mav-forge-panel-label">Access</span>
+			<span class="mav-forge-panel-title">Sign in</span>
+			<span class="mav-forge-panel-copy">For private repositories and invited collaborators.</span>
+		</a>
+		<a class="mav-forge-panel" href="ssh://git@git.martonaronvarga.dev:2222/">
+			<span class="mav-forge-panel-label">Git</span>
+			<span class="mav-forge-panel-title">Clone</span>
+			<span class="mav-forge-panel-copy">HTTPS remotes and SSH on port 2222.</span>
+		</a>
+	</section>
+</div>
+{{template "base/footer" .}}
