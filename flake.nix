@@ -14,6 +14,8 @@
     colmena.url = "github:zhaofengli/colmena";
     colmena.inputs.nixpkgs.follows = "nixpkgs";
 
+    website.url = "git+ssh://git@git.martonaronvarga.dev:2222/usu/martonaronvarga.dev.git?ref=main";
+
     utils.url = "github:zimbatm/flake-utils";
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
