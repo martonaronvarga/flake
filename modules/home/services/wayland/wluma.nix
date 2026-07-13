@@ -33,7 +33,8 @@
 
     output.backlight = [
       {
-        capturer = "wayland";
+        # Avoid content-adaptive backlight changes while keeping time-based levels.
+        capturer = "none";
         name = "eDP-1";
         path = "/sys/class/backlight/intel_backlight";
       }

@@ -80,6 +80,10 @@ in {
       "match:class ^(firefox|zen|zen-browser)$, match:title ^(File Upload|Open File|Save File|Choose File|Select File)$, max_size 1100 800"
       "match:class ^(firefox|zen|zen-browser)$, match:title ^(File Upload|Open File|Save File|Choose File|Select File)$, dim_around true"
 
+      # Keep Firefox visually solid even when blur/alpha rules are active elsewhere.
+      "match:class ^(firefox)$, opaque true"
+      "match:class ^(firefox)$, no_blur true"
+
       # Portal file chooser itself.
       "match:class ^(xdg-desktop-portal-gtk)$, size 900 650"
       "match:class ^(xdg-desktop-portal-gtk)$, max_size 1100 800"
