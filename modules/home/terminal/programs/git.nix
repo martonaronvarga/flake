@@ -113,6 +113,38 @@ in {
         ];
         username = gitEmail;
       };
+      "credential \"https://github.com\"" = {
+        helper = "!${lib.getExe pkgs.gh} auth git-credential";
+        username = "martonaronvarga";
+      };
+      "credential \"https://git.martonaronvarga.dev\"" = {
+        helper = "cache --timeout=3600";
+        username = "usu";
+      };
+      "url \"git@github.com:martonaronvarga/\"" = {
+        insteadOf = [
+          "gh:martonaronvarga/"
+          "github:martonaronvarga/"
+        ];
+      };
+      "url \"https://github.com/martonaronvarga/\"" = {
+        insteadOf = [
+          "gh-https:martonaronvarga/"
+          "github-https:martonaronvarga/"
+        ];
+      };
+      "url \"ssh://git@git.martonaronvarga.dev:2222/\"" = {
+        insteadOf = [
+          "forge:"
+          "forgejo:"
+        ];
+      };
+      "url \"https://git.martonaronvarga.dev/\"" = {
+        insteadOf = [
+          "forge-https:"
+          "forgejo-https:"
+        ];
+      };
 
       alias = let
         log = "log --show-notes='*' --abbrev-commit --pretty=format:'%Cred%h %Cgreen(%aD)%Creset -%C(bold red)%d%Creset %s %C(bold blue)<%an>% %Creset' --graph";

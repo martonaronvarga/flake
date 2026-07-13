@@ -27,6 +27,44 @@
         ServerAliveCountMax = 3;
       };
 
+      github = {
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
+      };
+
+      "github.com" = {
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
+      };
+
+      forgejo = {
+        HostName = "git.martonaronvarga.dev";
+        User = "git";
+        Port = infraNetwork.dusk.ports.forgejoSsh;
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
+      };
+
+      "git.martonaronvarga.dev" = {
+        HostName = "git.martonaronvarga.dev";
+        User = "git";
+        Port = infraNetwork.dusk.ports.forgejoSsh;
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
+      };
+
       gloam = {
         HostName = infraNetwork.gloam.publicIp;
         User = infraNetwork.gloam.sshUser;
