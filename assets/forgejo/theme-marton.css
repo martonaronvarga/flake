@@ -12,6 +12,8 @@
   --color-primary-light-2: #ffffff;
   --color-primary-light-3: #ffffff;
   --color-primary-light-4: #ffffff;
+  --color-black: #000000;
+  --color-white: #ffffff;
   --color-body: #050505;
   --color-box-header: #101010;
   --color-box-body: #0a0a0a;
@@ -19,36 +21,393 @@
   --color-secondary: #151515;
   --color-secondary-dark-1: #1f1f1f;
   --color-secondary-dark-2: #2a2a2a;
+  --color-secondary-dark-3: #343434;
+  --color-secondary-dark-4: #404040;
+  --color-secondary-light-1: #202020;
+  --color-secondary-light-2: #2a2a2a;
+  --color-secondary-light-3: #343434;
+  --color-secondary-light-4: #404040;
+  --color-console-fg: #f5f5f5;
+  --color-console-bg: #050505;
+  --color-console-border: #343434;
+  --color-diff-added-row-bg: #101010;
+  --color-diff-added-word-bg: #303030;
+  --color-diff-removed-row-bg: #050505;
+  --color-diff-removed-word-bg: #202020;
+  --color-diff-inactive: #151515;
+  --color-diff-moved-row-bg: #151515;
+  --color-diff-moved-word-bg: #343434;
+  --color-diff-removed-row-border: #4a4a4a;
+  --color-diff-added-row-border: #737373;
+  --color-error-border: #737373;
+  --color-error-bg: #101010;
+  --color-error-text: #ffffff;
+  --color-success-border: #737373;
+  --color-success-bg: #101010;
+  --color-success-text: #ffffff;
+  --color-warning-border: #737373;
+  --color-warning-bg: #101010;
+  --color-warning-text: #ffffff;
+  --color-info-border: #737373;
+  --color-info-bg: #101010;
+  --color-info-text: #ffffff;
   --color-text: #f5f5f5;
   --color-text-light: #dedede;
   --color-text-light-1: #c4c4c4;
   --color-text-light-2: #a3a3a3;
   --color-text-light-3: #7a7a7a;
+  --color-text-dark: #ffffff;
+  --color-text-dark-1: #f5f5f5;
+  --color-text-dark-2: #dedede;
   --color-link: #f5f5f5;
   --color-link-hover: #ffffff;
+  --color-label-text: #f5f5f5;
+  --color-label-bg: #151515;
+  --color-label-hover-bg: #202020;
+  --color-label-active-bg: #303030;
   --color-navbar: #000000;
   --color-header-wrapper: #000000;
   --color-footer: #000000;
   --color-input-background: #0a0a0a;
   --color-input-border: #4a4a4a;
+  --color-input-text: #f5f5f5;
+  --color-input-toggle-background: #202020;
+  --color-input-disabled-background: #151515;
+  --color-input-disabled-border: #303030;
+  --color-input-disabled-text: #7a7a7a;
   --color-card: #0a0a0a;
   --color-markup-code-block: #050505;
+  --color-markup-table-row: #0a0a0a;
+  --color-markup-table-row-alt: #101010;
   --color-code-bg: #050505;
+  --color-code-sidebar-bg: #101010;
+  --color-code-sidebar-line: #343434;
+  --color-timeline: #343434;
+  --color-project-board-bg: #050505;
+  --color-reaction-bg: #101010;
+  --color-reaction-hover-bg: #202020;
+  --color-heatmap-activity-0: #151515;
+  --color-heatmap-activity-1: #343434;
+  --color-heatmap-activity-2: #525252;
+  --color-heatmap-activity-3: #737373;
+  --color-heatmap-activity-4: #a3a3a3;
   --border-radius: 8px;
   --fonts-regular: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --fonts-monospace: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
+.page-content,
+.repository,
+.user.profile,
+.dashboard,
+.explore,
+.organization,
+.settings {
+  background: #050505;
+  color: #f5f5f5;
+}
+
+a,
+.ui.breadcrumb a,
+.repo-title a,
+.file-list a,
+.markup a {
+  color: #f5f5f5;
+}
+
+a:hover,
+.ui.breadcrumb a:hover,
+.repo-title a:hover,
+.file-list a:hover,
+.markup a:hover {
+  color: #ffffff;
+  text-decoration-color: #ffffff;
+}
+
+.ui.menu,
+.ui.secondary.menu,
+.ui.tabular.menu,
+.ui.vertical.menu,
+.ui.dropdown .menu,
+.ui.popup,
+.ui.modal,
+.ui.segment,
+.ui.segments,
+.ui.attached.segment,
+.ui.attached.header,
+.repository .header-wrapper,
+.repository .navbar,
+.repository .repo-header,
+.repository .repo-description,
+.repository .file-header,
+.repository .diff-file-box,
+.repository .comment-list .comment,
+.repository .commit-list,
+.repository .timeline-item,
+.repository .issue.list > .item,
+.repository .pull.list > .item,
+.user.profile .ui.card,
+.user.profile .ui.cards > .card,
+.dashboard .dashboard-navbar,
+.explore .ui.repository.list .item,
+.feeds .news,
+.markdown,
+.markup {
+  background: #0a0a0a;
+  border-color: #343434;
+  color: #f5f5f5;
+}
+
+.ui.menu .item,
+.ui.secondary.menu .item,
+.ui.tabular.menu .item,
+.ui.vertical.menu .item,
+.ui.dropdown .menu > .item,
+.ui.header,
+.ui.list .list > .item,
+.ui.list > .item,
+.repository .meta,
+.repository .repo-description,
+.repository .repo-header,
+.repository .file-header,
+.repository .file-list .file,
+.repository .commit-list .commit,
+.repository .diff-file-box,
+.repository .timeline-item,
+.user.profile .content,
+.feeds .news,
+.markup,
+.markdown {
+  color: #f5f5f5;
+}
+
+.ui.menu .active.item,
+.ui.secondary.menu .active.item,
+.ui.tabular.menu .active.item,
+.ui.vertical.menu .active.item,
+.ui.dropdown .menu > .active.item,
+.ui.menu .item:hover,
+.ui.secondary.menu .item:hover,
+.ui.vertical.menu .item:hover,
+.ui.dropdown .menu > .item:hover {
+  background: #151515;
+  color: #ffffff;
+}
+
+.ui.divider,
+.ui.horizontal.divider,
+.ui.section.divider,
+.repository .file-list .file,
+.repository .commit-list .commit,
+.repository .diff-file-box .file-header,
+.repository .issue.list > .item,
+.repository .pull.list > .item,
+.repository .timeline-item,
+.markup table,
+.markup table tr,
+.markup table th,
+.markup table td {
+  border-color: #343434;
+}
+
+.ui.table,
+.ui.table thead th,
+.ui.table tbody tr,
+.ui.table tbody td,
+.repository .file-list,
+.repository .file-list .file,
+.repository .commits-table,
+.repository .branches-table,
+.markup table th,
+.markup table td {
+  background: #0a0a0a;
+  color: #f5f5f5;
+}
+
+.ui.table tbody tr:hover,
+.repository .file-list .file:hover,
+.repository .commit-list .commit:hover,
+.explore .ui.repository.list .item:hover {
+  background: #151515;
+}
+
+.ui.label,
+.ui.labels .label,
+.repository .ui.label,
+.repo-topic.label,
+.branch-tag,
+.commit-status-link,
+.sha.label {
+  background: #151515;
+  border-color: #343434;
+  color: #f5f5f5;
+}
+
+.ui.label:hover,
+.ui.labels .label:hover,
+.repo-topic.label:hover,
+.branch-tag:hover {
+  background: #202020;
+  color: #ffffff;
+}
+
+.ui.button,
+.ui.basic.button,
+.ui.buttons .button,
+.ui.icon.button {
+  background: #101010;
+  border-color: #4a4a4a;
+  box-shadow: inset 0 0 0 1px #4a4a4a;
+  color: #f5f5f5;
+}
+
+.ui.button:hover,
+.ui.basic.button:hover,
+.ui.buttons .button:hover,
+.ui.icon.button:hover {
+  background: #202020;
+  border-color: #f5f5f5;
+  box-shadow: inset 0 0 0 1px #f5f5f5;
+  color: #ffffff;
+}
+
 .ui.primary.button,
 .ui.primary.buttons .button {
   background: #f5f5f5;
+  border-color: #f5f5f5;
+  box-shadow: inset 0 0 0 1px #f5f5f5;
   color: #000000;
 }
 
 .ui.primary.button:hover,
 .ui.primary.buttons .button:hover {
   background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: inset 0 0 0 1px #ffffff;
   color: #000000;
+}
+
+.ui.form input,
+.ui.form textarea,
+.ui.form select,
+.ui.input input,
+.ui.selection.dropdown,
+.ui.dropdown,
+.ui.search.dropdown > input.search,
+input,
+textarea,
+select {
+  background: #0a0a0a;
+  border-color: #4a4a4a;
+  color: #f5f5f5;
+}
+
+.ui.form input:focus,
+.ui.form textarea:focus,
+.ui.input input:focus,
+.ui.selection.dropdown:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  background: #000000;
+  border-color: #f5f5f5;
+  color: #ffffff;
+}
+
+.ui.message,
+.ui.info.message,
+.ui.warning.message,
+.ui.error.message,
+.ui.positive.message,
+.ui.negative.message,
+.flash-message {
+  background: #101010;
+  border-color: #737373;
+  color: #f5f5f5;
+}
+
+.text.green,
+.text.red,
+.text.orange,
+.text.yellow,
+.text.blue,
+.text.purple,
+.text.teal,
+.text.grey,
+.ui.green.label,
+.ui.red.label,
+.ui.orange.label,
+.ui.yellow.label,
+.ui.blue.label,
+.ui.purple.label,
+.ui.teal.label,
+.ui.grey.label {
+  color: #f5f5f5 !important;
+}
+
+.ui.green.label,
+.ui.red.label,
+.ui.orange.label,
+.ui.yellow.label,
+.ui.blue.label,
+.ui.purple.label,
+.ui.teal.label,
+.ui.grey.label {
+  background: #151515 !important;
+  border-color: #343434 !important;
+}
+
+.svg,
+.octicon,
+.svg.svg,
+.ui.button .svg,
+.ui.label .svg,
+.repository .svg {
+  color: currentcolor;
+}
+
+.activity-bar-graph rect,
+.heatmap-container rect {
+  fill: #343434;
+  stroke: #050505;
+}
+
+.chroma,
+.markup code,
+.markup pre,
+.code-view,
+.blob-view,
+.lines-code,
+.lines-num,
+.file-view,
+.diff-file-body {
+  background: #050505;
+  color: #f5f5f5;
+}
+
+.lines-num,
+.code-line-menu,
+.code-line-button,
+.diff-file-body .lines-num {
+  background: #101010;
+  color: #a3a3a3;
+}
+
+.add-code,
+.del-code,
+.diff-code-add,
+.diff-code-del,
+.diff-code-moved,
+.diff-code-context {
+  background: #0a0a0a !important;
+  color: #f5f5f5 !important;
+}
+
+.add-code .chroma,
+.del-code .chroma,
+.diff-code-add .chroma,
+.diff-code-del .chroma {
+  background: transparent !important;
 }
 
 .mav-forge-home {

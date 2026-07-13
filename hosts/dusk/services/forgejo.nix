@@ -46,7 +46,7 @@
     ${pkgs.util-linux}/bin/runuser -u forgejo -- ${config.services.postgresql.package}/bin/psql \
       -d forgejo \
       -v ON_ERROR_STOP=1 \
-      -c "update \"user\" set visibility = 0 where lower_name = 'usu';"
+      -c "update \"user\" set visibility = 0, theme = 'marton' where lower_name = 'usu';"
   '';
 in {
   services.forgejo = {
