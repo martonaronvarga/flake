@@ -68,6 +68,22 @@
                   annotations:
                     summary: "vaultwarden backup unit failed on dusk"
 
+                - alert: ForgejoDown
+                  expr: node_systemd_unit_state{name="forgejo.service", state="active"} != 1
+                  for: 5m
+                  labels:
+                    severity: critical
+                  annotations:
+                    summary: "forgejo is not active on dusk"
+
+                - alert: ForgejoDumpFailed
+                  expr: node_systemd_unit_state{name="forgejo-dump.service", state="failed"} == 1
+                  for: 5m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "forgejo dump unit failed on dusk"
+
                 - alert: ShadeResticBackupFailed
                   expr: node_systemd_unit_state{job="shade", name="restic-backups-shade-to-dusk.service", state="failed"} == 1
                   for: 5m

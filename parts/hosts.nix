@@ -45,6 +45,8 @@
       ports = {
         website = 8080;
         vaultwarden = 8222;
+        forgejo = 3001;
+        forgejoSsh = 2222;
         grafana = 3000;
         prometheus = 9090;
         nodeExporter = 9100;
@@ -158,7 +160,8 @@
       deployment = {
         targetHost = "gloam";
         targetPort = 22;
-        targetUser = "root";
+        targetUser = network.gloam.sshUser;
+        privilegeEscalationCommand = ["sudo" "-H" "--"];
         buildOnTarget = true;
       };
     };

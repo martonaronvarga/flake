@@ -14,6 +14,7 @@ in {
     ./services/wireguard.nix
     ./services/monitoring.nix
     ./services/vaultwarden.nix
+    ./services/forgejo.nix
     ./services/website.nix
   ];
 
@@ -46,6 +47,12 @@ in {
         mode = "0400";
         path = "/run/agenix/usu-password-hash";
       };
+      forgejo-mailer-password = {
+        file = ../../secrets/forgejo_mailer_password.age;
+        owner = "forgejo";
+        mode = "0400";
+        path = "/run/agenix/forgejo-mailer-password";
+      };
       vaultwarden-env = {
         file = ../../secrets/vaultwarden_env.age;
         owner = "vaultwarden";
@@ -62,6 +69,8 @@ in {
       "/var/lib/grafana"
       "/var/lib/vaultwarden"
       "/var/lib/wireguard"
+      "/var/lib/forgejo"
+      "/var/lib/postgresql"
     ];
   };
 

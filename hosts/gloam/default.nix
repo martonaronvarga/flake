@@ -17,7 +17,7 @@ in {
     useDHCP = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [22 80 443];
+      allowedTCPPorts = [22 80 443 infraNetwork.dusk.ports.forgejoSsh];
       allowedUDPPorts = [infraNetwork.gloam.wireguard.port];
       trustedInterfaces = [infraNetwork.wireguard.interface];
     };
@@ -55,19 +55,44 @@ in {
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
 
-    virtualHosts."martonaronvarga.dev" = {
-      enableACME = true;
-      forceSSL = true;
-      serverAliases = ["www.martonaronvarga.dev"];
-      locations."/".proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.website}";
+    virtualHosts = {
+      "martonaronvarga.dev" = {
+        enableACME = true;
+        forceSSL = true;
+        serverAliases = ["www.martonaronvarga.dev"];
+        locations."/".proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.website}";
+      };
+
+      "vault.${infraNetwork.domain}" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/".proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.vaultwarden}";
+        locations."/".proxyWebsockets = true;
+      };
+
+      "git.${infraNetwork.domain}" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.forgejo}";
+          proxyWebsockets = true;
+          extraConfig = ''
+            client_max_body_size 512M;
+          '';
+        };
+      };
     };
 
-    virtualHosts."vault.${infraNetwork.domain}" = {
-      enableACME = true;
-      forceSSL = true;
-      locations."/".proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.vaultwarden}";
-      locations."/".proxyWebsockets = true;
-    };
+    streamConfig = ''
+      upstream forgejo_ssh {
+        server ${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.forgejoSsh};
+      }
+
+      server {
+        listen ${toString infraNetwork.dusk.ports.forgejoSsh};
+        proxy_pass forgejo_ssh;
+      }
+    '';
   };
 
   security.acme = {

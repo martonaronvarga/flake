@@ -6,6 +6,7 @@ in {
   "usu_password_hash.age".publicKeys = [usu dusk];
   "aerc_client_id.age".publicKeys = [usu];
   "aerc_client_secret.age".publicKeys = [usu];
+  "forgejo_mailer_password.age".publicKeys = [usu dusk];
   "grafana_admin_password.age".publicKeys = [usu dusk];
   "grafana_secret_key.age".publicKeys = [usu dusk];
   "oci_config.age".publicKeys = [usu];

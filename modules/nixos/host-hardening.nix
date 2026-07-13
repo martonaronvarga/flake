@@ -57,6 +57,9 @@ in {
     (lib.mkIf config.services.vaultwarden.enable {
       vaultwarden.serviceConfig = basicHardening;
     })
+    (lib.mkIf config.services.forgejo.enable {
+      forgejo.serviceConfig = basicHardening;
+    })
   ];
 
   environment.systemPackages = with pkgs; [
