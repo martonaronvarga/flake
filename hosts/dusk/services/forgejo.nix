@@ -99,21 +99,15 @@ in {
         ENABLE_PUSH_CREATE_USER = true;
       };
       server = {
-        BUILTIN_SSH_SERVER_USER = "git";
-        DISABLE_SSH = false;
+        DISABLE_SSH = true;
         DOMAIN = domain;
         ENABLE_GZIP = true;
         HTTP_ADDR = infraNetwork.dusk.wireguard.address;
         HTTP_PORT = infraNetwork.dusk.ports.forgejo;
         OFFLINE_MODE = true;
         ROOT_URL = "https://${domain}/";
-        SSH_DOMAIN = domain;
-        SSH_LISTEN_HOST = infraNetwork.dusk.wireguard.address;
-        SSH_LISTEN_PORT = infraNetwork.dusk.ports.forgejoSsh;
-        SSH_PORT = infraNetwork.dusk.ports.forgejoSsh;
-        SSH_USER = "git";
         LANDING_PAGE = "home";
-        START_SSH_SERVER = true;
+        START_SSH_SERVER = false;
       };
       "service.explore".REQUIRE_SIGNIN_VIEW = false;
       service = {
@@ -137,7 +131,6 @@ in {
 
   networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
     infraNetwork.dusk.ports.forgejo
-    infraNetwork.dusk.ports.forgejoSsh
   ];
 
   systemd.services = {

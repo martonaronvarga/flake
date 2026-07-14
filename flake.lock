@@ -1616,12 +1616,12 @@
         "rev": "e422d94fa3ceeec07945fea02ce0a19b2ec7f89d",
         "revCount": 1,
         "type": "git",
-        "url": "ssh://git@git.martonaronvarga.dev:2222/usu/martonaronvarga.dev.git"
+        "url": "https://git.martonaronvarga.dev/usu/martonaronvarga.dev.git"
       },
       "original": {
         "ref": "main",
         "type": "git",
-        "url": "ssh://git@git.martonaronvarga.dev:2222/usu/martonaronvarga.dev.git"
+        "url": "https://git.martonaronvarga.dev/usu/martonaronvarga.dev.git"
       }
     },
     "xdph": {

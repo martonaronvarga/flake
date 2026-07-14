@@ -17,7 +17,7 @@ in {
     useDHCP = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [22 80 443 infraNetwork.dusk.ports.forgejoSsh];
+      allowedTCPPorts = [22 80 443];
       allowedUDPPorts = [infraNetwork.gloam.wireguard.port];
       trustedInterfaces = [infraNetwork.wireguard.interface];
     };
@@ -82,17 +82,6 @@ in {
         };
       };
     };
-
-    streamConfig = ''
-      upstream forgejo_ssh {
-        server ${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.forgejoSsh};
-      }
-
-      server {
-        listen ${toString infraNetwork.dusk.ports.forgejoSsh};
-        proxy_pass forgejo_ssh;
-      }
-    '';
   };
 
   security.acme = {

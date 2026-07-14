@@ -46,7 +46,6 @@
         website = 8080;
         vaultwarden = 8222;
         forgejo = 3001;
-        forgejoSsh = 2222;
         grafana = 3000;
         prometheus = 9090;
         nodeExporter = 9100;

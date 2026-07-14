@@ -173,14 +173,10 @@ in {
           "github-https:martonaronvarga/"
         ];
       };
-      "url \"ssh://git@git.martonaronvarga.dev:2222/\"" = {
+      "url \"https://git.martonaronvarga.dev/\"" = {
         insteadOf = [
           "forge:"
           "forgejo:"
-        ];
-      };
-      "url \"https://git.martonaronvarga.dev/\"" = {
-        insteadOf = [
           "forge-https:"
           "forgejo-https:"
         ];
