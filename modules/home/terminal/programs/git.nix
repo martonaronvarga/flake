@@ -9,6 +9,47 @@
   gmailEmail = "martonaronvarga@gmail.com";
   signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
   githubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY1cx1Encvc+3ovWpbyM0H1W7uIsXPanAXLlWoyvm/9 git@github.com";
+  gitCredentialForgejoPass = pkgs.writeShellApplication {
+    name = "git-credential-forgejo-pass";
+    runtimeInputs = [
+      pkgs.pass
+    ];
+    text = ''
+      set -euo pipefail
+
+      action="''${1:-get}"
+      if [ "$action" != "get" ]; then
+        exit 0
+      fi
+
+      protocol=""
+      host=""
+      username=""
+
+      while IFS= read -r line; do
+        [ -n "$line" ] || break
+        key="''${line%%=*}"
+        value="''${line#*=}"
+        case "$key" in
+          protocol) protocol="$value" ;;
+          host) host="$value" ;;
+          username) username="$value" ;;
+        esac
+      done
+
+      [ "$protocol" = "https" ] || exit 0
+      [ "$host" = "git.martonaronvarga.dev" ] || exit 0
+      [ -z "$username" ] || [ "$username" = "usu" ] || exit 0
+
+      if tty_path="$(tty 2>/dev/null)" && [ "$tty_path" != "not a tty" ]; then
+        export GPG_TTY="$tty_path"
+      fi
+
+      token="$(pass show git/git.martonaronvarga.dev/usu)"
+      printf 'username=usu\n'
+      printf 'password=%s\n' "$token"
+    '';
+  };
   gitCredentialAercOauth = pkgs.writers.writePython3Bin "git-credential-aerc-oauth" {} ''
     import json
     import sys
@@ -78,7 +119,10 @@
     print(f"password={token}")
   '';
 in {
-  home.packages = [pkgs.gh];
+  home.packages = [
+    pkgs.gh
+    pkgs.pass
+  ];
 
   # enable scrolling in git diff
   home.sessionVariables.DELTA_PAGER = "less -R";
@@ -158,7 +202,7 @@ in {
         username = "martonaronvarga";
       };
       "credential \"https://git.martonaronvarga.dev\"" = {
-        helper = "cache --timeout=3600";
+        helper = "${lib.getExe gitCredentialForgejoPass}";
         username = "usu";
       };
       "url \"git@github.com:martonaronvarga/\"" = {
