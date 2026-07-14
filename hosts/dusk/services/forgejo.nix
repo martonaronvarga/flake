@@ -80,11 +80,11 @@ in {
       federation.ENABLED = false;
       mailer = {
         ENABLED = true;
-        FROM = "Forgejo <git@${infraNetwork.domain}>";
+        FROM = "Forgejo <martonaronvarga@gmail.com>";
         PROTOCOL = "smtps";
         SMTP_ADDR = "smtp.gmail.com";
         SMTP_PORT = 465;
-        USER = "git@${infraNetwork.domain}";
+        USER = "martonaronvarga@gmail.com";
       };
       other = {
         SHOW_FOOTER_TEMPLATE_LOAD_TIME = false;

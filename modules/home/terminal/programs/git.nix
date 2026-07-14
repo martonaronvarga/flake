@@ -5,8 +5,10 @@
   ...
 }: let
   gitName = "Marton A. Varga";
-  gitEmail = "martonaronvarga@gmail.com";
-  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY1cx1Encvc+3ovWpbyM0H1W7uIsXPanAXLlWoyvm/9 git@github.com";
+  gitEmail = "git@martonaronvarga.dev";
+  gmailEmail = "martonaronvarga@gmail.com";
+  signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
+  githubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY1cx1Encvc+3ovWpbyM0H1W7uIsXPanAXLlWoyvm/9 git@github.com";
   gitCredentialAercOauth = pkgs.writers.writePython3Bin "git-credential-aerc-oauth" {} ''
     import json
     import sys
@@ -14,7 +16,7 @@
     import urllib.request
     from pathlib import Path
 
-    USERNAME = "${gitEmail}"
+    USERNAME = "${gmailEmail}"
     TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
     CLIENT_ID_PATH = Path("/run/agenix/aerc-client-id")
     CLIENT_SECRET_PATH = Path("/run/agenix/aerc-client-secret")
@@ -141,7 +143,7 @@ in {
         smtpEncryption = "ssl";
         smtpServer = "smtp.gmail.com";
         smtpServerPort = 465;
-        smtpUser = gitEmail;
+        smtpUser = gmailEmail;
         confirm = "auto";
       };
       "credential \"smtp://smtp.gmail.com\"" = {
@@ -149,7 +151,7 @@ in {
           ""
           "${lib.getExe gitCredentialAercOauth}"
         ];
-        username = gitEmail;
+        username = gmailEmail;
       };
       "credential \"https://github.com\"" = {
         helper = "!${lib.getExe pkgs.gh} auth git-credential";
@@ -255,6 +257,8 @@ in {
   };
 
   xdg.configFile."git/allowed_signers".text = ''
-    ${gitEmail} namespaces="git" ${key}
+    ${gitEmail} namespaces="git" ${signingKey}
+    ${gmailEmail} namespaces="git" ${signingKey}
+    ${gmailEmail} namespaces="git" ${githubKey}
   '';
 }

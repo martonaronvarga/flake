@@ -9,6 +9,7 @@
     "contact@martonaronvarga.dev"
     "research@martonaronvarga.dev"
     "admin@martonaronvarga.dev"
+    "git@martonaronvarga.dev"
   ];
   username = builtins.replaceStrings ["@"] ["%40"] account;
   gpgRecipient = "29F264979A64F516D7CB007D804BD4BD3F715230!";
