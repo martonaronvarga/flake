@@ -92,8 +92,10 @@ in {
       };
       packages.ENABLED = false;
       repository = {
+        ALLOW_ADOPTION_OF_UNADOPTED_REPOSITORIES = true;
+        ALLOW_DELETION_OF_UNADOPTED_REPOSITORIES = false;
         DEFAULT_BRANCH = "main";
-        DEFAULT_PRIVATE = "private";
+        DEFAULT_PRIVATE = "public";
         DISABLED_REPO_UNITS = "repo.packages,repo.actions";
         ENABLE_PUSH_CREATE_ORG = false;
         ENABLE_PUSH_CREATE_USER = true;
