@@ -42,6 +42,19 @@ in {
   };
 
   systemd.services = lib.mkMerge [
+    (lib.mkIf config.security.apparmor.enable {
+      # apparmor-utils 5.0.0 currently ships an aa-remove-unknown wrapper
+      # and aa-teardown script that reference a missing rc.apparmor.functions
+      # path. Keep parser-based policy loading enabled, but skip the broken
+      # cleanup helpers until the package is fixed upstream.
+      apparmor.reloadIfChanged = lib.mkForce false;
+      apparmor.serviceConfig = {
+        ExecStart = lib.mkAfter ["${pkgs.coreutils}/bin/true"];
+        ExecStartPre = lib.mkForce "${pkgs.coreutils}/bin/true";
+        ExecReload = lib.mkForce "${pkgs.coreutils}/bin/true";
+        ExecStop = lib.mkForce "${pkgs.coreutils}/bin/true";
+      };
+    })
     (lib.mkIf config.services.grafana.enable {
       grafana.serviceConfig = basicHardening;
     })

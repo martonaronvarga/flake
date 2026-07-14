@@ -29,4 +29,9 @@ in {
   networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
     infraNetwork.dusk.ports.website
   ];
+
+  systemd.services.nginx = {
+    after = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+    requires = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+  };
 }

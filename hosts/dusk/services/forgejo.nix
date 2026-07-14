@@ -135,6 +135,8 @@ in {
 
   systemd.services = {
     forgejo = {
+      after = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+      requires = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
       serviceConfig.ExecStartPre = lib.mkMerge [
         (lib.mkBefore [
           "+${pkgs.coreutils}/bin/chown -R forgejo:forgejo ${forgejoState}"
