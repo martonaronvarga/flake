@@ -11,7 +11,6 @@ in {
     ./hardware.nix
     ./disko.nix
     ./services/backups.nix
-    ./services/wireguard.nix
     ./services/monitoring.nix
     ./services/vaultwarden.nix
     ./services/forgejo.nix
@@ -20,45 +19,69 @@ in {
 
   networking.hostName = "dusk";
 
-  local.bootSecurity = {
-    enableSecureBoot = false;
-    enableTpmUnlock = true;
-    luksDeviceNames = ["cryptroot"];
-  };
+  local = {
+    bootSecurity = {
+      enableSecureBoot = false;
+      enableTpmUnlock = true;
+      luksDeviceNames = ["cryptroot"];
+    };
 
-  local.agenix = {
-    identityPaths = ["/persist/etc/agenix/dusk-age-key.txt"];
-    secrets = {
-      grafana-admin-password = {
-        file = ../../secrets/grafana_admin_password.age;
-        owner = "grafana";
-        mode = "0400";
-        path = "/run/agenix/grafana-admin-password";
+    agenix = {
+      identityPaths = ["/persist/etc/agenix/dusk-age-key.txt"];
+      secrets = {
+        grafana-admin-password = {
+          file = ../../secrets/grafana_admin_password.age;
+          owner = "grafana";
+          mode = "0400";
+          path = "/run/agenix/grafana-admin-password";
+        };
+        grafana-secret-key = {
+          file = ../../secrets/grafana_secret_key.age;
+          owner = "grafana";
+          mode = "0400";
+          path = "/run/agenix/grafana-secret-key";
+        };
+        usu-password-hash = {
+          file = ../../secrets/usu_password_hash.age;
+          owner = "root";
+          mode = "0400";
+          path = "/run/agenix/usu-password-hash";
+        };
+        dusk-wg-private-key = {
+          file = ../../secrets/dusk_wg_private_key.age;
+          owner = "root";
+          mode = "0400";
+          path = "/run/agenix/dusk-wg-private-key";
+        };
+        forgejo-mailer-password = {
+          file = ../../secrets/forgejo_mailer_password.age;
+          owner = "forgejo";
+          mode = "0400";
+          path = "/run/agenix/forgejo-mailer-password";
+        };
+        vaultwarden-env = {
+          file = ../../secrets/vaultwarden_env.age;
+          owner = "vaultwarden";
+          mode = "0400";
+          path = "/run/agenix/vaultwarden-env";
+        };
       };
-      grafana-secret-key = {
-        file = ../../secrets/grafana_secret_key.age;
-        owner = "grafana";
-        mode = "0400";
-        path = "/run/agenix/grafana-secret-key";
-      };
-      usu-password-hash = {
-        file = ../../secrets/usu_password_hash.age;
-        owner = "root";
-        mode = "0400";
-        path = "/run/agenix/usu-password-hash";
-      };
-      forgejo-mailer-password = {
-        file = ../../secrets/forgejo_mailer_password.age;
-        owner = "forgejo";
-        mode = "0400";
-        path = "/run/agenix/forgejo-mailer-password";
-      };
-      vaultwarden-env = {
-        file = ../../secrets/vaultwarden_env.age;
-        owner = "vaultwarden";
-        mode = "0400";
-        path = "/run/agenix/vaultwarden-env";
-      };
+    };
+
+    services.duskWireGuard.enable = true;
+
+    backups.offsiteRestic = {
+      enable = false;
+      name = "dusk-to-offsite";
+      user = "root";
+      paths = [
+        "/persist/backups"
+        "/persist/etc"
+        "/var/lib/grafana"
+      ];
+      exclude = [
+        "/persist/backups/restic"
+      ];
     };
   };
 
@@ -68,7 +91,6 @@ in {
       "/etc/agenix"
       "/var/lib/grafana"
       "/var/lib/vaultwarden"
-      "/var/lib/wireguard"
       "/var/lib/forgejo"
       "/var/lib/postgresql"
     ];

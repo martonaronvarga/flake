@@ -107,6 +107,7 @@
         ../modules/nixos/boot-security.nix
         ../modules/nixos/host-hardening.nix
         ../modules/nixos/neovim.nix
+        ../modules/nixos/services/offsite-restic.nix
         (mkHome {
           user = "usu";
           homeDirectory = "/home/usu";
@@ -131,6 +132,8 @@
         ../modules/nixos/agenix.nix
         ../modules/nixos/boot-security.nix
         ../modules/nixos/host-hardening.nix
+        ../modules/nixos/services/dusk-wireguard.nix
+        ../modules/nixos/services/offsite-restic.nix
       ];
       deployment = {
         targetHost = network.dusk.wireguard.address;

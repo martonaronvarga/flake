@@ -1,6 +1,5 @@
 {...}: {
   imports = [
-    ./wireguard.nix
     ./monitoring.nix
   ];
 

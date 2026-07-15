@@ -6,6 +6,7 @@
     "d /persist/backups/forgejo 0750 forgejo forgejo -"
     "d /persist/backups/restic 0750 usu users -"
     "d /persist/backups/restic/shade 0750 usu users -"
+    "d /persist/backups/restic/offsite 0750 root root -"
     "d /persist/backups/vaultwarden 0770 vaultwarden vaultwarden -"
   ];
 }

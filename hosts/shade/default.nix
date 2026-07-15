@@ -79,6 +79,30 @@
       enableTpmUnlock = true;
       luksDeviceNames = ["cryptroot" "cryptswap"];
     };
+
+    backups.offsiteRestic = {
+      enable = false;
+      name = "shade-to-offsite";
+      user = "usu";
+      paths = [
+        "/persist/home/usu"
+      ];
+      exclude = [
+        "/persist/home/usu/.cache"
+        "/persist/home/usu/.local/share/Trash"
+        "/persist/home/usu/.mozilla/firefox/*/cache2"
+        "/persist/home/usu/flake/result"
+        "/persist/home/usu/flake/result-*"
+        "**/.direnv"
+        "**/node_modules"
+        "**/target"
+      ];
+      pruneOpts = [
+        "--keep-daily 7"
+        "--keep-weekly 4"
+        "--keep-monthly 6"
+      ];
+    };
   };
 
   boot.kernel.sysctl."vm.swappiness" = 10;
