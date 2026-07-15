@@ -7,6 +7,8 @@ All notable infrastructure changes are recorded here.
 
 ### Deployment
 
+- Deploy(dusk): update website
+
 - Deploy(dusk): manage host through gloam wireguard
 
 
@@ -26,6 +28,10 @@ All notable infrastructure changes are recorded here.
 
 
 ### Features
+
+- Feat(dusk): harden monitoring and backups
+
+- Feat(dusk): deploy website from forgejo flake
 
 - Feat(dusk): customize forgejo homepage
 
@@ -64,6 +70,22 @@ relogin and reboot.
 
 ### Fixes
 
+- Fix(home): store forgejo git credentials in pass
+
+- Fix(hosts): recover forgejo repository adoption
+
+- Fix(hosts): harden dusk hosted services
+
+- Fix(forgejo): use https git access only
+
+- Fix(mail): align git identity with gmail sending
+
+- Fix(forgejo): color contributions and hide fallback avatar
+
+- Fix(desktop): stabilize backlight and firefox opacity
+
+- Fix(forgejo): refine monochrome theme contrast
+
 - Fix(home): yazi theming
 
 - Fix(home): stop projects dir and whiten yazi folders
@@ -77,6 +99,11 @@ relogin and reboot.
 - Fix(hosts): harden shade rollback initrd
 
 - Fix(hyprland): update rules for current syntax
+
+
+### Formatting
+
+- Style(forgejo): extend monochrome theme
 
 
 ### Home Manager
