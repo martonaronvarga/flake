@@ -28,15 +28,16 @@
       set -euo pipefail
 
       email="${account}"
+      outfile="$(mktemp)"
       errfile="$(mktemp)"
-      trap 'rm -f "$errfile"' EXIT
+      trap 'rm -f "$outfile" "$errfile"' EXIT
 
-      if token="$(oama access "$email" 2>"$errfile")"; then
-        printf '%s\n' "$token"
+      if oama access "$email" >"$outfile" 2>"$errfile"; then
+        cat "$outfile"
         exit 0
       fi
 
-      err="$(cat "$errfile")"
+      err="$(cat "$errfile" "$outfile")"
 
       if grep -Eqi 'invalid_grant|expired|revoked|InvalidGrant|reauthor' <<< "$err"; then
         notify-send \
@@ -62,15 +63,16 @@
       set -euo pipefail
 
       email="${account}"
+      outfile="$(mktemp)"
       errfile="$(mktemp)"
-      trap 'rm -f "$errfile"' EXIT
+      trap 'rm -f "$outfile" "$errfile"' EXIT
 
       # never print the token from a systemd service
-      if oama access "$email" >/dev/null 2>"$errfile"; then
+      if oama access "$email" >"$outfile" 2>"$errfile"; then
         exit 0
       fi
 
-      err="$(cat "$errfile")"
+      err="$(cat "$errfile" "$outfile")"
 
       if grep -Eqi 'invalid_grant|expired|revoked|InvalidGrant|reauthor' <<< "$err"; then
         notify-send \
@@ -121,7 +123,7 @@ in {
 
         outgoing-cred-cmd-cache = false;
 
-        carddav-source = "https://${username}@www.googleapis.com/carddav/v1/principals/${account}/lists/default";
+        carddav-source = "https+oauthbearer://${username}@www.googleapis.com/carddav/v1/principals/${account}/lists/default";
         carddav-source-cred-cmd = lib.getExe aercOauthToken;
 
         default = "INBOX";
