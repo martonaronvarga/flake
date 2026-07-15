@@ -5,6 +5,8 @@
 }: let
   name = "Marton A. Varga";
   account = "martonaronvarga@gmail.com";
+  # Inbound Cloudflare Email Routing aliases for the Gmail account. Keep Gmail
+  # as the SMTP sender unless a domain alias is verified in Gmail "send mail as".
   aliases = [
     "contact@martonaronvarga.dev"
     "research@martonaronvarga.dev"

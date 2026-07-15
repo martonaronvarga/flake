@@ -7,6 +7,12 @@
   gitName = "Marton A. Varga";
   gitEmail = "git@martonaronvarga.dev";
   gmailEmail = "martonaronvarga@gmail.com";
+  domainEmailAliases = [
+    "admin@martonaronvarga.dev"
+    "contact@martonaronvarga.dev"
+    "git@martonaronvarga.dev"
+    "research@martonaronvarga.dev"
+  ];
   signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
   githubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY1cx1Encvc+3ovWpbyM0H1W7uIsXPanAXLlWoyvm/9 git@github.com";
   gitCredentialForgejoPass = pkgs.writeShellApplication {
@@ -182,7 +188,7 @@ in {
         ssh.allowedSignersFile = config.home.homeDirectory + "/" + config.xdg.configFile."git/allowed_signers".target;
       };
       sendemail = {
-        from = "${gitName} <${gitEmail}>";
+        from = "${gitName} <${gmailEmail}>";
         smtpAuth = "OAUTHBEARER";
         smtpEncryption = "ssl";
         smtpServer = "smtp.gmail.com";
@@ -296,9 +302,10 @@ in {
     };
   };
 
-  xdg.configFile."git/allowed_signers".text = ''
-    ${gitEmail} namespaces="git" ${signingKey}
-    ${gmailEmail} namespaces="git" ${signingKey}
-    ${gmailEmail} namespaces="git" ${githubKey}
-  '';
+  xdg.configFile."git/allowed_signers".text =
+    lib.concatMapStringsSep "\n" (email: "${email} namespaces=\"git\" ${signingKey}") (domainEmailAliases ++ [gmailEmail])
+    + ''
+
+      ${gmailEmail} namespaces="git" ${githubKey}
+    '';
 }

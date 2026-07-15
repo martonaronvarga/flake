@@ -15,6 +15,30 @@ User identity belongs to `usu` and follows the operator:
 These credentials are used for GitHub, Forgejo, SSH login, Git signing, and
 operator decryption of age secrets.
 
+## Mail Identity
+
+`martonaronvarga.dev` addresses are public inbound aliases routed by Cloudflare
+Email Routing to `martonaronvarga@gmail.com`. They are not independent hosted
+mailboxes.
+
+Use `martonaronvarga@gmail.com` as the authenticated SMTP sender unless Gmail
+has a verified "send mail as" identity for a domain alias. Current service mail
+therefore sends through Gmail as:
+
+- Forgejo: `Forgejo <martonaronvarga@gmail.com>`
+- Alertmanager: `Alertmanager <martonaronvarga@gmail.com>`
+- Git patch email: `Marton A. Varga <martonaronvarga@gmail.com>`
+
+Domain aliases remain appropriate as public contact, notification recipient,
+Git commit identity, and account recovery addresses when inbound-only delivery
+is sufficient.
+
+Git commit signing uses SSH signatures. The local allowed signers file accepts
+the routed domain aliases and Gmail address for the same `shade` signing key, so
+commits can verify under any of those identities. The OpenPGP key is still
+primarily used for mail and age-related workflows; add OpenPGP user IDs only
+when you want to publish those aliases on the key itself.
+
 ## Machine Identity
 
 Machine identity belongs to a host:

@@ -118,7 +118,7 @@ in {
         DEFAULT_USER_VISIBILITY = "public";
         DISABLE_REGISTRATION = true;
         ENABLE_NOTIFY_MAIL = true;
-        NO_REPLY_ADDRESS = "noreply.${domain}";
+        NO_REPLY_ADDRESS = infraNetwork.domain;
         SHOW_REGISTRATION_BUTTON = false;
       };
       session.COOKIE_SECURE = true;

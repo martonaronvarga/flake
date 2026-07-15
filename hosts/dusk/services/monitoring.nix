@@ -386,7 +386,7 @@ in {
         configuration = {
           global = {
             smtp_smarthost = "smtp.gmail.com:465";
-            smtp_from = "Forgejo <martonaronvarga@gmail.com>";
+            smtp_from = "Alertmanager <martonaronvarga@gmail.com>";
             smtp_auth_username = "martonaronvarga@gmail.com";
             smtp_auth_password = "$SMTP_PASSWORD";
             smtp_require_tls = true;
