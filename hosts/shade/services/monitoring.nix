@@ -9,4 +9,9 @@
   networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
     infraNetwork.shade.ports.nodeExporter
   ];
+
+  systemd.services.prometheus-node-exporter = {
+    after = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+    requires = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+  };
 }

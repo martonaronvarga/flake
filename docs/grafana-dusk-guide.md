@@ -78,9 +78,16 @@ Alertmanager is not exposed through the firewall. Query it from `dusk`:
 ssh dusk 'curl -fsS http://127.0.0.1:9093/-/ready'
 ```
 
-To test notification delivery without breaking a real service, temporarily add
-a short-lived always-firing test alert in a local branch, deploy, confirm email,
-then remove it.
+To test notification delivery without breaking a real service, post a
+short-lived synthetic alert from `dusk`:
+
+```sh
+ssh dusk 'now=$(date --iso-8601=seconds); end=$(date -d "+2 minutes" --iso-8601=seconds); curl -fsS -H "Content-Type: application/json" -d "[{\"labels\":{\"alertname\":\"ManualDeliveryTest\",\"severity\":\"info\",\"instance\":\"dusk\"},\"annotations\":{\"summary\":\"manual Alertmanager delivery test\"},\"startsAt\":\"$now\",\"endsAt\":\"$end\"}]" http://127.0.0.1:9093/api/v2/alerts'
+```
+
+Wait for the configured `group_wait`, then confirm the message arrives in
+Gmail. Do not tick real notification delivery until an inbox delivery is
+confirmed.
 
 ## Weekly Review
 

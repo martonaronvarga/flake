@@ -1,8 +1,11 @@
 {
   config,
   infraNetwork,
+  pkgs,
   ...
 }: {
+  environment.systemPackages = with pkgs; [restic];
+
   environment.etc."ssh/known_hosts.d/dusk-restic".text = ''
     ${infraNetwork.dusk.wireguard.address} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHrll3wZxB7KTlmTMVXRwpQUNZpjoMIWEO58nM+lwL47
   '';
@@ -26,7 +29,7 @@
       "**/target"
     ];
     extraOptions = [
-      "sftp.command='ssh usu@${infraNetwork.dusk.wireguard.address} -J ${infraNetwork.gloam.sshUser}@${infraNetwork.gloam.publicIp} -i /persist/home/usu/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/etc/ssh/known_hosts.d/dusk-restic -s sftp'"
+      "sftp.command='ssh usu@${infraNetwork.dusk.wireguard.address} -i /persist/home/usu/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/etc/ssh/known_hosts.d/dusk-restic -s sftp'"
     ];
     pruneOpts = [
       "--keep-daily 7"

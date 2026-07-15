@@ -18,6 +18,12 @@ off-site SSH target exists, backups run there, and a restore drill passes.
 
 ## Active Shade Backup
 
+As of 2026-07-16, the repository has a completed small restore-drill snapshot
+tagged `codex-restore-drill`. The previous scheduled full-home runs had failed
+while using an SSH jump-host SFTP path. The declarative configuration now uses
+direct WireGuard SSH to `10.200.200.2`; after deploying `shade`, run the full
+unit manually before treating the daily laptop backup as healthy.
+
 Run a backup manually:
 
 ```sh
@@ -43,17 +49,22 @@ Restore into a temporary directory on `shade`:
 
 ```sh
 tmp="$(mktemp -d)"
-sudo restic restore latest \
+restic restore latest \
+  --tag codex-restore-drill \
   --repo sftp:usu@10.200.200.2:/persist/backups/restic/shade \
   --password-file /run/agenix/restic-shade-password \
   --target "$tmp" \
-  --include /persist/home/usu/flake
+  --include /persist/home/usu/flake/TODO.md
 find "$tmp" -maxdepth 4 -type f | sort | head
-sudo rm -rf "$tmp"
+rm -rf "$tmp"
 ```
 
 The drill passes when representative files are present and readable. Record the
 date in a private note or issue before ticking restore-related TODOs.
+
+For a full backup drill, deploy the direct-WireGuard Restic unit on `shade`,
+run `systemctl start restic-backups-shade-to-dusk.service`, confirm it exits
+successfully, and restore a non-trivial directory to a temporary path.
 
 ## Service State
 

@@ -96,7 +96,6 @@
         inputs.impermanence.nixosModules.impermanence
         inputs.agenix.nixosModules.default
         inputs.lanzaboote.nixosModules.lanzaboote
-        inputs.nvf.nixosModules.default
         inputs.home-manager.nixosModules.home-manager
         inputs.nix-topology.nixosModules.default
         inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-6th-gen
@@ -106,7 +105,6 @@
         ../modules/nixos/agenix.nix
         ../modules/nixos/boot-security.nix
         ../modules/nixos/host-hardening.nix
-        ../modules/nixos/neovim.nix
         ../modules/nixos/services/offsite-restic.nix
         (mkHome {
           user = "usu";
