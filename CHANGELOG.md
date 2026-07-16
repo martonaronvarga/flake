@@ -28,6 +28,8 @@ All notable infrastructure changes are recorded here.
 
 - Docs: update changelog
 
+- Docs: update changelog
+
 - Docs(dusk): document install and operations
 
 - Docs: update changelog
@@ -162,6 +164,8 @@ relogin and reboot.
 
 
 ### Refactors
+
+- Refactor(infra): collapse inventory aliases
 
 - Refactor(modules): inject host capabilities functionally
 
