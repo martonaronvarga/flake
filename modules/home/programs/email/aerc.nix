@@ -1,18 +1,14 @@
 {
+  inventory,
   pkgs,
   lib,
   ...
 }: let
   name = "Marton A. Varga";
-  account = "martonaronvarga@gmail.com";
+  account = inventory.mail.sender;
   # Inbound Cloudflare Email Routing aliases for the Gmail account. Keep Gmail
   # as the SMTP sender unless a domain alias is verified in Gmail "send mail as".
-  aliases = [
-    "contact@martonaronvarga.dev"
-    "research@martonaronvarga.dev"
-    "admin@martonaronvarga.dev"
-    "git@martonaronvarga.dev"
-  ];
+  aliases = inventory.mail.aliases;
   username = builtins.replaceStrings ["@"] ["%40"] account;
   gpgRecipient = "29F264979A64F516D7CB007D804BD4BD3F715230!";
 

@@ -68,7 +68,11 @@ in {
       };
     };
 
-    services.duskWireGuard.enable = true;
+    networking.wireguardClient = {
+      enable = true;
+      privateKeyFile = config.age.secrets.dusk-wg-private-key.path;
+      dns = ["1.1.1.1" "9.9.9.9"];
+    };
 
     backups.offsiteRestic = {
       enable = false;

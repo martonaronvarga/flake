@@ -1,11 +1,13 @@
 {
   config,
+  infraInventory,
   infraNetwork,
   lib,
   pkgs,
   ...
 }: let
   domain = "git.${infraNetwork.domain}";
+  inherit (infraInventory) mail;
   forgejoState = config.services.forgejo.stateDir;
   forgejoCustom = pkgs.runCommand "forgejo-custom" {nativeBuildInputs = [pkgs.coreutils pkgs.imagemagick];} ''
     mkdir -p "$out/public/assets/img" "$out/public/assets/css" "$out/templates"
@@ -43,8 +45,7 @@
   publishForgejoProfile = pkgs.writeShellScript "publish-forgejo-profile" ''
     set -eu
 
-    ${pkgs.util-linux}/bin/runuser -u forgejo -- ${config.services.postgresql.package}/bin/psql \
-      -d forgejo \
+    ${config.services.postgresql.package}/bin/psql -d forgejo \
       -v ON_ERROR_STOP=1 \
       -c "update \"user\" set visibility = 0, theme = 'marton' where lower_name = 'usu';"
   '';
@@ -80,11 +81,11 @@ in {
       federation.ENABLED = false;
       mailer = {
         ENABLED = true;
-        FROM = "Forgejo <martonaronvarga@gmail.com>";
+        FROM = "Forgejo <${mail.sender}>";
         PROTOCOL = "smtps";
         SMTP_ADDR = "smtp.gmail.com";
         SMTP_PORT = 465;
-        USER = "martonaronvarga@gmail.com";
+        USER = mail.sender;
       };
       other = {
         SHOW_FOOTER_TEMPLATE_LOAD_TIME = false;
@@ -145,10 +146,22 @@ in {
           "+${pkgs.coreutils}/bin/install -d -o forgejo -g forgejo -m 0750 ${forgejoState}/data/tmp/package-upload"
           "+${installForgejoCustom}"
         ])
-        (lib.mkAfter [
-          "+${publishForgejoProfile}"
-        ])
       ];
+    };
+
+    forgejo-profile-policy = {
+      description = "Apply local Forgejo profile defaults";
+      wantedBy = ["multi-user.target"];
+      after = ["forgejo.service" "postgresql.service"];
+      wants = ["forgejo.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        User = "forgejo";
+        Group = "forgejo";
+      };
+      script = ''
+        ${publishForgejoProfile}
+      '';
     };
 
     forgejo-secrets = {

@@ -7,5 +7,5 @@
   attrs = import ./attrs.nix {inherit lib;};
 in {
   inherit mkHost;
-  inherit (attrs) recursiveMerge filterNullAttrs umport;
+  inherit (attrs) recursiveMerge filterNullAttrs;
 }

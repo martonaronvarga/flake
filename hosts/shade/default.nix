@@ -1,14 +1,13 @@
 {
   config,
+  infraNetwork,
   pkgs,
   ...
 }: {
   imports = [
     ./hardware.nix
     ./disko.nix
-    ./services/wireguard.nix
     ./services/monitoring.nix
-    ./services/restic.nix
   ];
 
   users.mutableUsers = false;
@@ -74,6 +73,14 @@
       ssidPrefixes = ["Telekom"];
     };
 
+    networking.wireguardClient = {
+      enable = true;
+      privateKeyFile = config.age.secrets.shade-wg-private-key.path;
+      routeGuardTargets = [
+        infraNetwork.dusk.wireguard.address
+      ];
+    };
+
     bootSecurity = {
       enableSecureBoot = true;
       enableTpmUnlock = true;
@@ -102,6 +109,43 @@
         "--keep-weekly 4"
         "--keep-monthly 6"
       ];
+    };
+
+    backups.resticSftp.jobs.shade-to-dusk = {
+      enable = true;
+      user = "usu";
+      identityFile = "/persist/home/usu/.ssh/id_ed25519";
+      passwordFile = config.age.secrets.restic-shade-password.path;
+      paths = [
+        "/persist/home/usu"
+      ];
+      exclude = [
+        "/persist/home/usu/.cache"
+        "/persist/home/usu/.local/share/Trash"
+        "/persist/home/usu/.mozilla/firefox/*/cache2"
+        "/persist/home/usu/flake/result"
+        "/persist/home/usu/flake/result-*"
+        "**/.direnv"
+        "**/node_modules"
+        "**/target"
+      ];
+      pruneOpts = [
+        "--keep-daily 7"
+        "--keep-weekly 4"
+        "--keep-monthly 6"
+      ];
+      timerConfig = {
+        OnCalendar = "03:30";
+        RandomizedDelaySec = "45m";
+        Persistent = true;
+      };
+      target = {
+        user = "usu";
+        host = infraNetwork.dusk.wireguard.address;
+        repositoryPath = "/persist/backups/restic/shade";
+        hostKey = "${infraNetwork.dusk.wireguard.address} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHrll3wZxB7KTlmTMVXRwpQUNZpjoMIWEO58nM+lwL47";
+        knownHostsName = "dusk-restic";
+      };
     };
   };
 

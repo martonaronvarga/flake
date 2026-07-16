@@ -1,11 +1,13 @@
 {
   config,
+  infraInventory,
   infraNetwork,
   lib,
   pkgs,
   ...
 }: let
   alertmanagerEnv = "/run/alertmanager/smtp.env";
+  inherit (infraInventory) mail;
   dashboard = {
     uid,
     title,
@@ -386,8 +388,8 @@ in {
         configuration = {
           global = {
             smtp_smarthost = "smtp.gmail.com:465";
-            smtp_from = "Alertmanager <martonaronvarga@gmail.com>";
-            smtp_auth_username = "martonaronvarga@gmail.com";
+            smtp_from = "Alertmanager <${mail.sender}>";
+            smtp_auth_username = mail.sender;
             smtp_auth_password = "$SMTP_PASSWORD";
             smtp_require_tls = true;
           };
@@ -403,7 +405,7 @@ in {
               name = "gmail";
               email_configs = [
                 {
-                  to = "admin@martonaronvarga.dev";
+                  to = mail.alertRecipient;
                   send_resolved = true;
                 }
               ];
@@ -418,7 +420,7 @@ in {
       settings = {
         analytics.reporting_enabled = false;
         security = {
-          admin_email = "admin@martonaronvarga.dev";
+          admin_email = mail.alertRecipient;
           admin_password = "$__file{${config.age.secrets.grafana-admin-password.path}}";
           admin_user = "admin";
           secret_key = "$__file{${config.age.secrets.grafana-secret-key.path}}";

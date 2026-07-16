@@ -37,9 +37,6 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    nvf.url = "github:notashelf/nvf";
-    nvf.inputs.nixpkgs.follows = "nixpkgs";
-
     hyprland.url = "github:hyprwm/Hyprland?submodules=1";
 
     hypridle = {
@@ -150,6 +147,26 @@
           alejandra = mkCheck "alejandra-check" pkgs.alejandra "alejandra --check";
           statix = mkCheck "statix-check" pkgs.statix "statix check";
           deadnix = mkCheck "deadnix-check" pkgs.deadnix "deadnix --fail";
+          architecture-invariants =
+            pkgs.runCommandLocal "architecture-invariants" {
+              nativeBuildInputs = [pkgs.ripgrep];
+            } ''
+                src=${nixFiles}
+
+              if rg -n '10\.200\.200\.' "$src/hosts" "$src/modules" "$src/profiles"; then
+                  echo "WireGuard addresses must come from parts/inventory.nix." >&2
+                  exit 1
+                fi
+
+              if rg -n 'local\.services\.duskWireGuard|dusk-wireguard\.nix|offsite-restic\.nix' "$src/hosts" "$src/modules"; then
+                  echo "Use the shared WireGuard and Restic SFTP modules instead of legacy service-specific modules." >&2
+                  exit 1
+                fi
+
+                rg -q 'shade\.rollback_home=1' "$src/hosts/shade/hardware.nix"
+
+                touch "$out"
+            '';
         };
       };
     });
