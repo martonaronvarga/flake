@@ -22,6 +22,8 @@ All notable infrastructure changes are recorded here.
 
 - Docs: update changelog
 
+- Docs: update changelog
+
 - Docs(dusk): document install and operations
 
 - Docs: update changelog
@@ -71,6 +73,8 @@ relogin and reboot.
 
 
 ### Fixes
+
+- Fix(home): repair aerc carddav oauth
 
 - Fix(shade): repair restic and monitoring path
 
@@ -152,6 +156,8 @@ relogin and reboot.
 
 
 ### Refactors
+
+- Refactor(infra): centralize host capabilities
 
 - Refactor(hosts): modularize flake infrastructure
 
