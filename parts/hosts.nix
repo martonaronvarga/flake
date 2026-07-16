@@ -38,7 +38,6 @@
       overwriteBackup = true;
       extraSpecialArgs = {
         inherit inputs homeDirectory inventory;
-        infraNetwork = network;
         flakePath = config.local.flakePath;
         homeUser = user;
       };
@@ -194,7 +193,7 @@
     ++ map (profile: profiles.${profile}) host.profiles
     ++ host.modules;
 
-  resolvedHosts = lib.mapAttrs (_: host: host // {resolvedModules = mkModules host;}) hosts;
+  hostRegistry = lib.mapAttrs (_: host: host // {resolvedModules = mkModules host;}) hosts;
 
   mkConfiguration = name: host:
     localLib.mkHost {
@@ -202,20 +201,16 @@
       inherit (host) system;
       modules = host.resolvedModules;
       specialArgs = {
-        infraInventory = inventory;
         inherit inventory;
-        infraNetwork = network;
       };
     };
 in {
   _module.args = {
-    infraHosts = resolvedHosts;
-    infraInventory = inventory;
-    infraNetwork = network;
+    inherit hostRegistry inventory;
   };
 
   flake = {
-    nixosConfigurations = lib.mapAttrs mkConfiguration resolvedHosts;
+    nixosConfigurations = lib.mapAttrs mkConfiguration hostRegistry;
   };
 
   perSystem = {system, ...}: {
@@ -223,6 +218,6 @@ in {
       name: _host:
         lib.nameValuePair name
         inputs.self.nixosConfigurations.${name}.config.system.build.toplevel
-    ) (lib.filterAttrs (_: host: host.system == system) resolvedHosts);
+    ) (lib.filterAttrs (_: host: host.system == system) hostRegistry);
   };
 }

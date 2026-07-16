@@ -1,8 +1,9 @@
 {
-  infraNetwork,
+  inventory,
   pkgs,
   ...
 }: let
+  inherit (inventory) domain network;
   shadeSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
 in {
   imports = [
@@ -18,23 +19,23 @@ in {
     firewall = {
       enable = true;
       allowedTCPPorts = [22 80 443];
-      allowedUDPPorts = [infraNetwork.gloam.wireguard.port];
-      trustedInterfaces = [infraNetwork.wireguard.interface];
+      allowedUDPPorts = [network.gloam.wireguard.port];
+      trustedInterfaces = [network.wireguard.interface];
     };
 
-    wg-quick.interfaces.${infraNetwork.wireguard.interface} = {
-      address = [infraNetwork.gloam.wireguard.cidr];
-      listenPort = infraNetwork.gloam.wireguard.port;
+    wg-quick.interfaces.${network.wireguard.interface} = {
+      address = [network.gloam.wireguard.cidr];
+      listenPort = network.gloam.wireguard.port;
       privateKeyFile = "/persist/etc/wireguard/gloam.key";
       generatePrivateKeyFile = true;
       peers = [
         {
-          publicKey = infraNetwork.dusk.wireguard.publicKey;
-          allowedIPs = [infraNetwork.dusk.wireguard.cidr];
+          publicKey = network.dusk.wireguard.publicKey;
+          allowedIPs = [network.dusk.wireguard.cidr];
         }
         {
-          publicKey = infraNetwork.shade.wireguard.publicKey;
-          allowedIPs = [infraNetwork.shade.wireguard.cidr];
+          publicKey = network.shade.wireguard.publicKey;
+          allowedIPs = [network.shade.wireguard.cidr];
         }
       ];
     };
@@ -60,21 +61,21 @@ in {
         enableACME = true;
         forceSSL = true;
         serverAliases = ["www.martonaronvarga.dev"];
-        locations."/".proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.website}";
+        locations."/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.website}";
       };
 
-      "vault.${infraNetwork.domain}" = {
+      "vault.${domain}" = {
         enableACME = true;
         forceSSL = true;
-        locations."/".proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.vaultwarden}";
+        locations."/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.vaultwarden}";
         locations."/".proxyWebsockets = true;
       };
 
-      "git.${infraNetwork.domain}" = {
+      "git.${domain}" = {
         enableACME = true;
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.forgejo}";
+          proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.forgejo}";
           proxyWebsockets = true;
           extraConfig = ''
             client_max_body_size 512M;

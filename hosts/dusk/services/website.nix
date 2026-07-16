@@ -1,9 +1,10 @@
 {
-  infraNetwork,
+  inventory,
   inputs,
   pkgs,
   ...
 }: let
+  inherit (inventory) network;
   siteRoot = inputs.website.packages.${pkgs.stdenv.hostPlatform.system}.site;
 in {
   services.nginx = {
@@ -15,8 +16,8 @@ in {
     virtualHosts."martonaronvarga.dev" = {
       listen = [
         {
-          addr = infraNetwork.dusk.wireguard.address;
-          port = infraNetwork.dusk.ports.website;
+          addr = network.dusk.wireguard.address;
+          port = network.dusk.ports.website;
         }
       ];
       root = "${siteRoot}/share/web";
@@ -26,12 +27,12 @@ in {
     };
   };
 
-  networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
-    infraNetwork.dusk.ports.website
+  networking.firewall.interfaces.${network.wireguard.interface}.allowedTCPPorts = [
+    network.dusk.ports.website
   ];
 
   systemd.services.nginx = {
-    after = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
-    requires = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+    after = ["wg-quick-${network.wireguard.interface}.service"];
+    requires = ["wg-quick-${network.wireguard.interface}.service"];
   };
 }

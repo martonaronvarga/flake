@@ -1,13 +1,12 @@
 {
-  infraHosts,
-  infraInventory,
-  infraNetwork,
+  hostRegistry,
+  inventory,
   inputs,
   lib,
   self,
   ...
 }: let
-  deployableHosts = lib.filterAttrs (_: host: host ? deployment) infraHosts;
+  deployableHosts = lib.filterAttrs (_: host: host ? deployment) hostRegistry;
 
   mkNode = name: host: {
     imports = host.resolvedModules;
@@ -27,8 +26,7 @@
           config.allowUnfree = true;
         };
         specialArgs = {
-          inherit infraInventory infraNetwork inputs self;
-          inventory = infraInventory;
+          inherit inputs inventory self;
         };
       };
     }

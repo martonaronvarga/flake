@@ -1,13 +1,12 @@
 {
   config,
-  infraInventory,
-  infraNetwork,
+  inventory,
   lib,
   pkgs,
   ...
 }: let
   alertmanagerEnv = "/run/alertmanager/smtp.env";
-  inherit (infraInventory) mail;
+  inherit (inventory) mail network;
   dashboard = {
     uid,
     title,
@@ -228,7 +227,7 @@ in {
     prometheus = {
       enable = true;
       listenAddress = "127.0.0.1";
-      port = infraNetwork.dusk.ports.prometheus;
+      port = network.dusk.ports.prometheus;
       alertmanagers = [
         {
           static_configs = [
@@ -253,7 +252,7 @@ in {
           job_name = "shade";
           static_configs = [
             {
-              targets = ["${infraNetwork.shade.wireguard.address}:${toString infraNetwork.shade.ports.nodeExporter}"];
+              targets = ["${network.shade.wireguard.address}:${toString network.shade.ports.nodeExporter}"];
               labels.instance = "shade";
             }
           ];
@@ -375,7 +374,7 @@ in {
         enable = true;
         listenAddress = "127.0.0.1";
         enabledCollectors = ["systemd" "cpu" "diskstats" "filesystem" "loadavg" "meminfo" "netdev"];
-        port = infraNetwork.dusk.ports.nodeExporter;
+        port = network.dusk.ports.nodeExporter;
       };
 
       alertmanager = {
@@ -427,9 +426,9 @@ in {
         };
         server = {
           domain = "dusk";
-          http_addr = infraNetwork.dusk.wireguard.address;
-          http_port = infraNetwork.dusk.ports.grafana;
-          root_url = "http://${infraNetwork.dusk.wireguard.address}:${toString infraNetwork.dusk.ports.grafana}/";
+          http_addr = network.dusk.wireguard.address;
+          http_port = network.dusk.ports.grafana;
+          root_url = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.grafana}/";
         };
         users = {
           allow_org_create = false;
@@ -481,8 +480,8 @@ in {
     nethogs
   ];
 
-  networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
-    infraNetwork.dusk.ports.grafana
+  networking.firewall.interfaces.${network.wireguard.interface}.allowedTCPPorts = [
+    network.dusk.ports.grafana
   ];
 
   systemd = {

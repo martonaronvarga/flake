@@ -4,11 +4,12 @@
   lib,
   ...
 }: let
+  inherit (inventory) mail;
   name = "Marton A. Varga";
-  account = inventory.mail.sender;
+  account = mail.sender;
   # Inbound Cloudflare Email Routing aliases for the Gmail account. Keep Gmail
   # as the SMTP sender unless a domain alias is verified in Gmail "send mail as".
-  aliases = inventory.mail.aliases;
+  inherit (mail) aliases;
   username = builtins.replaceStrings ["@"] ["%40"] account;
   gpgRecipient = "29F264979A64F516D7CB007D804BD4BD3F715230!";
 

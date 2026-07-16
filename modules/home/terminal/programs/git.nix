@@ -5,10 +5,11 @@
   pkgs,
   ...
 }: let
+  inherit (inventory) domain mail;
   gitName = "Marton A. Varga";
-  gitEmail = "git@${inventory.domain}";
-  gmailEmail = inventory.mail.sender;
-  domainEmailAliases = inventory.mail.aliases;
+  gitEmail = "git@${domain}";
+  gmailEmail = mail.sender;
+  domainEmailAliases = mail.aliases;
   signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
   githubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY1cx1Encvc+3ovWpbyM0H1W7uIsXPanAXLlWoyvm/9 git@github.com";
   gitCredentialForgejoPass = pkgs.writeShellApplication {
@@ -40,14 +41,14 @@
       done
 
       [ "$protocol" = "https" ] || exit 0
-      [ "$host" = "git.${inventory.domain}" ] || exit 0
+      [ "$host" = "git.${domain}" ] || exit 0
       [ -z "$username" ] || [ "$username" = "usu" ] || exit 0
 
       if tty_path="$(tty 2>/dev/null)" && [ "$tty_path" != "not a tty" ]; then
         export GPG_TTY="$tty_path"
       fi
 
-      token="$(pass show git/git.${inventory.domain}/usu)"
+      token="$(pass show git/git.${domain}/usu)"
       printf 'username=usu\n'
       printf 'password=%s\n' "$token"
     '';
@@ -203,7 +204,7 @@ in {
         helper = "!${lib.getExe pkgs.gh} auth git-credential";
         username = "martonaronvarga";
       };
-      "credential \"https://git.${inventory.domain}\"" = {
+      "credential \"https://git.${domain}\"" = {
         helper = "${lib.getExe gitCredentialForgejoPass}";
         username = "usu";
       };
@@ -219,7 +220,7 @@ in {
           "github-https:martonaronvarga/"
         ];
       };
-      "url \"https://git.${inventory.domain}/\"" = {
+      "url \"https://git.${domain}/\"" = {
         insteadOf = [
           "forge:"
           "forgejo:"

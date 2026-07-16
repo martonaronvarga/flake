@@ -1,13 +1,12 @@
 {
   config,
-  infraInventory,
-  infraNetwork,
+  inventory,
   lib,
   pkgs,
   ...
 }: let
-  domain = "git.${infraNetwork.domain}";
-  inherit (infraInventory) mail;
+  inherit (inventory) domain mail network;
+  forgejoDomain = "git.${domain}";
   forgejoState = config.services.forgejo.stateDir;
   forgejoCustom = pkgs.runCommand "forgejo-custom" {nativeBuildInputs = [pkgs.coreutils pkgs.imagemagick];} ''
     mkdir -p "$out/public/assets/img" "$out/public/assets/css" "$out/templates"
@@ -103,12 +102,12 @@ in {
       };
       server = {
         DISABLE_SSH = true;
-        DOMAIN = domain;
+        DOMAIN = forgejoDomain;
         ENABLE_GZIP = true;
-        HTTP_ADDR = infraNetwork.dusk.wireguard.address;
-        HTTP_PORT = infraNetwork.dusk.ports.forgejo;
+        HTTP_ADDR = network.dusk.wireguard.address;
+        HTTP_PORT = network.dusk.ports.forgejo;
         OFFLINE_MODE = true;
-        ROOT_URL = "https://${domain}/";
+        ROOT_URL = "https://${forgejoDomain}/";
         LANDING_PAGE = "home";
         START_SSH_SERVER = false;
       };
@@ -119,7 +118,7 @@ in {
         DEFAULT_USER_VISIBILITY = "public";
         DISABLE_REGISTRATION = true;
         ENABLE_NOTIFY_MAIL = true;
-        NO_REPLY_ADDRESS = infraNetwork.domain;
+        NO_REPLY_ADDRESS = domain;
         SHOW_REGISTRATION_BUTTON = false;
       };
       session.COOKIE_SECURE = true;
@@ -132,14 +131,14 @@ in {
     };
   };
 
-  networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
-    infraNetwork.dusk.ports.forgejo
+  networking.firewall.interfaces.${network.wireguard.interface}.allowedTCPPorts = [
+    network.dusk.ports.forgejo
   ];
 
   systemd.services = {
     forgejo = {
-      after = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
-      requires = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+      after = ["wg-quick-${network.wireguard.interface}.service"];
+      requires = ["wg-quick-${network.wireguard.interface}.service"];
       serviceConfig.ExecStartPre = lib.mkMerge [
         (lib.mkBefore [
           "+${pkgs.coreutils}/bin/chown -R forgejo:forgejo ${forgejoState}"

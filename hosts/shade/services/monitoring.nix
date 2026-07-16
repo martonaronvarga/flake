@@ -1,17 +1,19 @@
-{infraNetwork, ...}: {
+{inventory, ...}: let
+  inherit (inventory) network;
+in {
   services.prometheus.exporters.node = {
     enable = true;
-    listenAddress = infraNetwork.shade.wireguard.address;
+    listenAddress = network.shade.wireguard.address;
     enabledCollectors = ["systemd" "cpu" "diskstats" "filesystem" "loadavg" "meminfo" "netdev"];
-    port = infraNetwork.shade.ports.nodeExporter;
+    port = network.shade.ports.nodeExporter;
   };
 
-  networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
-    infraNetwork.shade.ports.nodeExporter
+  networking.firewall.interfaces.${network.wireguard.interface}.allowedTCPPorts = [
+    network.shade.ports.nodeExporter
   ];
 
   systemd.services.prometheus-node-exporter = {
-    after = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
-    requires = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+    after = ["wg-quick-${network.wireguard.interface}.service"];
+    requires = ["wg-quick-${network.wireguard.interface}.service"];
   };
 }

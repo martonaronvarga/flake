@@ -1,9 +1,11 @@
 {
-  infraNetwork,
+  inventory,
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (inventory) network;
+in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
@@ -46,8 +48,8 @@
       };
 
       gloam = {
-        HostName = infraNetwork.gloam.publicIp;
-        User = infraNetwork.gloam.sshUser;
+        HostName = network.gloam.publicIp;
+        User = network.gloam.sshUser;
         Port = 22;
         IdentityFile = "~/.ssh/id_ed25519";
         IdentitiesOnly = true;
@@ -56,7 +58,7 @@
       };
 
       dusk = {
-        HostName = infraNetwork.dusk.wireguard.address;
+        HostName = network.dusk.wireguard.address;
         User = "usu";
         ProxyJump = "gloam";
         IdentityFile = "~/.ssh/id_ed25519";
@@ -66,7 +68,7 @@
       };
 
       dusk-wg = {
-        HostName = infraNetwork.dusk.wireguard.address;
+        HostName = network.dusk.wireguard.address;
         User = "usu";
         IdentityFile = "~/.ssh/id_ed25519";
         IdentitiesOnly = true;

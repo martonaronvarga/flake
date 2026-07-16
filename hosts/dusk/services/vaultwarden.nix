@@ -1,10 +1,12 @@
 {
   config,
-  infraNetwork,
+  inventory,
   lib,
   pkgs,
   ...
 }: let
+  inherit (inventory) domain network;
+  vaultwardenDomain = "vault.${domain}";
   vaultwardenEnvGuard = pkgs.writeShellScript "vaultwarden-env-guard" ''
     set -eu
 
@@ -27,24 +29,24 @@ in {
     environmentFile = config.age.secrets.vaultwarden-env.path;
     backupDir = "/persist/backups/vaultwarden";
     config = {
-      DOMAIN = "https://vault.${infraNetwork.domain}";
+      DOMAIN = "https://${vaultwardenDomain}";
       ENABLE_WEBSOCKET = true;
       INVITATIONS_ALLOWED = false;
-      ROCKET_ADDRESS = infraNetwork.dusk.wireguard.address;
-      ROCKET_PORT = infraNetwork.dusk.ports.vaultwarden;
+      ROCKET_ADDRESS = network.dusk.wireguard.address;
+      ROCKET_PORT = network.dusk.ports.vaultwarden;
       SIGNUPS_ALLOWED = false;
     };
   };
 
   systemd.services.vaultwarden = {
-    after = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
-    requires = ["wg-quick-${infraNetwork.wireguard.interface}.service"];
+    after = ["wg-quick-${network.wireguard.interface}.service"];
+    requires = ["wg-quick-${network.wireguard.interface}.service"];
     serviceConfig.ExecStartPre = lib.mkBefore [
       "${vaultwardenEnvGuard}"
     ];
   };
 
-  networking.firewall.interfaces.${infraNetwork.wireguard.interface}.allowedTCPPorts = [
-    infraNetwork.dusk.ports.vaultwarden
+  networking.firewall.interfaces.${network.wireguard.interface}.allowedTCPPorts = [
+    network.dusk.ports.vaultwarden
   ];
 }

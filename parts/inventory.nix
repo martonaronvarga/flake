@@ -1,19 +1,19 @@
-{
+let
   domain = "martonaronvarga.dev";
-
+in {
+  inherit domain;
   mail = {
     sender = "martonaronvarga@gmail.com";
-    alertRecipient = "admin@martonaronvarga.dev";
-    aliases = [
-      "admin@martonaronvarga.dev"
-      "contact@martonaronvarga.dev"
-      "git@martonaronvarga.dev"
-      "research@martonaronvarga.dev"
+    alertRecipient = "admin@${domain}";
+    aliases = map (local: "${local}@${domain}") [
+      "admin"
+      "contact"
+      "git"
+      "research"
     ];
   };
 
   network = {
-    domain = "martonaronvarga.dev";
     wireguard = {
       subnet = "10.200.200.0/24";
       interface = "wg0";
