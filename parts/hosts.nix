@@ -8,6 +8,9 @@
     inherit inputs lib withSystem;
   };
   inventory = import ./inventory.nix;
+  capabilities = import ./capabilities.nix {
+    inherit inventory lib;
+  };
 
   profiles = {
     base = ../profiles/nixos/base.nix;
@@ -69,6 +72,53 @@
         ../modules/nixos/host-hardening.nix
         ../modules/nixos/services/restic-sftp.nix
         ../modules/nixos/services/wireguard-client.nix
+        (capabilities.mkWireGuardClient {
+          hostName = "shade";
+          privateKeyFile = "/run/agenix/shade-wg-private-key";
+          routeGuardTargets = [
+            network.dusk.wireguard.address
+          ];
+        })
+        (capabilities.mkResticSftpJob {
+          name = "shade-to-dusk";
+          user = "usu";
+          identityFile = "/persist/home/usu/.ssh/id_ed25519";
+          passwordFile = "/run/agenix/restic-shade-password";
+          paths = [
+            "/persist/home/usu"
+          ];
+          exclude = [
+            "/persist/home/usu/.cache"
+            "/persist/home/usu/.local/share/Trash"
+            "/persist/home/usu/.mozilla/firefox/*/cache2"
+            "/persist/home/usu/flake/result"
+            "/persist/home/usu/flake/result-*"
+            "**/.direnv"
+            "**/node_modules"
+            "**/target"
+          ];
+          pruneOpts = [
+            "--keep-daily 7"
+            "--keep-weekly 4"
+            "--keep-monthly 6"
+          ];
+          timerConfig = {
+            OnCalendar = "03:30";
+            RandomizedDelaySec = "45m";
+            Persistent = true;
+          };
+          target = {
+            user = "usu";
+            host = network.dusk.wireguard.address;
+            repositoryPath = "/persist/backups/restic/shade";
+            hostKey = "${network.dusk.wireguard.address} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHrll3wZxB7KTlmTMVXRwpQUNZpjoMIWEO58nM+lwL47";
+            knownHostsName = "dusk-restic";
+          };
+        })
+        (capabilities.mkResticSftpJob {
+          name = "shade-to-offsite";
+          enable = false;
+        })
         (mkHome {
           user = "usu";
           homeDirectory = "/home/usu";
@@ -95,6 +145,15 @@
         ../modules/nixos/host-hardening.nix
         ../modules/nixos/services/restic-sftp.nix
         ../modules/nixos/services/wireguard-client.nix
+        (capabilities.mkWireGuardClient {
+          hostName = "dusk";
+          privateKeyFile = "/run/agenix/dusk-wg-private-key";
+          dns = ["1.1.1.1" "9.9.9.9"];
+        })
+        (capabilities.mkResticSftpJob {
+          name = "dusk-to-offsite";
+          enable = false;
+        })
       ];
       deployment = {
         targetHost = network.dusk.wireguard.address;

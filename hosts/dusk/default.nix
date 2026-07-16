@@ -67,26 +67,6 @@ in {
         };
       };
     };
-
-    networking.wireguardClient = {
-      enable = true;
-      privateKeyFile = config.age.secrets.dusk-wg-private-key.path;
-      dns = ["1.1.1.1" "9.9.9.9"];
-    };
-
-    backups.offsiteRestic = {
-      enable = false;
-      name = "dusk-to-offsite";
-      user = "root";
-      paths = [
-        "/persist/backups"
-        "/persist/etc"
-        "/var/lib/grafana"
-      ];
-      exclude = [
-        "/persist/backups/restic"
-      ];
-    };
   };
 
   # Persistence for server

@@ -1,29 +1,23 @@
 {
   config,
-  infraNetwork,
   lib,
   pkgs,
   ...
 }: let
   cfg = config.local.networking.wireguardClient;
-  host = infraNetwork.${cfg.hostName};
-  peer = infraNetwork.${cfg.peerHostName};
-  interface = infraNetwork.wireguard.interface;
 in {
   options.local.networking.wireguardClient = {
-    enable = lib.mkEnableOption "a WireGuard client tunnel using the shared infrastructure inventory";
+    enable = lib.mkEnableOption "a WireGuard client tunnel";
 
-    hostName = lib.mkOption {
-      type = lib.types.enum (builtins.attrNames (lib.filterAttrs (_: value: value ? wireguard) infraNetwork));
-      default = config.networking.hostName;
-      defaultText = lib.literalExpression "config.networking.hostName";
-      description = "Inventory host whose WireGuard client address should be configured.";
+    interface = lib.mkOption {
+      type = lib.types.str;
+      default = "wg0";
+      description = "WireGuard interface name.";
     };
 
-    peerHostName = lib.mkOption {
-      type = lib.types.enum (builtins.attrNames (lib.filterAttrs (_: value: value ? wireguard) infraNetwork));
-      default = "gloam";
-      description = "Inventory host used as the remote WireGuard peer.";
+    addresses = lib.mkOption {
+      type = lib.types.nonEmptyListOf lib.types.str;
+      description = "Local WireGuard interface addresses in CIDR notation.";
     };
 
     privateKeyFile = lib.mkOption {
@@ -37,45 +31,75 @@ in {
       description = "Optional DNS servers installed on the wg-quick interface.";
     };
 
-    routeGuardTargets = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [];
-      description = "Inventory addresses that must keep routing through the WireGuard interface.";
+    peers = lib.mkOption {
+      type = lib.types.nonEmptyListOf (lib.types.submodule {
+        options = {
+          publicKey = lib.mkOption {
+            type = lib.types.str;
+            description = "Remote peer public key.";
+          };
+
+          endpoint = lib.mkOption {
+            type = lib.types.str;
+            description = "Remote peer endpoint in host:port form.";
+          };
+
+          allowedIPs = lib.mkOption {
+            type = lib.types.nonEmptyListOf lib.types.str;
+            description = "Allowed IP ranges routed through this peer.";
+          };
+
+          persistentKeepalive = lib.mkOption {
+            type = lib.types.nullOr lib.types.int;
+            default = null;
+            description = "Optional persistent keepalive interval in seconds.";
+          };
+        };
+      });
+      description = "WireGuard peers for this client.";
+    };
+
+    routeGuard = {
+      targets = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Addresses that must keep routing through the WireGuard interface.";
+      };
+
+      onBootSec = lib.mkOption {
+        type = lib.types.str;
+        default = "2m";
+        description = "Initial route guard timer delay.";
+      };
+
+      onUnitActiveSec = lib.mkOption {
+        type = lib.types.str;
+        default = "5m";
+        description = "Route guard repeat interval.";
+      };
     };
   };
 
   config = lib.mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = host ? wireguard && host.wireguard ? cidr;
-        message = "local.networking.wireguardClient.hostName must reference an inventory host with a WireGuard cidr.";
-      }
-      {
-        assertion = peer ? publicIp && peer.wireguard ? publicKey && peer.wireguard ? port;
-        message = "local.networking.wireguardClient.peerHostName must reference an inventory peer with endpoint metadata.";
-      }
-    ];
-
-    networking.wg-quick.interfaces.${interface} = {
-      address = [host.wireguard.cidr];
+    networking.wg-quick.interfaces.${cfg.interface} = {
+      address = cfg.addresses;
       inherit (cfg) privateKeyFile;
       inherit (cfg) dns;
-
-      peers = [
+      peers = map (peer:
         {
-          publicKey = peer.wireguard.publicKey;
-          endpoint = "${peer.publicIp}:${toString peer.wireguard.port}";
-          allowedIPs = [infraNetwork.wireguard.subnet];
-          persistentKeepalive = 25;
+          inherit (peer) publicKey endpoint allowedIPs;
         }
-      ];
+        // lib.optionalAttrs (peer.persistentKeepalive != null) {
+          inherit (peer) persistentKeepalive;
+        })
+      cfg.peers;
     };
 
     environment.systemPackages = with pkgs; [wireguard-tools];
 
-    systemd.services.wireguard-route-guard = lib.mkIf (cfg.routeGuardTargets != []) {
+    systemd.services.wireguard-route-guard = lib.mkIf (cfg.routeGuard.targets != []) {
       description = "Ensure selected hosts remain routed through WireGuard";
-      after = ["wg-quick-${interface}.service" "network-online.target"];
+      after = ["wg-quick-${cfg.interface}.service" "network-online.target"];
       wants = ["network-online.target"];
       path = with pkgs; [
         iproute2
@@ -85,21 +109,21 @@ in {
       script = ''
         set -euo pipefail
 
-        for target in ${lib.escapeShellArgs cfg.routeGuardTargets}; do
+        for target in ${lib.escapeShellArgs cfg.routeGuard.targets}; do
           route="$(ip route get "$target" || true)"
           case "$route" in
-            *" dev ${interface} "*) ;;
-            *) systemctl restart wg-quick-${interface}.service; exit 0 ;;
+            *" dev ${cfg.interface} "*) ;;
+            *) systemctl restart wg-quick-${cfg.interface}.service; exit 0 ;;
           esac
         done
       '';
     };
 
-    systemd.timers.wireguard-route-guard = lib.mkIf (cfg.routeGuardTargets != []) {
+    systemd.timers.wireguard-route-guard = lib.mkIf (cfg.routeGuard.targets != []) {
       wantedBy = ["timers.target"];
       timerConfig = {
-        OnBootSec = "2m";
-        OnUnitActiveSec = "5m";
+        OnBootSec = cfg.routeGuard.onBootSec;
+        OnUnitActiveSec = cfg.routeGuard.onUnitActiveSec;
         Unit = "wireguard-route-guard.service";
       };
     };
