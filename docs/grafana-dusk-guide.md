@@ -63,7 +63,9 @@ systemctl status wg-quick-wg0.service
 
 Prometheus sends alerts to Alertmanager on `127.0.0.1:9093`. Alertmanager sends
 email through Gmail SMTP using a runtime env file generated from the existing
-Gmail app-password secret.
+Gmail app-password secret. Notifications go directly to
+`szemgolyobis@gmail.com`; an offline `shade` does not alert because it is a
+laptop, although its metrics remain available whenever it is online.
 
 Check the services:
 

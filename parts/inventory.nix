@@ -4,7 +4,7 @@ in {
   inherit domain;
   mail = {
     sender = "martonaronvarga@gmail.com";
-    alertRecipient = "admin@${domain}";
+    alertRecipient = "szemgolyobis@gmail.com";
     aliases = map (local: "${local}@${domain}") [
       "admin"
       "contact"

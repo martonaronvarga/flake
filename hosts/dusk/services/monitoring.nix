@@ -7,6 +7,79 @@
 }: let
   alertmanagerEnv = "/run/alertmanager/smtp.env";
   inherit (inventory) mail network;
+  blackboxConfig = pkgs.writeText "blackbox.yml" ''
+    modules:
+      public_website:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ["Marton"]
+      public_vault:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ["Vaultwarden|Web Vault"]
+      public_forge:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ["Forgejo|Personal software forge"]
+      origin_website:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          headers: { Host: "martonaronvarga.dev" }
+          tls_config: { server_name: "martonaronvarga.dev" }
+      origin_vault:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          headers: { Host: "vault.martonaronvarga.dev" }
+          tls_config: { server_name: "vault.martonaronvarga.dev" }
+      origin_forge:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          headers: { Host: "git.martonaronvarga.dev" }
+          tls_config: { server_name: "git.martonaronvarga.dev" }
+  '';
+  mkBlackboxScrape = {
+    name,
+    module,
+    target,
+  }: {
+    job_name = "blackbox-${name}";
+    metrics_path = "/probe";
+    params.module = [module];
+    scrape_interval = "1m";
+    static_configs = [{targets = [target];}];
+    relabel_configs = [
+      {
+        source_labels = ["__address__"];
+        target_label = "__param_target";
+      }
+      {
+        source_labels = ["__param_target"];
+        target_label = "instance";
+      }
+      {
+        target_label = "__address__";
+        replacement = "127.0.0.1:9115";
+      }
+    ];
+  };
   dashboard = {
     uid,
     title,
@@ -257,6 +330,45 @@ in {
             }
           ];
         }
+        {
+          job_name = "gloam";
+          static_configs = [
+            {
+              targets = ["${network.gloam.wireguard.address}:9100"];
+              labels.instance = "gloam";
+            }
+          ];
+        }
+        (mkBlackboxScrape {
+          name = "public-website";
+          module = "public_website";
+          target = "https://martonaronvarga.dev/";
+        })
+        (mkBlackboxScrape {
+          name = "public-vault";
+          module = "public_vault";
+          target = "https://vault.martonaronvarga.dev/";
+        })
+        (mkBlackboxScrape {
+          name = "public-forge";
+          module = "public_forge";
+          target = "https://git.martonaronvarga.dev/";
+        })
+        (mkBlackboxScrape {
+          name = "origin-website";
+          module = "origin_website";
+          target = "https://${network.gloam.wireguard.address}/";
+        })
+        (mkBlackboxScrape {
+          name = "origin-vault";
+          module = "origin_vault";
+          target = "https://${network.gloam.wireguard.address}/";
+        })
+        (mkBlackboxScrape {
+          name = "origin-forge";
+          module = "origin_forge";
+          target = "https://${network.gloam.wireguard.address}/";
+        })
       ];
 
       ruleFiles = [
@@ -271,14 +383,6 @@ in {
                     severity: critical
                   annotations:
                     summary: "dusk node exporter is unreachable"
-
-                - alert: ShadeNodeExporterDown
-                  expr: up{job="shade"} == 0
-                  for: 10m
-                  labels:
-                    severity: warning
-                  annotations:
-                    summary: "shade node exporter is unreachable from dusk"
 
                 - alert: VaultwardenDown
                   expr: node_systemd_unit_state{name="vaultwarden.service", state="active"} != 1
@@ -367,8 +471,30 @@ in {
                     severity: warning
                   annotations:
                     summary: "shade WireGuard is not active"
+
+                - alert: PublicEndpointDown
+                  expr: probe_success == 0
+                  for: 15m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "public or origin probe failed for {{ $labels.instance }}"
+
+                - alert: PublicCertificateExpiring
+                  expr: probe_ssl_earliest_cert_expiry - time() < 21 * 24 * 60 * 60
+                  for: 15m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "TLS certificate expires within 21 days for {{ $labels.instance }}"
         '')
       ];
+
+      exporters.blackbox = {
+        enable = true;
+        listenAddress = "127.0.0.1";
+        configFile = blackboxConfig;
+      };
 
       exporters.node = {
         enable = true;
@@ -393,13 +519,22 @@ in {
             smtp_require_tls = true;
           };
           route = {
-            receiver = "gmail";
+            receiver = "discard";
             group_by = ["alertname" "instance"];
             group_wait = "30s";
             group_interval = "5m";
             repeat_interval = "12h";
+            routes = [
+              {
+                receiver = "gmail";
+                matchers = ["severity=~\"warning|critical\""];
+              }
+            ];
           };
           receivers = [
+            {
+              name = "discard";
+            }
             {
               name = "gmail";
               email_configs = [
@@ -468,8 +603,8 @@ in {
     };
 
     journald.extraConfig = ''
-      SystemMaxUse=500M
-      MaxRetentionSec=1week
+      SystemMaxUse=1G
+      MaxRetentionSec=30day
     '';
   };
 

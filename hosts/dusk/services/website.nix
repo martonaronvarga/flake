@@ -22,7 +22,7 @@ in {
       ];
       root = "${siteRoot}/share/web";
       extraConfig = ''
-        access_log off;
+        access_log syslog:server=unix:/dev/log combined;
       '';
     };
   };
