@@ -1,4 +1,5 @@
 {
+  config,
   inventory,
   pkgs,
   ...
@@ -13,21 +14,29 @@ in {
 
   networking.hostName = "gloam";
   local.flakePath = "/persist/etc/nixos";
+  local.agenix = {
+    identityPaths = ["/persist/etc/agenix/gloam-age-key.txt"];
+    secrets.gloam-wg-private-key = {
+      file = ../../secrets/gloam_wg_private_key.age;
+      owner = "root";
+      mode = "0400";
+      path = "/run/agenix/gloam-wg-private-key";
+    };
+  };
 
   networking = {
     useDHCP = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [22 80 443];
+      allowedTCPPorts = [80 443];
       allowedUDPPorts = [network.gloam.wireguard.port];
-      trustedInterfaces = [network.wireguard.interface];
+      interfaces.${network.wireguard.interface}.allowedTCPPorts = [22];
     };
 
     wg-quick.interfaces.${network.wireguard.interface} = {
       address = [network.gloam.wireguard.cidr];
       listenPort = network.gloam.wireguard.port;
-      privateKeyFile = "/persist/etc/wireguard/gloam.key";
-      generatePrivateKeyFile = true;
+      privateKeyFile = config.age.secrets.gloam-wg-private-key.path;
       peers = [
         {
           publicKey = network.dusk.wireguard.publicKey;
@@ -44,6 +53,7 @@ in {
   boot.kernel.sysctl."net.ipv4.ip_forward" = true;
 
   environment.persistence."/persist".directories = [
+    "/etc/agenix"
     "/etc/wireguard"
     "/var/lib/acme"
     "/var/lib/nginx"
@@ -105,7 +115,6 @@ in {
         extraGroups = ["wheel"];
         openssh.authorizedKeys.keys = [shadeSshKey];
       };
-      root.openssh.authorizedKeys.keys = [shadeSshKey];
     };
   };
 
@@ -139,6 +148,11 @@ in {
   };
 
   security.sudo.wheelNeedsPassword = false;
+
+  services.openssh.settings = {
+    AllowUsers = ["usu"];
+    PermitRootLogin = "no";
+  };
 
   i18n = {
     defaultLocale = "en_US.UTF-8";

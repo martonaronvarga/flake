@@ -1,0 +1,14 @@
+region           = "eu-frankfurt-1"
+tenancy_ocid     = "ocid1.tenancy.oc1..REDACTED"
+compartment_ocid = "ocid1.compartment.oc1..REDACTED"
+user_ocid        = "ocid1.user.oc1..REDACTED"
+fingerprint      = "aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99"
+private_key_path = "/etc/gloam-a1-retry/oci-private-key.pem"
+
+subnet_id          = "ocid1.subnet.oc1..."
+nsg_id             = "ocid1.networksecuritygroup.oc1..."
+ssh_public_key_path = "/etc/gloam-a1-retry/admin.pub"
+
+availability_domain_index = 0
+ocpus                     = 1
+memory_in_gbs             = 6

@@ -85,6 +85,7 @@
           passwordFile = "/run/agenix/restic-shade-password";
           paths = [
             "/persist/home/usu"
+            "/persist/state/opentofu/gloam"
           ];
           exclude = [
             "/persist/home/usu/.cache"
@@ -143,6 +144,7 @@
         ../modules/nixos/boot-security.nix
         ../modules/nixos/host-hardening.nix
         ../modules/nixos/services/restic-sftp.nix
+        ../modules/nixos/services/removable-restic.nix
         ../modules/nixos/services/wireguard-client.nix
         (capabilities.mkWireGuardClient {
           hostName = "dusk";
@@ -159,7 +161,7 @@
         targetPort = 22;
         targetUser = "usu";
         privilegeEscalationCommand = ["sudo" "-H" "--"];
-        sshOptions = ["-F" "/dev/null" "-J" "${network.gloam.sshUser}@${network.gloam.publicIp}"];
+        sshOptions = ["-F" "/dev/null"];
         buildOnTarget = false;
         allowLocalDeployment = true;
       };
@@ -177,6 +179,8 @@
       ];
       modules = [
         ../hosts/gloam
+        ../modules/nixos/agenix.nix
+        ../modules/nixos/host-hardening.nix
       ];
       deployment = {
         targetHost = "gloam";
