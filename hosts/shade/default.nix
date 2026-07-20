@@ -1,8 +1,48 @@
 {
   config,
+  inventory,
   pkgs,
   ...
-}: {
+}: let
+  inherit (inventory) network;
+  gloamStateSnapshot = pkgs.writeShellApplication {
+    name = "gloam-state-snapshot";
+    runtimeInputs = with pkgs; [coreutils jq openssh];
+    text = ''
+      set -euo pipefail
+      destination=/persist/state/opentofu/gloam/capacity-mirror
+      install -d -m 0700 "$destination"
+      staging="$(mktemp -d "$destination/.pull.XXXXXX")"
+      remote=ubuntu@${network.gloam.wireguard.address}
+      ssh_args=(-F /dev/null -i /persist/home/usu/.ssh/id_ed25519)
+      cleanup() {
+        rm -rf "$staging"
+        ssh "''${ssh_args[@]}" "$remote" \
+          'sudo systemctl start gloam-a1-retry.service' >/dev/null 2>&1 || true
+      }
+      trap cleanup EXIT
+      ssh "''${ssh_args[@]}" "$remote" 'sudo systemctl stop gloam-a1-retry.service'
+      ssh "''${ssh_args[@]}" "$remote" \
+        'if sudo test -f /var/lib/gloam-a1-retry/terraform.tfstate; then
+           sudo cat /var/lib/gloam-a1-retry/terraform.tfstate
+         else
+           sudo cat /opt/gloam/oci-edge/terraform.tfstate
+         fi' > "$staging/terraform.tfstate"
+      jq -e '.lineage and (.serial >= 0)' "$staging/terraform.tfstate" >/dev/null
+      sha256sum "$staging/terraform.tfstate" > "$staging/SHA256SUMS"
+      jq -r '"serial=\(.serial) lineage=\(.lineage)"' \
+        "$staging/terraform.tfstate" > "$staging/metadata"
+      chmod 0600 "$staging"/*
+      rm -rf "$destination/current.old"
+      [ ! -d "$destination/current" ] ||
+        mv "$destination/current" "$destination/current.old"
+      mv "$staging" "$destination/current"
+      trap - EXIT
+      ssh "''${ssh_args[@]}" "$remote" 'sudo systemctl start gloam-a1-retry.service'
+      rm -rf "$destination/current.old"
+    '';
+  };
+in {
   imports = [
     ./hardware.nix
     ./disko.nix
@@ -19,6 +59,19 @@
 
   local = {
     flakePath = "/persist/home/usu/flake";
+    nixPolicy = {
+      trustedUsers = ["root" "usu"];
+      extraSubstituters = [
+        "https://numtide.cachix.org?priority=3"
+        "https://nix-community.cachix.org?priority=4"
+        "https://hyprland.cachix.org"
+      ];
+      extraTrustedPublicKeys = [
+        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE="
+      ];
+    };
 
     agenix = {
       identityPaths = ["/persist/home/usu/.ssh/id_ed25519"];
@@ -116,6 +169,21 @@
   };
 
   documentation.dev.enable = true;
+
+  environment.systemPackages = [gloamStateSnapshot];
+
+  systemd.services = {
+    gloam-capacity-state-snapshot = {
+      description = "Pull a consistent gloam capacity-state mirror";
+      before = ["restic-backups-shade-to-dusk.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        User = "usu";
+        ExecStart = "${gloamStateSnapshot}/bin/gloam-state-snapshot";
+      };
+    };
+    restic-backups-shade-to-dusk.wants = ["gloam-capacity-state-snapshot.service"];
+  };
 
   i18n = {
     defaultLocale = "en_US.UTF-8";

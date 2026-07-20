@@ -59,6 +59,18 @@ in {
           mode = "0400";
           path = "/run/agenix/forgejo-mailer-password";
         };
+        restic-external-password = {
+          file = ../../secrets/restic_external_password.age;
+          owner = "root";
+          mode = "0400";
+          path = "/run/agenix/restic-external-password";
+        };
+        restic-shade-password = {
+          file = ../../secrets/restic_shade_password.age;
+          owner = "root";
+          mode = "0400";
+          path = "/run/agenix/restic-shade-password";
+        };
         vaultwarden-env = {
           file = ../../secrets/vaultwarden_env.age;
           owner = "vaultwarden";

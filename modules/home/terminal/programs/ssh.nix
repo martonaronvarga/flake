@@ -60,7 +60,6 @@ in {
       dusk = {
         HostName = network.dusk.wireguard.address;
         User = "usu";
-        ProxyJump = "gloam";
         IdentityFile = "~/.ssh/id_ed25519";
         IdentitiesOnly = true;
         ServerAliveInterval = 30;
