@@ -53,7 +53,6 @@
         --color=info:#aaaaaa
         --color=prompt:#e25303
         --color=pointer:#e25303
-        --color=gutter:#e25303
         --color=marker:#33aa77
         --color=spinner:#e25303
         --color=header:#5e676e
@@ -337,36 +336,42 @@
         git stash apply "$stash"
       '';
       fzf-help = ''
-                      print -r -- 'fzf key bindings
-                Ctrl-R       search shell history; one command per row
-                Ctrl-T       insert selected file paths into the command line
-                Alt-C        change to a selected directory
-                **<Tab>      trigger fuzzy completion where supported
+        print -r -- 'fzf key bindings'
+        printf '  %-24s %s\n' \
+          'Ctrl-R' 'search shell history; one command per row' \
+          'Ctrl-T' 'insert selected file paths into the command line' \
+          'Alt-C' 'change to a selected directory' \
+          'COMMAND **<Tab>' 'fuzzy-complete paths, PIDs, hosts, and similar values'
 
-              Common selector keys
-                type         filter the candidates
-                Enter        accept the current candidate
-                Esc          cancel without changing anything
-                Ctrl-J/K     move down/up
-                Ctrl-N/P     move down/up
-                Tab/Shift-Tab select or move, depending on whether multi-select is enabled
-                Ctrl-Y       copy the current history command
+        print -r -- $'\nCommon selector keys'
+        printf '  %-24s %s\n' \
+          'type' 'filter the candidates' \
+          'Enter' 'accept the current candidate' \
+          'Esc' 'cancel without changing anything' \
+          'Ctrl-J/K or Ctrl-N/P' 'move down/up' \
+          'Tab / Shift-Tab' 'select or move when multi-select is enabled' \
+          'Ctrl-Y' 'copy the current history command'
 
-              fzf helper functions
-                f PROGRAM [ARGS...]  recursively select files and open them with PROGRAM
-                ff PROGRAM [ARGS...] select files from only the current directory
-        cf                    cd to a selected directory or the parent of a file
-                fe [QUERY]            select files recursively and open them in $EDITOR
-                frg PATTERN           search file contents with ripgrep and edit a match
-                fkill [SIGNAL]        select your processes and signal them (default TERM)
-                tm [SESSION]          select, attach, or create a tmux session
-                gco                   select and check out a Git branch
-                grb                   select a Git commit as an interactive-rebase base
-                gedit                 edit selected changed or untracked Git files
-                gstash                select and apply a Git stash
+        print -r -- $'\nfzf helper functions'
+        printf '  %-24s %s\n' \
+          'f PROGRAM [ARGS...]' 'recursively select files and open them with PROGRAM' \
+          'ff PROGRAM [ARGS...]' 'select files from only the current directory' \
+          'cf' 'enter a selected directory or the parent of a selected file' \
+          'fe [QUERY]' 'select files recursively and open them in $EDITOR' \
+          'frg PATTERN' 'search file contents and edit a selected match' \
+          'fkill [SIGNAL]' 'select your processes and signal them; default TERM' \
+          'tm [SESSION]' 'select, attach to, or create a tmux session' \
+          'gco' 'select and check out a Git branch' \
+          'grb' 'select the base commit for an interactive rebase' \
+          'gedit' 'edit selected changed or untracked Git files' \
+          'gstash' 'select and apply a Git stash'
 
-              Run `fzf --man` for the complete fzf reference. See docs/fzf-cheatsheet.md in
-              the flake working tree for examples, behavior, and cautions.'
+        print -r -- $'\nCompletion examples'
+        printf '  %s\n' \
+          'cat **<Tab>    cd **<Tab>    kill **<Tab>    ssh **<Tab>'
+
+        print -r -- $'\nRun `fzf --man` for the full reference.'
+        print -r -- 'See docs/fzf-cheatsheet.md in the flake for examples and cautions.'
       '';
     };
     setOptions = [
@@ -395,15 +400,15 @@
             display="''${display//$'\t'/  }"
             printf '%s\t%s\0' "$id" "$display"
           done
-        } | FZF_DEFAULT_OPTS_FILE= fzf \
+        } | FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS $FZF_CTRL_R_OPTS" \
+          FZF_DEFAULT_OPTS_FILE= fzf \
           --read0 \
           --delimiter=$'\t' \
           --with-nth=2.. \
           --nth=2.. \
           --scheme=history \
           --query="$LBUFFER" \
-          --bind=ctrl-r:toggle-sort \
-          ''${(z)FZF_CTRL_R_OPTS})" || {
+          --bind=ctrl-r:toggle-sort)" || {
             zle reset-prompt
             return 0
           }
