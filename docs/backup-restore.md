@@ -18,11 +18,13 @@ off-site SSH target exists, backups run there, and a restore drill passes.
 
 ## Active Shade Backup
 
-As of 2026-07-16, the repository has a completed small restore-drill snapshot
-tagged `codex-restore-drill`. The previous scheduled full-home runs had failed
-while using an SSH jump-host SFTP path. The declarative configuration now uses
-direct WireGuard SSH to `10.200.200.2`; after deploying `shade`, run the full
-unit manually before treating the daily laptop backup as healthy.
+As of 2026-07-21, the direct-WireGuard backup is healthy. Snapshot `5bc6be4c`
+contains `/persist/home/usu` and `/persist/state/opentofu/gloam` with a logical
+size of 147.120 GiB. A restore drill recovered both `TODO.md` and the archived
+OpenTofu state mirror and compared them byte-for-byte with the live files.
+
+The older small restore-drill snapshot tagged `codex-restore-drill` remains
+available as an additional known-good fixture.
 
 Run a backup manually:
 
@@ -62,9 +64,10 @@ rm -rf "$tmp"
 The drill passes when representative files are present and readable. Record the
 date in a private note or issue before ticking restore-related TODOs.
 
-For a full backup drill, deploy the direct-WireGuard Restic unit on `shade`,
-run `systemctl start restic-backups-shade-to-dusk.service`, confirm it exits
-successfully, and restore a non-trivial directory to a temporary path.
+For subsequent drills, run the unit manually, confirm it exits successfully,
+and restore representative repository and infrastructure-state files to a
+temporary path. Compare them with `cmp` or a recorded checksum before deleting
+the temporary restore.
 
 ## Service State
 
