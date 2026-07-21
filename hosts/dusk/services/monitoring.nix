@@ -30,6 +30,47 @@
           preferred_ip_protocol: ip4
           fail_if_not_ssl: true
           fail_if_body_not_matches_regexp: ["Forgejo|Personal software forge"]
+      public_matrix_client:
+        prober: http
+        timeout: 15s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ['"versions"']
+      public_matrix_federation:
+        prober: http
+        timeout: 15s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ['"server"']
+      public_matrix_well_known_client:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ["matrix.martonaronvarga.dev"]
+      public_matrix_well_known_server:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ["matrix.martonaronvarga.dev:443"]
+      public_matrix_support:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ["@usu:martonaronvarga.dev"]
+      backend_matrix:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_body_not_matches_regexp: ['"versions"']
       origin_website:
         prober: http
         timeout: 10s
@@ -210,7 +251,7 @@
         (statPanel {
           id = 2;
           title = "Failed backup units";
-          expr = "sum(node_systemd_unit_state{name=~\"restic-backups-.*\\\\.service|backup-vaultwarden.service|forgejo-dump.service\", state=\"failed\"})";
+          expr = "sum(node_systemd_unit_state{name=~\"restic-backups-.*\\\\.service|backup-vaultwarden.service|forgejo-dump.service|continuwuity-(maintenance|weekly-archive)\\\\.service\", state=\"failed\"})";
           x = 6;
           y = 0;
         })
@@ -239,7 +280,7 @@
         (statPanel {
           id = 1;
           title = "Critical services active";
-          expr = "sum(node_systemd_unit_state{name=~\"vaultwarden.service|nginx.service|grafana.service|prometheus.service|forgejo.service\", state=\"active\"})";
+          expr = "sum(node_systemd_unit_state{name=~\"vaultwarden.service|nginx.service|grafana.service|prometheus.service|forgejo.service|continuwuity.service\", state=\"active\"})";
           x = 0;
           y = 0;
         })
@@ -294,6 +335,49 @@
         })
       ];
     }} "$out/security-posture.json"
+    cp ${dashboard {
+      uid = "matrix-service";
+      title = "Matrix service";
+      panels = [
+        (statPanel {
+          id = 1;
+          title = "Continuwuity active";
+          expr = "node_systemd_unit_state{name=\"continuwuity.service\", state=\"active\"}";
+          x = 0;
+          y = 0;
+        })
+        (statPanel {
+          id = 2;
+          title = "Public probes passing";
+          expr = "sum(probe_success{job=~\"blackbox-public-matrix-.*\"})";
+          x = 6;
+          y = 0;
+        })
+        (statPanel {
+          id = 3;
+          title = "Backup age";
+          expr = "time() - continuwuity_backup_last_success_seconds";
+          x = 12;
+          y = 0;
+          unit = "s";
+        })
+        (statPanel {
+          id = 4;
+          title = "Weekly archives";
+          expr = "continuwuity_weekly_archive_count";
+          x = 18;
+          y = 0;
+        })
+        (timeSeriesPanel {
+          id = 5;
+          title = "Matrix probe latency";
+          expr = "probe_duration_seconds{job=~\"blackbox-(public|backend)-matrix-.*\"}";
+          x = 0;
+          y = 4;
+          unit = "s";
+        })
+      ];
+    }} "$out/matrix-service.json"
   '';
 in {
   services = {
@@ -353,6 +437,36 @@ in {
           name = "public-forge";
           module = "public_forge";
           target = "https://git.martonaronvarga.dev/";
+        })
+        (mkBlackboxScrape {
+          name = "public-matrix-client";
+          module = "public_matrix_client";
+          target = "https://matrix.martonaronvarga.dev/_matrix/client/versions";
+        })
+        (mkBlackboxScrape {
+          name = "public-matrix-federation";
+          module = "public_matrix_federation";
+          target = "https://matrix.martonaronvarga.dev/_matrix/federation/v1/version";
+        })
+        (mkBlackboxScrape {
+          name = "public-matrix-well-known-client";
+          module = "public_matrix_well_known_client";
+          target = "https://martonaronvarga.dev/.well-known/matrix/client";
+        })
+        (mkBlackboxScrape {
+          name = "public-matrix-well-known-server";
+          module = "public_matrix_well_known_server";
+          target = "https://martonaronvarga.dev/.well-known/matrix/server";
+        })
+        (mkBlackboxScrape {
+          name = "public-matrix-support";
+          module = "public_matrix_support";
+          target = "https://martonaronvarga.dev/.well-known/matrix/support";
+        })
+        (mkBlackboxScrape {
+          name = "backend-matrix-client";
+          module = "backend_matrix";
+          target = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.matrix}/_matrix/client/versions";
         })
         (mkBlackboxScrape {
           name = "origin-website";
@@ -415,6 +529,38 @@ in {
                     severity: warning
                   annotations:
                     summary: "forgejo dump unit failed on dusk"
+
+                - alert: ContinuwuityDown
+                  expr: node_systemd_unit_state{name="continuwuity.service", state="active"} != 1
+                  for: 5m
+                  labels:
+                    severity: critical
+                  annotations:
+                    summary: "Continuwuity is not active on dusk"
+
+                - alert: ContinuwuityMaintenanceFailed
+                  expr: node_systemd_unit_state{name=~"continuwuity-(maintenance|weekly-archive)\\.service", state="failed"} == 1
+                  for: 5m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "a Continuwuity maintenance unit failed on dusk"
+
+                - alert: ContinuwuityBackupStale
+                  expr: (time() - continuwuity_backup_last_success_seconds > 36 * 60 * 60) or absent(continuwuity_backup_last_success_seconds)
+                  for: 15m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "Continuwuity database backup is older than 36 hours"
+
+                - alert: ContinuwuityWeeklyArchiveStale
+                  expr: (time() - continuwuity_weekly_archive_last_success_seconds > 9 * 24 * 60 * 60) or absent(continuwuity_weekly_archive_last_success_seconds)
+                  for: 15m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "Continuwuity weekly archive is older than nine days"
 
                 - alert: ResticBackupFailed
                   expr: node_systemd_unit_state{name=~"restic-backups-.*\\.service", state="failed"} == 1
@@ -500,6 +646,7 @@ in {
         enable = true;
         listenAddress = "127.0.0.1";
         enabledCollectors = ["systemd" "cpu" "diskstats" "filesystem" "loadavg" "meminfo" "netdev"];
+        extraFlags = ["--collector.textfile.directory=/var/lib/prometheus-node-exporter-textfiles"];
         port = network.dusk.ports.nodeExporter;
       };
 

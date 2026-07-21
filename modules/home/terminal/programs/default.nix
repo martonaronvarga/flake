@@ -9,6 +9,7 @@
     ./yazi
     ./xdg.nix
     ./hx.nix
+    ./iamb.nix
     ./fastfetch.nix
     ./tmux.nix
   ];

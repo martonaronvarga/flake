@@ -14,6 +14,7 @@ in {
     ./services/monitoring.nix
     ./services/vaultwarden.nix
     ./services/forgejo.nix
+    ./services/matrix.nix
     ./services/website.nix
   ];
 
@@ -88,6 +89,12 @@ in {
       "/var/lib/grafana"
       "/var/lib/vaultwarden"
       "/var/lib/forgejo"
+      {
+        directory = "/var/lib/continuwuity";
+        user = "continuwuity";
+        group = "continuwuity";
+        mode = "0700";
+      }
       "/var/lib/postgresql"
     ];
   };

@@ -41,6 +41,7 @@ in {
         grafana = 3000;
         prometheus = 9090;
         nodeExporter = 9100;
+        matrix = 6167;
       };
     };
     shade = {

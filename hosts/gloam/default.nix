@@ -71,7 +71,29 @@ in {
         enableACME = true;
         forceSSL = true;
         serverAliases = ["www.martonaronvarga.dev"];
-        locations."/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.website}";
+        locations = {
+          "/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.website}";
+          "/.well-known/matrix/" = {
+            proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.matrix}";
+            extraConfig = ''
+              access_log off;
+            '';
+          };
+        };
+      };
+
+      "matrix.${domain}" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.matrix}";
+          extraConfig = ''
+            access_log off;
+            client_max_body_size 50M;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
+          '';
+        };
       };
 
       "vault.${domain}" = {
