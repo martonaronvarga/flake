@@ -33,6 +33,7 @@
       export FZF_DEFAULT_OPTS='
         --height=80%
         --layout=reverse
+        --cycle
         --border
         --info=inline
         --prompt=>\
@@ -52,6 +53,7 @@
         --color=info:#aaaaaa
         --color=prompt:#e25303
         --color=pointer:#e25303
+        --color=gutter:#e25303
         --color=marker:#33aa77
         --color=spinner:#e25303
         --color=header:#5e676e
@@ -77,11 +79,12 @@
         --pointer=>
         --marker=*
         --no-multi
+        --no-wrap
         --bind=ctrl-j:down,ctrl-k:up,ctrl-n:down,ctrl-p:up
         --bind=tab:down,btab:up
-        --bind "ctrl-y:execute-silent(echo -n {2..} | wl-copy)+abort"
+        --bind "ctrl-y:execute-silent(printf %s {2..} | wl-copy --trim-newline)+abort"
         --color header:italic
-        --header "Press CTRL-Y to copy command into clipboard"
+        --header "enter: insert  ctrl-y: copy  ctrl-r: sort  esc: cancel"
       '
 
       export FZF_ALT_C_OPTS='
@@ -145,6 +148,10 @@
         command rm -Iv "$@"
       '';
       extract = ''
+        (( $# == 1 )) || {
+          print -u2 -- "usage: extract ARCHIVE"
+          return 2
+        }
         case "$1" in
            *.tar.bz2) tar xjf "$1" ;;
            *.tar.gz)  tar xzf "$1" ;;
@@ -155,12 +162,21 @@
       '';
 
       f = ''
+        (( $# >= 1 )) || {
+          print -u2 -- "usage: f PROGRAM [PROGRAM_ARGUMENT ...]"
+          return 2
+        }
+
         local program="$1"
-        shift || return 1
+        shift
+        (( $+commands[$program] )) || {
+          print -u2 -- "f: command not found: $program"
+          return 127
+        }
 
         local -a files
-        files=("''${(@f)$(fzf --multi)}")
-        (( ''${#files} )) || return 1
+        files=("''${(@f)$(fzf --multi --header='enter: open  tab: select  esc: cancel')}")
+        (( ''${#files} )) || return 0
 
         print -s -- "$program ''${(q)@} ''${(q)files}"
         case "$program" in
@@ -169,12 +185,21 @@
         esac
       '';
       ff = ''
+        (( $# >= 1 )) || {
+          print -u2 -- "usage: ff PROGRAM [PROGRAM_ARGUMENT ...]"
+          return 2
+        }
+
         local program="$1"
-        shift || return 1
+        shift
+        (( $+commands[$program] )) || {
+          print -u2 -- "ff: command not found: $program"
+          return 127
+        }
 
         local -a files
-        files=("''${(@f)$(fd --type f --max-depth 1 | fzf --multi)}")
-        (( ''${#files} )) || return 1
+        files=("''${(@f)$(fd --type f --max-depth 1 --strip-cwd-prefix | fzf --multi --header='enter: open  tab: select  esc: cancel')}")
+        (( ''${#files} )) || return 0
 
         print -s -- "$program ''${(q)@} ''${(q)files}"
         case "$program" in
@@ -184,8 +209,10 @@
       '';
       cf = ''
         local file
-        file="$(fd --hidden --follow --exclude .git . | fzf --select-1 --exit-0)"
-        [[ -z "$file" ]] && return 1
+        file="$(fd --hidden --follow --exclude .git --strip-cwd-prefix . | fzf \
+          --select-1 --exit-0 \
+          --header='enter: cd to directory or containing directory  esc: cancel')"
+        [[ -z "$file" ]] && return 0
 
         if [[ -d "$file" ]]; then
           cd -- "$file"
@@ -195,38 +222,55 @@
       '';
       fe = ''
         local -a files
-        files=("''${(@f)$(fzf-tmux --query="$1" --multi --select-1 --exit-0 --preview="bat --color=always {}")}")
-        (( ''${#files} )) && ''${EDITOR:-hx} "''${files[@]}"
+        files=("''${(@f)$(fzf --query="''${1:-}" --multi --select-1 --exit-0 \
+          --preview='bat --color=always --style=numbers --line-range=:300 -- {}' \
+          --header='enter: edit  tab: select  esc: cancel')}")
+        (( ''${#files} )) || return 0
+        ''${EDITOR:-hx} "''${files[@]}"
       '';
       frg = ''
-        if [ ! "$#" -gt 0 ]; then echo "Need a string to search for\!"; return 1; fi
+        (( $# >= 1 )) || {
+          print -u2 -- "usage: frg SEARCH_PATTERN"
+          return 2
+        }
+
         rg --line-number --no-heading --color=always --smart-case "''${*:-}" |
         fzf --ansi --delimiter : \
           --preview 'bat --style=numbers --color=always {1} --highlight-line {2}' \
           --preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
-          --bind 'enter:become(''${EDITOR:-hx} {1} +{2})'
+          --header='enter: edit match  esc: cancel' \
+          --bind 'enter:become(''${EDITOR:-hx} {1}:{2})'
       '';
       fkill = ''
-        local pid
-        if [ "$UID" != "0" ]; then
-          pid=$(ps -f -u $UID | sed 1d | fzf -m | awk '{print $2}')
-        else
-          pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
-        fi
+        local signal="''${1:-TERM}"
+        local -a pids
 
-        if [ "x$pid" != "x" ]
-        then
-          echo $pid | xargs kill -''${1:-9}
-        fi
+        kill -l "$signal" >/dev/null 2>&1 || {
+          print -u2 -- "usage: fkill [SIGNAL]"
+          return 2
+        }
 
+        pids=("''${(@f)$(ps -o pid=,user=,stat=,etime=,command= -u "$UID" |
+          fzf --multi \
+            --header="enter: send SIG$signal  tab: select  esc: cancel" |
+          awk '{print $1}')}")
+        (( ''${#pids} )) || return 0
+        kill -s "$signal" -- "''${pids[@]}"
       '';
       tm = ''
+        local change session
         [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
         if [[ -n "$1" ]]; then
           tmux $change -t "$1" 2>/dev/null || (tmux new-session -d -s "$1" && tmux $change -t "$1")
           return
         fi
-        session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) && tmux $change -t "$session" || echo "No sessions found."
+        session="$(tmux list-sessions -F "#{session_name}" 2>/dev/null |
+          fzf --exit-0 --header='enter: attach  esc: cancel')" || return 0
+        [[ -n "$session" ]] || {
+          print -u2 -- "tm: no sessions found (pass a name to create one)"
+          return 0
+        }
+        tmux "$change" -t "$session"
       '';
       eltevpn-setup = ''
         nmcli connection show elte-vpn >/dev/null 2>&1 || \
@@ -237,19 +281,92 @@
         nm-connection-editor --edit "$uuid" >/dev/null 2>&1 &!
       '';
       gco = ''
-        git checkout "$(git branch --all | sed 's/^[* ] //' | fzf \
-        --preview 'git log -n 20 --color=always {}')"
+        git rev-parse --git-dir >/dev/null 2>&1 || {
+          print -u2 -- "gco: not inside a Git repository"
+          return 2
+        }
+
+        local branch
+        branch="$(git branch --all --format='%(refname:short)' |
+          fzf --header='enter: checkout branch  esc: cancel' \
+            --preview 'git log -n 20 --color=always -- {}')"
+        [[ -n "$branch" ]] || return 0
+        git checkout -- "$branch"
       '';
       grb = ''
-        git rebase -i "$(git log --oneline | fzf | awk '{print $1}')"
+        git rev-parse --git-dir >/dev/null 2>&1 || {
+          print -u2 -- "grb: not inside a Git repository"
+          return 2
+        }
+
+        local commit
+        commit="$(git log --oneline --decorate |
+          fzf --header='enter: rebase commits after selection  esc: cancel' |
+          awk '{print $1}')"
+        [[ -n "$commit" ]] || return 0
+        git rebase -i "$commit"
       '';
       gedit = ''
-        git diff --name-only | fzf -m \
-          --preview 'bat --color=always {}' \
-          | xargs -r ''${EDITOR:-hx}
+        git rev-parse --git-dir >/dev/null 2>&1 || {
+          print -u2 -- "gedit: not inside a Git repository"
+          return 2
+        }
+
+        local -a files
+        files=("''${(@f)$({
+          git diff --name-only
+          git diff --cached --name-only
+          git ls-files --others --exclude-standard
+        } | sort -u | fzf --multi \
+          --preview 'bat --color=always --style=numbers -- {}' \
+          --header='enter: edit  tab: select  esc: cancel')}")
+        (( ''${#files} )) || return 0
+        ''${EDITOR:-hx} "''${files[@]}"
       '';
       gstash = ''
-        git stash apply "$(git stash list | fzf | cut -d: -f1)"
+        git rev-parse --git-dir >/dev/null 2>&1 || {
+          print -u2 -- "gstash: not inside a Git repository"
+          return 2
+        }
+
+        local stash
+        stash="$(git stash list |
+          fzf --header='enter: apply stash  esc: cancel' |
+          cut -d: -f1)"
+        [[ -n "$stash" ]] || return 0
+        git stash apply "$stash"
+      '';
+      fzf-help = ''
+                      print -r -- 'fzf key bindings
+                Ctrl-R       search shell history; one command per row
+                Ctrl-T       insert selected file paths into the command line
+                Alt-C        change to a selected directory
+                **<Tab>      trigger fuzzy completion where supported
+
+              Common selector keys
+                type         filter the candidates
+                Enter        accept the current candidate
+                Esc          cancel without changing anything
+                Ctrl-J/K     move down/up
+                Ctrl-N/P     move down/up
+                Tab/Shift-Tab select or move, depending on whether multi-select is enabled
+                Ctrl-Y       copy the current history command
+
+              fzf helper functions
+                f PROGRAM [ARGS...]  recursively select files and open them with PROGRAM
+                ff PROGRAM [ARGS...] select files from only the current directory
+        cf                    cd to a selected directory or the parent of a file
+                fe [QUERY]            select files recursively and open them in $EDITOR
+                frg PATTERN           search file contents with ripgrep and edit a match
+                fkill [SIGNAL]        select your processes and signal them (default TERM)
+                tm [SESSION]          select, attach, or create a tmux session
+                gco                   select and check out a Git branch
+                grb                   select a Git commit as an interactive-rebase base
+                gedit                 edit selected changed or untracked Git files
+                gstash                select and apply a Git stash
+
+              Run `fzf --man` for the complete fzf reference. See docs/fzf-cheatsheet.md in
+              the flake working tree for examples, behavior, and cautions.'
       '';
     };
     setOptions = [
@@ -262,6 +379,44 @@
 
     initContent = ''
       bindkey "''${key[Up]}" up-line-or-search
+
+      # fzf 0.74 intentionally displays multiline history entries across
+      # multiple screen rows. Present a flattened preview instead, then restore
+      # the original command (including its newlines) into the editing buffer.
+      fzf-history-widget() {
+        emulate -L zsh
+        setopt localoptions pipefail no_aliases
+
+        local id command display selected
+        selected="$({
+          for id in ''${(Onk)history}; do
+            command="''${history[$id]}"
+            display="''${command//$'\n'/ ↵ }"
+            display="''${display//$'\t'/  }"
+            printf '%s\t%s\0' "$id" "$display"
+          done
+        } | FZF_DEFAULT_OPTS_FILE= fzf \
+          --read0 \
+          --delimiter=$'\t' \
+          --with-nth=2.. \
+          --nth=2.. \
+          --scheme=history \
+          --query="$LBUFFER" \
+          --bind=ctrl-r:toggle-sort \
+          ''${(z)FZF_CTRL_R_OPTS})" || {
+            zle reset-prompt
+            return 0
+          }
+
+        id="''${selected%%$'\t'*}"
+        if [[ "$id" == <-> && -n "''${history[$id]-}" ]]; then
+          BUFFER="''${history[$id]}"
+          CURSOR=''${#BUFFER}
+        fi
+        zle reset-prompt
+      }
+      zle -N fzf-history-widget
+      bindkey '^R' fzf-history-widget
 
       if [[ $(tty) == /dev/tty1 ]]; then
         if uwsm check may-start; then
