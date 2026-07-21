@@ -472,7 +472,7 @@ in {
               type = "prometheus";
               access = "proxy";
               url = "http://127.0.0.1:9090";
-              uid = "prometheus";
+              uid = "PBFA97CFB590B2093";
               isDefault = true;
               editable = false;
             }

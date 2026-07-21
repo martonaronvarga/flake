@@ -103,7 +103,7 @@
     type = "query";
     datasource = {
       type = "prometheus";
-      uid = "prometheus";
+      uid = "PBFA97CFB590B2093";
     };
     definition = "label_values(node_uname_info, instance)";
     query = {
