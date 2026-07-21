@@ -46,6 +46,7 @@ in {
   imports = [
     ./hardware.nix
     ./disko.nix
+    ./fingerprint.nix
     ./services/monitoring.nix
   ];
 

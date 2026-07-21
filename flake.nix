@@ -124,6 +124,7 @@
             ./hosts
             ./lib
             ./modules
+            ./packages
             ./parts
             ./profiles
             ./secrets/secrets.nix
