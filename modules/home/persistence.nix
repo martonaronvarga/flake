@@ -28,6 +28,10 @@ _: {
         mode = "0700";
       }
       {
+        directory = ".password-store";
+        mode = "0700";
+      }
+      {
         directory = ".ssh";
         mode = "0700";
       }
