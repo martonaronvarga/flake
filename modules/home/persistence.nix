@@ -13,6 +13,10 @@ _: {
       ".local/share/zoxide"
       ".local/share/FreesmLauncher"
       ".local/share/direnv"
+      {
+        directory = ".local/share/iamb";
+        mode = "0700";
+      }
       ".local/state/oama"
       ".local/share/wluma"
       ".cache/aerc"
