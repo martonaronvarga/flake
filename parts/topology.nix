@@ -14,7 +14,7 @@
           in {
             renderer = "elk";
             renderers.elk.overviews = {
-              networks.enable = true;
+              networks.enable = false;
               services.enable = false;
             };
 

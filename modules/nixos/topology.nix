@@ -36,7 +36,10 @@ in {
           network = "wireguard";
           type = "wireguard";
           virtual = true;
-          renderer.hidePhysicalConnections = true;
+          physicalConnections = lib.optionals (hostName == "gloam") [
+            (config.lib.topology.mkConnection "dusk" network.wireguard.interface)
+            (config.lib.topology.mkConnection "shade" network.wireguard.interface)
+          ];
         };
         public = lib.mkIf (hostName == "gloam") {
           addresses = [network.gloam.publicIp];
