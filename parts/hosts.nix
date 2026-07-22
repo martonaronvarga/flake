@@ -149,7 +149,6 @@
         (capabilities.mkWireGuardClient {
           hostName = "dusk";
           privateKeyFile = "/run/agenix/dusk-wg-private-key";
-          dns = ["1.1.1.1" "9.9.9.9"];
         })
         (capabilities.mkResticSftpJob {
           name = "dusk-to-offsite";

@@ -95,6 +95,34 @@
           fail_if_not_ssl: true
           headers: { Host: "git.martonaronvarga.dev" }
           tls_config: { server_name: "git.martonaronvarga.dev" }
+      icmp_ipv4:
+        prober: icmp
+        timeout: 5s
+        icmp:
+          preferred_ip_protocol: ip4
+          ip_protocol_fallback: false
+      dns_quad9_dot:
+        prober: dns
+        timeout: 5s
+        dns:
+          preferred_ip_protocol: ip4
+          ip_protocol_fallback: false
+          transport_protocol: tcp
+          dns_over_tls: true
+          tls_config: { server_name: "dns.quad9.net" }
+          query_name: "martonaronvarga.dev"
+          query_type: A
+      dns_cloudflare_dot:
+        prober: dns
+        timeout: 5s
+        dns:
+          preferred_ip_protocol: ip4
+          ip_protocol_fallback: false
+          transport_protocol: tcp
+          dns_over_tls: true
+          tls_config: { server_name: "cloudflare-dns.com" }
+          query_name: "martonaronvarga.dev"
+          query_type: A
   '';
   mkBlackboxScrape = {
     name,
@@ -225,6 +253,31 @@ in {
           name = "origin-forge";
           module = "origin_forge";
           target = "https://${network.gloam.wireguard.address}/";
+        })
+        (mkBlackboxScrape {
+          name = "gateway";
+          module = "icmp_ipv4";
+          target = "192.168.0.1";
+        })
+        (mkBlackboxScrape {
+          name = "internet-cloudflare";
+          module = "icmp_ipv4";
+          target = "1.1.1.1";
+        })
+        (mkBlackboxScrape {
+          name = "internet-quad9";
+          module = "icmp_ipv4";
+          target = "9.9.9.9";
+        })
+        (mkBlackboxScrape {
+          name = "dns-cloudflare";
+          module = "dns_cloudflare_dot";
+          target = "1.1.1.1:853";
+        })
+        (mkBlackboxScrape {
+          name = "dns-quad9";
+          module = "dns_quad9_dot";
+          target = "9.9.9.9:853";
         })
       ];
 
@@ -370,12 +423,60 @@ in {
                     summary: "shade WireGuard is not active"
 
                 - alert: PublicEndpointDown
-                  expr: probe_success == 0
+                  expr: probe_success{job=~"blackbox-(public|origin|backend)-.*"} == 0
                   for: 15m
                   labels:
                     severity: warning
                   annotations:
                     summary: "public or origin probe failed for {{ $labels.instance }}"
+
+                - alert: DuskGatewayDown
+                  expr: probe_success{job="blackbox-gateway"} == 0
+                  for: 2m
+                  labels:
+                    severity: critical
+                  annotations:
+                    summary: "dusk cannot reach its local gateway"
+
+                - alert: DuskInternetPathDown
+                  expr: max(probe_success{job=~"blackbox-internet-.*"}) == 0
+                  for: 3m
+                  labels:
+                    severity: critical
+                  annotations:
+                    summary: "dusk cannot reach independent internet targets by IP"
+
+                - alert: DuskDnsResolverDown
+                  expr: probe_success{job=~"blackbox-dns-.*"} == 0
+                  for: 5m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "encrypted DNS probe failed for {{ $labels.job }}"
+
+                - alert: DuskAllDnsResolversDown
+                  expr: max(probe_success{job=~"blackbox-dns-.*"}) == 0
+                  for: 3m
+                  labels:
+                    severity: critical
+                  annotations:
+                    summary: "all configured encrypted DNS resolvers are unreachable"
+
+                - alert: DuskWireGuardOriginDown
+                  expr: max(probe_success{job=~"blackbox-origin-.*"}) == 0
+                  for: 3m
+                  labels:
+                    severity: critical
+                  annotations:
+                    summary: "dusk cannot reach the gloam origin over WireGuard"
+
+                - alert: DuskEthernetCarrierChanged
+                  expr: increase(node_network_carrier_changes_total{instance="dusk",device="enp0s31f6"}[10m]) > 0
+                  for: 1m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "dusk Ethernet carrier changed in the last ten minutes"
 
                 - alert: PublicCertificateExpiring
                   expr: probe_ssl_earliest_cert_expiry - time() < 21 * 24 * 60 * 60

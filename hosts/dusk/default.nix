@@ -11,7 +11,7 @@ in {
     ./hardware.nix
     ./disko.nix
     ./services/backups.nix
-    ./services/monitoring.nix
+    ./services
     ./services/vaultwarden.nix
     ./services/forgejo.nix
     ./services/forgejo-runner.nix
