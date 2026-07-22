@@ -13,7 +13,6 @@ in {
     settings = {
       general = {
         hide_cursor = true;
-        grace = 3;
       };
 
       auth = {
@@ -78,7 +77,7 @@ in {
           text = "cmd[update:3600000] date +'%a %b %d'";
           inherit font_family;
           font_size = 20;
-          color = "rgb(255, 255, 255, 0.6)";
+          color = "rgba(255, 255, 255, 0.6)";
 
           position = "0, 150";
 

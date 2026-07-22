@@ -44,8 +44,9 @@ _: {
   boot.kernelModules = ["tcp_bbr"];
 
   security = {
-    # allow wayland lockers to unlock the screen
-    pam.services.hyprlock.text = "auth include login";
+    # Hyprlock handles fprintd independently and in parallel. Keep its PAM
+    # stack password-only so pam_fprintd cannot contend for the same sensor.
+    pam.services.hyprlock.text = "auth required pam_unix.so";
 
     # userland niceness
     rtkit.enable = true;
