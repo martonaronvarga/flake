@@ -26,7 +26,9 @@
       network = "podman";
       enable_ipv6 = false;
       privileged = false;
-      options = "--cpus=2 --memory=4g --pids-limit=1024";
+      options = "--cpus=2 --memory=4g --pids-limit=1024 --volume=forgejo-nix-store:/nix --volume=forgejo-nix-cache:/root/.cache/nix";
+      # Workflows cannot request arbitrary host mounts. The two fixed volumes
+      # above are runner policy and only persist Nix's store and fetch cache.
       valid_volumes = [];
       docker_host = "-";
       force_pull = false;
@@ -114,6 +116,23 @@ in {
   };
 
   systemd.services = {
+    forgejo-ci-volumes = {
+      description = "Create persistent Nix cache volumes for Forgejo CI";
+      wantedBy = ["multi-user.target"];
+      before = ["gitea-runner-dusk.service"];
+      after = ["podman.socket"];
+      requires = ["podman.socket"];
+      path = [pkgs.podman];
+      script = ''
+        podman volume create --ignore --label io.martonaronvarga.forgejo-ci=cache forgejo-nix-store
+        podman volume create --ignore --label io.martonaronvarga.forgejo-ci=cache forgejo-nix-cache
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+    };
+
     forgejo-ci-image = {
       description = "Load the declarative Forgejo CI image into Podman";
       wantedBy = ["multi-user.target"];
@@ -144,8 +163,8 @@ in {
     gitea-runner-dusk = {
       description = "Forgejo Actions Runner";
       wantedBy = ["multi-user.target"];
-      after = ["forgejo-ci-image.service" "forgejo-runner-register.service"];
-      requires = ["forgejo-ci-image.service" "forgejo-runner-register.service"];
+      after = ["forgejo-ci-image.service" "forgejo-ci-volumes.service" "forgejo-runner-register.service"];
+      requires = ["forgejo-ci-image.service" "forgejo-ci-volumes.service" "forgejo-runner-register.service"];
       environment = {
         HOME = "/var/lib/gitea-runner";
         DOCKER_HOST = "unix:///run/podman/podman.sock";
