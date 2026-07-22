@@ -1,19 +1,19 @@
 :root,
 [data-theme="marton"] {
-  --color-primary: #050505;
-  --color-primary-contrast: #ffffff;
-  --color-primary-dark-1: #000000;
-  --color-primary-dark-2: #000000;
-  --color-primary-dark-3: #000000;
-  --color-primary-dark-4: #000000;
-  --color-primary-dark-5: #000000;
-  --color-primary-dark-6: #000000;
-  --color-primary-dark-7: #000000;
-  --color-primary-light-1: #101010;
-  --color-primary-light-2: #151515;
-  --color-primary-light-3: #202020;
-  --color-primary-light-4: #2a2a2a;
-  --color-primary-light-5: #343434;
+  --color-primary: #f5f5f5;
+  --color-primary-contrast: #050505;
+  --color-primary-dark-1: #dedede;
+  --color-primary-dark-2: #c4c4c4;
+  --color-primary-dark-3: #a3a3a3;
+  --color-primary-dark-4: #8a8a8a;
+  --color-primary-dark-5: #737373;
+  --color-primary-dark-6: #666666;
+  --color-primary-dark-7: #595959;
+  --color-primary-light-1: #ffffff;
+  --color-primary-light-2: #ffffff;
+  --color-primary-light-3: #ffffff;
+  --color-primary-light-4: #ffffff;
+  --color-primary-light-5: #ffffff;
   --color-black: #000000;
   --color-white: #ffffff;
   --color-body: #050505;
@@ -112,6 +112,13 @@
   --fonts-monospace: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
+html,
+body,
+.page-content {
+  background-color: #050505;
+  color: #f5f5f5;
+}
+
 .page-content,
 .repository,
 .user.profile,
@@ -123,20 +130,21 @@
   color: #f5f5f5;
 }
 
-a,
+a:not(.button),
 .ui.breadcrumb a,
 .repo-title a,
 .file-list a,
 .markup a {
-  color: #f5f5f5;
+  color: #f5f5f5 !important;
 }
 
-a:hover,
+a:not(.button):hover,
+a:not(.button):focus,
 .ui.breadcrumb a:hover,
 .repo-title a:hover,
 .file-list a:hover,
 .markup a:hover {
-  color: #ffffff;
+  color: #ffffff !important;
   text-decoration-color: #ffffff;
 }
 
@@ -145,6 +153,10 @@ a:hover,
 .ui.tabular.menu,
 .ui.vertical.menu,
 .ui.dropdown .menu,
+.ui.dropdown .menu .menu,
+.ui.selection.active.dropdown,
+.ui.selection.active.dropdown .menu,
+.ui.menu .dropdown.item .menu,
 .ui.popup,
 .ui.modal,
 .ui.segment,
@@ -169,7 +181,7 @@ a:hover,
 .feeds .news,
 .markdown,
 .markup {
-  background: #0a0a0a;
+  background: #0a0a0a !important;
   border-color: #343434;
   color: #f5f5f5;
 }
@@ -179,6 +191,11 @@ a:hover,
 .ui.tabular.menu .item,
 .ui.vertical.menu .item,
 .ui.dropdown .menu > .item,
+.ui.dropdown .menu > .header,
+.ui.dropdown .menu > .message,
+.ui.dropdown .menu > .menu > .item,
+.ui.selection.dropdown .menu > .item,
+.ui.popup > .content,
 .ui.header,
 .ui.list .list > .item,
 .ui.list > .item,
@@ -194,7 +211,7 @@ a:hover,
 .feeds .news,
 .markup,
 .markdown {
-  color: #f5f5f5;
+  color: #f5f5f5 !important;
 }
 
 .ui.menu .active.item,
@@ -206,8 +223,28 @@ a:hover,
 .ui.secondary.menu .item:hover,
 .ui.vertical.menu .item:hover,
 .ui.dropdown .menu > .item:hover {
-  background: #151515;
-  color: #ffffff;
+  background: #151515 !important;
+  color: #ffffff !important;
+}
+
+.ui.dropdown .menu > .selected.item,
+.ui.dropdown .menu > .active.item,
+.ui.selection.dropdown .menu > .selected.item,
+.ui.selection.dropdown .menu > .active.item {
+  background: #202020 !important;
+  color: #ffffff !important;
+}
+
+.ui.dropdown .menu > .divider,
+.ui.selection.dropdown .menu > .divider {
+  border-color: #343434 !important;
+}
+
+.ui.dropdown .menu input,
+.ui.dropdown .menu .search,
+.ui.dropdown .menu .search input {
+  background: #050505 !important;
+  color: #ffffff !important;
 }
 
 .ui.divider,

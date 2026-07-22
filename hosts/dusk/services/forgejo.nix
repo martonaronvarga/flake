@@ -46,7 +46,8 @@
 
     ${config.services.postgresql.package}/bin/psql -d forgejo \
       -v ON_ERROR_STOP=1 \
-      -c "update \"user\" set visibility = 0, theme = 'marton' where lower_name = 'usu';"
+      -c "update \"user\" set visibility = 0, theme = 'marton' where lower_name = 'usu';" \
+      -c "insert into repo_unit (repo_id, type, config, created_unix) select repository.id, 10, '{}', extract(epoch from now())::bigint from repository join \"user\" on \"user\".id = repository.owner_id where \"user\".lower_name = 'usu' and not exists (select 1 from repo_unit where repo_unit.repo_id = repository.id and repo_unit.type = 10);"
   '';
 in {
   services.forgejo = {
