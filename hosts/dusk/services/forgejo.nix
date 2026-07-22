@@ -76,7 +76,12 @@ in {
         APP_SLOGAN = "Personal software forge";
         RUN_MODE = "prod";
       };
-      actions.ENABLED = false;
+      actions = {
+        ENABLED = true;
+        DEFAULT_ACTIONS_URL = "https://data.forgejo.org";
+        ARTIFACT_RETENTION_DAYS = 30;
+        LOG_RETENTION_DAYS = 30;
+      };
       federation.ENABLED = false;
       mailer = {
         ENABLED = true;
@@ -96,7 +101,7 @@ in {
         ALLOW_DELETION_OF_UNADOPTED_REPOSITORIES = false;
         DEFAULT_BRANCH = "main";
         DEFAULT_PRIVATE = "public";
-        DISABLED_REPO_UNITS = "repo.packages,repo.actions";
+        DISABLED_REPO_UNITS = "repo.packages";
         ENABLE_PUSH_CREATE_ORG = false;
         ENABLE_PUSH_CREATE_USER = true;
       };

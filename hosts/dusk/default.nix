@@ -14,6 +14,7 @@ in {
     ./services/monitoring.nix
     ./services/vaultwarden.nix
     ./services/forgejo.nix
+    ./services/forgejo-runner.nix
     ./services/matrix.nix
     ./services/website.nix
   ];
@@ -60,6 +61,13 @@ in {
           mode = "0400";
           path = "/run/agenix/forgejo-mailer-password";
         };
+        forgejo-runner-token = {
+          file = ../../secrets/forgejo_runner_token.age;
+          owner = "root";
+          group = "forgejo-runner-secret";
+          mode = "0440";
+          path = "/run/agenix/forgejo-runner-token";
+        };
         restic-external-password = {
           file = ../../secrets/restic_external_password.age;
           owner = "root";
@@ -89,6 +97,8 @@ in {
       "/var/lib/grafana"
       "/var/lib/vaultwarden"
       "/var/lib/forgejo"
+      "/var/lib/gitea-runner"
+      "/var/lib/containers"
       {
         directory = "/var/lib/continuwuity";
         user = "continuwuity";
@@ -137,16 +147,33 @@ in {
   fileSystems."/var".neededForBoot = true;
 
   # Server user
-  users.mutableUsers = false;
-  users.users.usu = {
-    isNormalUser = true;
-    shell = pkgs.zsh;
-    hashedPasswordFile = config.age.secrets.usu-password-hash.path;
-    extraGroups = ["wheel" "networkmanager"];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade"
-    ];
+  users = {
+    mutableUsers = false;
+    users = {
+      usu = {
+        isNormalUser = true;
+        shell = pkgs.zsh;
+        hashedPasswordFile = config.age.secrets.usu-password-hash.path;
+        extraGroups = ["wheel" "networkmanager"];
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade"
+        ];
+      };
+      nix-builder = {
+        isSystemUser = true;
+        group = "nix-builder";
+        shell = pkgs.bashInteractive;
+        openssh.authorizedKeys.keys = [
+          "restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC6It5C9Uef0VCYGXMfNWmhh2UN4WmorGWIYGO8tKjdv shade-to-dusk-nix-builder"
+        ];
+      };
+    };
+    groups.nix-builder = {};
   };
+
+  local.nixPolicy.trustedUsers = ["root" "nix-builder"];
+
+  services.openssh.settings.AllowUsers = lib.mkForce ["usu" "nix-builder"];
 
   programs.starship = {
     enable = true;

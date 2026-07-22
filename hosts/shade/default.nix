@@ -42,6 +42,17 @@
       rm -rf "$destination/current.old"
     '';
   };
+  nixBuildRemote = pkgs.writeShellApplication {
+    name = "nix-build-remote";
+    runtimeInputs = [pkgs.nix];
+    text = ''
+      set -euo pipefail
+      if [ "$#" -eq 0 ]; then
+        set -- .
+      fi
+      exec nix build --max-jobs 0 "$@"
+    '';
+  };
 in {
   imports = [
     ./hardware.nix
@@ -117,6 +128,12 @@ in {
           mode = "0400";
           path = "/run/agenix/shade-wg-private-key";
         };
+        shade-dusk-builder-key = {
+          file = ../../secrets/shade_dusk_builder_key.age;
+          owner = "root";
+          mode = "0400";
+          path = "/run/agenix/shade-dusk-builder-key";
+        };
       };
     };
 
@@ -134,6 +151,27 @@ in {
   };
 
   boot.kernel.sysctl."vm.swappiness" = 10;
+
+  nix = {
+    distributedBuilds = true;
+    buildMachines = [
+      {
+        hostName = network.dusk.wireguard.address;
+        protocol = "ssh-ng";
+        sshUser = "nix-builder";
+        sshKey = config.age.secrets.shade-dusk-builder-key.path;
+        system = "x86_64-linux";
+        maxJobs = 2;
+        speedFactor = 2;
+        supportedFeatures = ["benchmark" "big-parallel" "kvm"];
+      }
+    ];
+  };
+
+  programs.ssh.knownHosts.dusk-builder = {
+    hostNames = [network.dusk.wireguard.address];
+    publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHrll3wZxB7KTlmTMVXRwpQUNZpjoMIWEO58nM+lwL47";
+  };
 
   services.avahi = {
     enable = true;
@@ -171,7 +209,7 @@ in {
 
   documentation.dev.enable = true;
 
-  environment.systemPackages = [gloamStateSnapshot];
+  environment.systemPackages = [gloamStateSnapshot nixBuildRemote];
 
   systemd.services = {
     gloam-capacity-state-snapshot = {

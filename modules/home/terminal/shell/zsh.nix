@@ -127,6 +127,7 @@
       ga = "git add";
       gcmsg = "git commit -m";
       ip = "ip --color";
+      nbr = "nix-build-remote";
     };
 
     shellGlobalAliases = {

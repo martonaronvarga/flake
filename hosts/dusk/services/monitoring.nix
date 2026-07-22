@@ -273,6 +273,14 @@ in {
                   annotations:
                     summary: "forgejo dump unit failed on dusk"
 
+                - alert: ForgejoRunnerDown
+                  expr: node_systemd_unit_state{name="gitea-runner-dusk.service", state="active"} != 1
+                  for: 10m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "the owner-scoped Forgejo runner is not active on dusk"
+
                 - alert: ContinuwuityDown
                   expr: node_systemd_unit_state{name="continuwuity.service", state="active"} != 1
                   for: 5m

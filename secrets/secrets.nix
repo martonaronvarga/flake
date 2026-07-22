@@ -17,5 +17,7 @@ in {
   "restic_shade_password.age".publicKeys = [usu dusk];
   "restic_external_password.age".publicKeys = [usu dusk];
   "shade_wg_private_key.age".publicKeys = [usu];
+  "shade_dusk_builder_key.age".publicKeys = [usu];
   "vaultwarden_env.age".publicKeys = [usu dusk];
+  "forgejo_runner_token.age".publicKeys = [usu dusk];
 }
