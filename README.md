@@ -17,15 +17,18 @@ This is my flake-parts based NixOS infrastructure repository. Hosts are declared
 - `shade` is my personal Lenovo X1C 6th Gen laptop. It imports `base`, `laptop`, and `desktop`, uses Home Manager, impermanence, Hyprland.
 - `dusk` is a laptop-server / edge host for small services. It imports `base` and `laptop-server`, is managed by Colmena, and deploys to `dusk.local` as `root`.
 
-## Topology (WIP)
+## Topology
 
-`nix-topology` is wired through flake-parts and receives the generated NixOS configurations. Build the diagrams with:
+![Declarative infrastructure topology](assets/topology.svg)
+
+The diagram is generated from the same NixOS configurations that define the hosts. Host roles, service metadata, the WireGuard mesh, and the public Cloudflare ingress are declared through the local topology module. Regenerate the export with:
 
 ```sh
 nix build .#topology
+cp result/main.svg assets/topology.svg
 ```
 
-The output appears under `result/` and contains rendered SVG topology diagrams.
+The build also produces `result/network.svg`, a network-centric view.
 
 ## Common Commands
 

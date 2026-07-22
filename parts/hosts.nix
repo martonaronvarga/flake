@@ -195,6 +195,7 @@
   mkModules = host:
     host.externalModules
     ++ map (profile: profiles.${profile}) host.profiles
+    ++ [../modules/nixos/topology.nix]
     ++ host.modules;
 
   hostRegistry = lib.mapAttrs (_: host: host // {resolvedModules = mkModules host;}) hosts;

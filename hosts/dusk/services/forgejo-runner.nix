@@ -66,6 +66,7 @@
       cat > etc/nix/nix.conf <<'EOF'
       experimental-features = nix-command flakes
       sandbox = false
+      build-users-group =
       substituters = https://usu.cachix.org https://cache.nixos.org
       trusted-public-keys = usu.cachix.org-1:5jwkfmhQB89RUnXnSde4kN01awJGUqoBkqP0uRKPMFk= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
       use-xdg-base-directories = true
