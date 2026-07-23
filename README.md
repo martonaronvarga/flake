@@ -1,27 +1,26 @@
-# My NixOS infrastructure
+# nix infrastructure
 
 This repository is the source of truth for my laptop, home server, and public
-edge. It started as a dotfiles flake and gradually became the place where I keep
-the whole system: disks, networking, desktop configuration, secrets wiring,
-services, monitoring, backups, and deployment policy.
+edge. It started as a "dotfiles" flake and gradually became the place where
+I keep the whole system: disks, networking, desktop configuration,
+secrets wiring, services, monitoring, backups, and deployment policy.
 
 I want the machines to be reproducible without pretending that state does not
-exist. NixOS defines what should run, agenix supplies runtime secrets, and
+exist. Nix defines what should run, agenix supplies runtime secrets, and
 impermanence makes every piece of state earn an explicit place under `/persist`.
-In particular, Shade's ephemeral home directory is intentional rather than a
-recovery mechanism.
+In particular, I try to make every runtime directory ephemereal where useless
+data would build up long term.
 
-## The three machines
+## Three machines
 
 | Host | Role | What lives there |
 | --- | --- | --- |
-| **shade** | Personal ThinkPad and workstation | Hyprland desktop, Home Manager, development tools, biometric unlock, encrypted DNS, and the main deployment environment |
+| **shade** | Personal ThinkPad and workstation | Hyprland desktop, Home Manager, development tools, and the main deployment environment |
 | **dusk** | Home server and remote builder | Website, Vaultwarden, Forgejo and Actions runner, Matrix, monitoring, alerting, backups, and Nix build capacity |
 | **gloam** | Small public ARM edge | TLS termination, public nginx ingress, and the stable WireGuard meeting point for Shade and Dusk |
 
 Public traffic reaches Cloudflare first, then Gloam, and crosses WireGuard to
-the services on Dusk. Dusk does not need an inbound port on the home connection,
-and moving between home networks does not change the public endpoints.
+the services on Dusk.
 
 ```text
 internet -> Cloudflare -> gloam -> WireGuard -> dusk
@@ -53,7 +52,7 @@ ordinary `nix build` work to Dusk without going through Forgejo Actions.
 - `parts/hosts.nix` registers every host and assembles its profiles,
   capabilities, deployment settings, and Home Manager configuration.
 - `parts/inventory.nix` is the shared map of addresses, ports, domain names,
-  and mail identities.
+  and mail/etc. identities.
 - `hosts/<host>/` contains hardware, storage, persistence, and services that
   belong to one machine.
 - `profiles/nixos/` composes broad roles such as laptop, desktop, server, and
@@ -119,17 +118,12 @@ systemctl --failed --no-pager
 systemctl --user --failed --no-pager
 ```
 
-On captive portals or networks that block DNS-over-TLS, temporarily use the
-current Wi-Fi network's resolver:
+Alternative use `nh`:
 
 ```sh
-privacy-dns off
-privacy-dns status
-privacy-dns on
+nh os switch .#shade
+nh os switch .#dusk
 ```
-
-The exception is scoped to the current Wi-Fi connection and disappears after a
-disconnect or reboot.
 
 ### Deploy Dusk and Gloam
 
@@ -140,19 +134,6 @@ nix develop -c colmena build --on dusk
 nix develop -c colmena apply --on dusk
 nix develop -c colmena apply --on gloam
 ```
-
-After deploying Dusk, check the important layers rather than only trusting the
-switch exit code:
-
-```sh
-ssh dusk 'systemctl --failed --no-pager'
-ssh dusk 'systemctl is-active nginx forgejo vaultwarden continuwuity prometheus alertmanager'
-ssh dusk 'sudo wg show wg0'
-```
-
-Gloam is `aarch64-linux`, so its deployment has different build and recovery
-characteristics from Shade and Dusk. Treat an edge deployment as an explicit
-operation, not part of a casual laptop switch.
 
 ### Offload a build to Dusk
 
@@ -204,7 +185,7 @@ unrelated host state; the longer checklist lives in
 - Dusk services bind to the private WireGuard network unless public exposure is
   deliberately provided through Gloam.
 - The disko, encrypted Btrfs, blank-root rollback, and impermanence model are
-  part of the architecture—not installation leftovers.
+  part of the architecture, not installation leftovers.
 - Changes should pass the complete validation sequence before deployment.
 
 For operational detail, start with [`docs/deployment.md`](docs/deployment.md),
