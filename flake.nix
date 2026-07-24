@@ -17,7 +17,7 @@
     website.url = "git+https://git.martonaronvarga.dev/usu/martonaronvarga.dev.git?ref=main";
 
     elte-metascience-matrix = {
-      url = "git+ssh://git@github.com/martonaronvarga/elte-metascience-matrix.git";
+      url = "git+https://git.martonaronvarga.dev/usu/elte-metascience-matrix.git?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

@@ -146,17 +146,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1784851889,
-        "narHash": "sha256-QZq7PVuwl2ja/GrAK+jnCN+xXyqBY7+/3L4dHm/+od8=",
-        "ref": "refs/heads/main",
-        "rev": "aeb20020bec0609d694be91e3c6fcbe4ab0d9716",
-        "revCount": 25,
+        "lastModified": 1784854425,
+        "narHash": "sha256-rWT/fK2gAuA/CpReXHmc4lHl4x4ggQA5WOiPLEx3x30=",
+        "ref": "main",
+        "rev": "62a19f562da2f84ec44191fc1f1329786a15fb9b",
+        "revCount": 26,
         "type": "git",
-        "url": "ssh://git@github.com/martonaronvarga/elte-metascience-matrix.git"
+        "url": "https://git.martonaronvarga.dev/usu/elte-metascience-matrix.git"
       },
       "original": {
+        "ref": "main",
         "type": "git",
-        "url": "ssh://git@github.com/martonaronvarga/elte-metascience-matrix.git"
+        "url": "https://git.martonaronvarga.dev/usu/elte-metascience-matrix.git"
       }
     },
     "fenix": {
