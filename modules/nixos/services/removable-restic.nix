@@ -1,5 +1,6 @@
 {
   config,
+  inventory,
   lib,
   pkgs,
   ...
@@ -107,15 +108,22 @@ in {
     };
     paths = lib.mkOption {
       type = lib.types.nonEmptyListOf lib.types.str;
-      default = [
-        "/persist/backups/continuwuity"
-        "/persist/backups/forgejo"
-        "/persist/backups/vaultwarden"
-        "/persist/etc/agenix"
-        "/var/lib/forgejo"
-        "/var/lib/continuwuity"
-        "/var/lib/vaultwarden"
-      ];
+      default =
+        [
+          "/persist/backups/continuwuity"
+          "/persist/backups/forgejo"
+          "/persist/backups/vaultwarden"
+          "/persist/etc/agenix"
+          "/var/lib/forgejo"
+          "/var/lib/continuwuity"
+          "/var/lib/vaultwarden"
+        ]
+        ++ lib.optionals inventory.matrixLab.enable [
+          "/persist/backups/matrix"
+          "/var/lib/matrix-synapse"
+          "/var/lib/mautrix-slack"
+          "/var/lib/draupnir"
+        ];
     };
   };
 

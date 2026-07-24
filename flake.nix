@@ -16,6 +16,11 @@
 
     website.url = "git+https://git.martonaronvarga.dev/usu/martonaronvarga.dev.git?ref=main";
 
+    elte-metascience-matrix = {
+      url = "git+ssh://git@github.com/martonaronvarga/elte-metascience-matrix.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     utils.url = "github:zimbatm/flake-utils";
     nixos-hardware.url = "github:nixos/nixos-hardware";
 

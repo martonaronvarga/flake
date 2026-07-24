@@ -6,7 +6,7 @@
   ...
 }: let
   alertmanagerEnv = "/run/alertmanager/smtp.env";
-  inherit (inventory) mail network;
+  inherit (inventory) mail matrixLab network;
   blackboxConfig = pkgs.writeText "blackbox.yml" ''
     modules:
       public_website:
@@ -365,6 +365,31 @@ in {
                     severity: warning
                   annotations:
                     summary: "Continuwuity weekly archive is older than nine days"
+
+                ${lib.optionalString matrixLab.enable ''            - alert: MetascienceMatrixDown
+                              expr: node_systemd_unit_state{name="matrix-synapse.service", state="active"} != 1 or node_systemd_unit_state{name="mautrix-slack.service", state="active"} != 1
+                              for: 5m
+                              labels:
+                                severity: critical
+                              annotations:
+                                summary: "the metascience Synapse or Slack bridge service is not active on dusk"
+
+                            - alert: MetascienceMatrixBackupFailed
+                              expr: node_systemd_unit_state{name="matrix-backup.service", state="failed"} == 1
+                              for: 5m
+                              labels:
+                                severity: warning
+                              annotations:
+                                summary: "the metascience Matrix database backup failed on dusk"
+
+                            - alert: MetascienceMatrixBackupStale
+                              expr: (time() - matrix_backup_last_success_seconds > 36 * 60 * 60) or absent(matrix_backup_last_success_seconds)
+                              for: 15m
+                              labels:
+                                severity: warning
+                              annotations:
+                                summary: "the metascience Matrix database backup is older than 36 hours"
+          ''}
 
                 - alert: ResticBackupFailed
                   expr: node_systemd_unit_state{name=~"restic-backups-.*\\.service", state="failed"} == 1

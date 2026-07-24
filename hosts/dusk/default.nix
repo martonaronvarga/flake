@@ -1,5 +1,6 @@
 {
   config,
+  inventory,
   lib,
   pkgs,
   ...
@@ -16,6 +17,7 @@ in {
     ./services/forgejo.nix
     ./services/forgejo-runner.nix
     ./services/matrix.nix
+    ./services/matrix-lab.nix
     ./services/website.nix
   ];
 
@@ -92,21 +94,27 @@ in {
 
   # Persistence for server
   environment.persistence."/persist" = {
-    directories = [
-      "/etc/agenix"
-      "/var/lib/grafana"
-      "/var/lib/vaultwarden"
-      "/var/lib/forgejo"
-      "/var/lib/gitea-runner"
-      "/var/lib/containers"
-      {
-        directory = "/var/lib/continuwuity";
-        user = "continuwuity";
-        group = "continuwuity";
-        mode = "0700";
-      }
-      "/var/lib/postgresql"
-    ];
+    directories =
+      [
+        "/etc/agenix"
+        "/var/lib/grafana"
+        "/var/lib/vaultwarden"
+        "/var/lib/forgejo"
+        "/var/lib/gitea-runner"
+        "/var/lib/containers"
+        {
+          directory = "/var/lib/continuwuity";
+          user = "continuwuity";
+          group = "continuwuity";
+          mode = "0700";
+        }
+        "/var/lib/postgresql"
+      ]
+      ++ lib.optionals inventory.matrixLab.enable [
+        "/var/lib/matrix-synapse"
+        "/var/lib/mautrix-slack"
+        "/var/lib/draupnir"
+      ];
   };
 
   environment.systemPackages = [

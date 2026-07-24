@@ -139,6 +139,26 @@
         "type": "github"
       }
     },
+    "elte-metascience-matrix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784851889,
+        "narHash": "sha256-QZq7PVuwl2ja/GrAK+jnCN+xXyqBY7+/3L4dHm/+od8=",
+        "ref": "refs/heads/main",
+        "rev": "aeb20020bec0609d694be91e3c6fcbe4ab0d9716",
+        "revCount": 25,
+        "type": "git",
+        "url": "ssh://git@github.com/martonaronvarga/elte-metascience-matrix.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/martonaronvarga/elte-metascience-matrix.git"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -1359,6 +1379,7 @@
         "agenix": "agenix",
         "colmena": "colmena",
         "disko": "disko",
+        "elte-metascience-matrix": "elte-metascience-matrix",
         "flake-parts": "flake-parts",
         "home-manager": "home-manager",
         "hyprcursor": "hyprcursor",

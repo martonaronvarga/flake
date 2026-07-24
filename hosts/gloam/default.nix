@@ -1,10 +1,11 @@
 {
   config,
   inventory,
+  lib,
   pkgs,
   ...
 }: let
-  inherit (inventory) domain network;
+  inherit (inventory) domain matrixLab network;
   shadeSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
 in {
   imports = [
@@ -66,55 +67,94 @@ in {
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
 
-    virtualHosts = {
-      "martonaronvarga.dev" = {
-        enableACME = true;
-        forceSSL = true;
-        serverAliases = ["www.martonaronvarga.dev"];
-        locations = {
-          "/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.website}";
-          "/.well-known/matrix/" = {
+    virtualHosts =
+      {
+        "martonaronvarga.dev" = {
+          enableACME = true;
+          forceSSL = true;
+          serverAliases = ["www.martonaronvarga.dev"];
+          locations = {
+            "/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.website}";
+            "/.well-known/matrix/" = {
+              proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.matrix}";
+              extraConfig = ''
+                access_log off;
+              '';
+            };
+          };
+        };
+
+        "matrix.${domain}" = {
+          enableACME = true;
+          forceSSL = true;
+          locations."/" = {
             proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.matrix}";
             extraConfig = ''
               access_log off;
+              client_max_body_size 50M;
+              proxy_read_timeout 600s;
+              proxy_send_timeout 600s;
+            '';
+          };
+        };
+      }
+      // lib.optionalAttrs matrixLab.enable {
+        ${matrixLab.serverName} = {
+          enableACME = true;
+          forceSSL = true;
+          locations = {
+            "=/.well-known/matrix/server".extraConfig = ''
+              default_type application/json;
+              add_header Access-Control-Allow-Origin * always;
+              return 200 '{"m.server":"${matrixLab.publicHost}:443"}';
+            '';
+            "=/.well-known/matrix/client".extraConfig = ''
+              default_type application/json;
+              add_header Access-Control-Allow-Origin * always;
+              return 200 '{"m.homeserver":{"base_url":"https://${matrixLab.publicHost}"}}';
+            '';
+            "=/.well-known/matrix/support".extraConfig = ''
+              default_type application/json;
+              add_header Access-Control-Allow-Origin * always;
+              return 200 '{"contacts":[{"matrix_id":"${matrixLab.adminMxid}","role":"m.role.admin"}]}';
+            '';
+          };
+        };
+
+        ${matrixLab.publicHost} = {
+          enableACME = true;
+          forceSSL = true;
+          locations."/" = {
+            proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.matrixLab}";
+            proxyWebsockets = true;
+            extraConfig = ''
+              client_max_body_size 50M;
+              proxy_read_timeout 600s;
+              proxy_send_timeout 600s;
+            '';
+          };
+        };
+      }
+      // {
+        "vault.${domain}" = {
+          enableACME = true;
+          forceSSL = true;
+          locations."/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.vaultwarden}";
+          locations."/".proxyWebsockets = true;
+        };
+
+        "git.${domain}" = {
+          enableACME = true;
+          forceSSL = true;
+          locations."/" = {
+            proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.forgejo}";
+            proxyWebsockets = true;
+            extraConfig = ''
+              client_max_body_size 512M;
             '';
           };
         };
       };
-
-      "matrix.${domain}" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.matrix}";
-          extraConfig = ''
-            access_log off;
-            client_max_body_size 50M;
-            proxy_read_timeout 600s;
-            proxy_send_timeout 600s;
-          '';
-        };
-      };
-
-      "vault.${domain}" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.vaultwarden}";
-        locations."/".proxyWebsockets = true;
-      };
-
-      "git.${domain}" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.forgejo}";
-          proxyWebsockets = true;
-          extraConfig = ''
-            client_max_body_size 512M;
-          '';
-        };
-      };
-    };
   };
 
   security.acme = {

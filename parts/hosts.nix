@@ -137,6 +137,7 @@
         inputs.agenix.nixosModules.default
         inputs.lanzaboote.nixosModules.lanzaboote
         inputs.nix-topology.nixosModules.default
+        inputs.elte-metascience-matrix.nixosModules.default
       ];
       modules = [
         ../hosts/dusk

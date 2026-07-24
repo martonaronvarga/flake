@@ -2,6 +2,12 @@ let
   domain = "martonaronvarga.dev";
 in {
   inherit domain;
+  matrixLab = {
+    enable = false;
+    serverName = "metascience.elte.hu";
+    publicHost = "matrix.metascience.elte.hu";
+    adminMxid = "@usu:metascience.elte.hu";
+  };
   mail = {
     sender = "martonaronvarga@gmail.com";
     alertRecipient = "szemgolyobis@gmail.com";
@@ -42,6 +48,7 @@ in {
         prometheus = 9090;
         nodeExporter = 9100;
         matrix = 6167;
+        matrixLab = 6168;
       };
     };
     shade = {
