@@ -3,7 +3,7 @@ let
 in {
   inherit domain;
   rfcs = {
-    enable = false;
+    enable = true;
     domain = "rfc.${domain}";
   };
   matrixLab = {

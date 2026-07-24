@@ -22,7 +22,7 @@ in
         locations."/".tryFiles = "$uri $uri/ =404";
         extraConfig = ''
           access_log syslog:server=unix:/dev/log combined;
-          add_header Content-Security-Policy "default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" always;
+          add_header Content-Security-Policy "default-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" always;
           add_header Referrer-Policy "no-referrer" always;
           add_header X-Content-Type-Options "nosniff" always;
         '';
