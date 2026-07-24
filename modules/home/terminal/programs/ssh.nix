@@ -48,9 +48,10 @@ in {
       };
 
       gloam = {
-        HostName = network.gloam.publicIp;
+        HostName = network.gloam.wireguard.address;
         User = network.gloam.sshUser;
         Port = 22;
+        ProxyJump = "dusk";
         IdentityFile = "~/.ssh/id_ed25519";
         IdentitiesOnly = true;
         ServerAliveInterval = 30;

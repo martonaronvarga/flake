@@ -179,6 +179,10 @@ in {
     hostNames = [network.dusk.wireguard.address];
     publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHrll3wZxB7KTlmTMVXRwpQUNZpjoMIWEO58nM+lwL47";
   };
+  programs.ssh.knownHosts.gloam = {
+    hostNames = [network.gloam.wireguard.address];
+    publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOfsmTWZfEGh/4sY/zZ7fHM08aCPqK9NUXRZlkMJebgF";
+  };
 
   services.avahi = {
     enable = true;
