@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (inventory) domain matrixLab network;
+  inherit (inventory) domain matrixLab network rfcs;
   shadeSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
 in {
   imports = [
@@ -136,6 +136,12 @@ in {
         };
       }
       // {
+        ${rfcs.domain} = lib.mkIf rfcs.enable {
+          enableACME = true;
+          forceSSL = true;
+          locations."/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.rfcs}";
+        };
+
         "vault.${domain}" = {
           enableACME = true;
           forceSSL = true;

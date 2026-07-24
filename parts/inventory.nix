@@ -2,6 +2,10 @@ let
   domain = "martonaronvarga.dev";
 in {
   inherit domain;
+  rfcs = {
+    enable = false;
+    domain = "rfc.${domain}";
+  };
   matrixLab = {
     enable = false;
     serverName = "metascience.elte.hu";
@@ -42,6 +46,7 @@ in {
       };
       ports = {
         website = 8080;
+        rfcs = 8081;
         vaultwarden = 8222;
         forgejo = 3001;
         grafana = 3000;

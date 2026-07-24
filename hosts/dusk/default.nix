@@ -18,6 +18,7 @@ in {
     ./services/forgejo-runner.nix
     ./services/matrix.nix
     ./services/matrix-lab.nix
+    ./services/rfcs.nix
     ./services/website.nix
   ];
 

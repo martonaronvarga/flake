@@ -146,11 +146,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784854425,
-        "narHash": "sha256-rWT/fK2gAuA/CpReXHmc4lHl4x4ggQA5WOiPLEx3x30=",
+        "lastModified": 1784899025,
+        "narHash": "sha256-7QqdGLaO/WWWCVsIBq4EPPlOm9eKqb60KRTXvyXckko=",
         "ref": "main",
-        "rev": "62a19f562da2f84ec44191fc1f1329786a15fb9b",
-        "revCount": 26,
+        "rev": "441432e5413c1135c67e3a71ec6c5ee3f95ddce8",
+        "revCount": 27,
         "type": "git",
         "url": "https://git.martonaronvarga.dev/usu/elte-metascience-matrix.git"
       },
@@ -1375,6 +1375,27 @@
         "type": "github"
       }
     },
+    "rfcs": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784917148,
+        "narHash": "sha256-dNO5ecaJ/g6dmLlXkj9FJ7EjX8KdinHKZGtrLuCO8nY=",
+        "ref": "main",
+        "rev": "9c9b6d5675ac3e4df2f5c71b2eb712a43998732f",
+        "revCount": 1,
+        "type": "git",
+        "url": "https://git.martonaronvarga.dev/usu/rfcs.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "https://git.martonaronvarga.dev/usu/rfcs.git"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -1395,6 +1416,7 @@
         "nix-topology": "nix-topology",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
+        "rfcs": "rfcs",
         "utils": "utils",
         "website": "website"
       }

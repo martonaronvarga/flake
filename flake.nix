@@ -16,6 +16,11 @@
 
     website.url = "git+https://git.martonaronvarga.dev/usu/martonaronvarga.dev.git?ref=main";
 
+    rfcs = {
+      url = "git+https://git.martonaronvarga.dev/usu/rfcs.git?ref=main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     elte-metascience-matrix = {
       url = "git+https://git.martonaronvarga.dev/usu/elte-metascience-matrix.git?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
