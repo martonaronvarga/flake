@@ -15,13 +15,19 @@
       staging="$(mktemp -d "$destination/.pull.XXXXXX")"
       remote=ubuntu@${network.gloam.wireguard.address}
       ssh_args=(-F /dev/null -i /persist/home/usu/.ssh/id_ed25519)
+      retry_was_active="$(${pkgs.openssh}/bin/ssh "''${ssh_args[@]}" "$remote" \
+        'if systemctl is-active --quiet gloam-a1-retry.service 2>/dev/null; then printf 1; else printf 0; fi')"
       cleanup() {
         rm -rf "$staging"
-        ssh "''${ssh_args[@]}" "$remote" \
-          'sudo systemctl start gloam-a1-retry.service' >/dev/null 2>&1 || true
+        if [ "$retry_was_active" = 1 ]; then
+          ssh "''${ssh_args[@]}" "$remote" \
+            'sudo systemctl start gloam-a1-retry.service' >/dev/null 2>&1 || true
+        fi
       }
       trap cleanup EXIT
-      ssh "''${ssh_args[@]}" "$remote" 'sudo systemctl stop gloam-a1-retry.service'
+      if [ "$retry_was_active" = 1 ]; then
+        ssh "''${ssh_args[@]}" "$remote" 'sudo systemctl stop gloam-a1-retry.service'
+      fi
       ssh "''${ssh_args[@]}" "$remote" \
         'if sudo test -f /var/lib/gloam-a1-retry/terraform.tfstate; then
            sudo cat /var/lib/gloam-a1-retry/terraform.tfstate
@@ -38,7 +44,9 @@
         mv "$destination/current" "$destination/current.old"
       mv "$staging" "$destination/current"
       trap - EXIT
-      ssh "''${ssh_args[@]}" "$remote" 'sudo systemctl start gloam-a1-retry.service'
+      if [ "$retry_was_active" = 1 ]; then
+        ssh "''${ssh_args[@]}" "$remote" 'sudo systemctl start gloam-a1-retry.service'
+      fi
       rm -rf "$destination/current.old"
     '';
   };

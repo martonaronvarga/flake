@@ -565,6 +565,38 @@ in {
                 {
                   to = mail.alertRecipient;
                   send_resolved = true;
+                  headers.Subject = ''{{ if eq .Status "firing" }}[FIRING]{{ else }}[RESOLVED]{{ end }} {{ .CommonLabels.alertname }} on {{ .CommonLabels.instance }}'';
+                  text = ''
+                    STATUS: {{ if eq .Status "firing" }}FIRING - ACTION REQUIRED{{ else }}RESOLVED - RECOVERY CONFIRMED{{ end }}
+                    Alert: {{ .CommonLabels.alertname }}
+                    Instance: {{ .CommonLabels.instance }}
+                    Firing: {{ len .Alerts.Firing }}
+                    Resolved: {{ len .Alerts.Resolved }}
+                    {{ range .Alerts }}
+                    Summary: {{ .Annotations.summary }}
+                    Severity: {{ .Labels.severity }}
+                    Unit: {{ .Labels.name }}
+                    Started: {{ .StartsAt }}
+                    Ended: {{ .EndsAt }}
+                    {{ end }}
+                  '';
+                  html = ''
+                    <div style="font-family: sans-serif; color: #000; background: #fff; border: 4px solid #000; padding: 20px">
+                      <h1 style="margin-top: 0">{{ if eq .Status "firing" }}FIRING - ACTION REQUIRED{{ else }}RESOLVED - RECOVERY CONFIRMED{{ end }}</h1>
+                      <p><strong>Alert:</strong> {{ .CommonLabels.alertname }}<br>
+                      <strong>Instance:</strong> {{ .CommonLabels.instance }}<br>
+                      <strong>Firing:</strong> {{ len .Alerts.Firing }}<br>
+                      <strong>Resolved:</strong> {{ len .Alerts.Resolved }}</p>
+                      {{ range .Alerts }}
+                      <hr style="border: 0; border-top: 2px solid #000">
+                      <p><strong>{{ .Annotations.summary }}</strong><br>
+                      Severity: {{ .Labels.severity }}<br>
+                      Unit: {{ .Labels.name }}<br>
+                      Started: {{ .StartsAt }}<br>
+                      Ended: {{ .EndsAt }}</p>
+                      {{ end }}
+                    </div>
+                  '';
                 }
               ];
             }

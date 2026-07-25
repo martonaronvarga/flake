@@ -83,6 +83,7 @@
           user = "usu";
           identityFile = "/persist/home/usu/.ssh/id_ed25519";
           passwordFile = "/run/agenix/restic-shade-password";
+          inhibitSleep = true;
           paths = [
             "/persist/home/usu"
             "/persist/state/opentofu/gloam"

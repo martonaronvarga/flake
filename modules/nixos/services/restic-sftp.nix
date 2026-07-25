@@ -79,6 +79,12 @@
         description = "Restic check options.";
       };
 
+      inhibitSleep = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Whether to block system sleep for the complete backup job.";
+      };
+
       timerConfig = lib.mkOption {
         type = lib.types.attrsOf lib.types.anything;
         default = {
@@ -114,14 +120,48 @@ in {
     enabledJobs;
 
     services.restic.backups =
-      lib.mapAttrs (_: job: {
+      lib.mapAttrs (_: job: let
+        sftpCommand = "ssh ${job.target.user}@${job.target.host} -i ${job.identityFile} -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/etc/ssh/known_hosts.d/${job.target.knownHostsName} -s sftp";
+        sftpOption = "sftp.command=${sftpCommand}";
+      in {
         inherit (job) user paths exclude pruneOpts passwordFile timerConfig checkOpts;
         initialize = true;
         repository = "sftp:${job.target.user}@${job.target.host}:${job.target.repositoryPath}";
         extraOptions = [
-          "sftp.command='ssh ${job.target.user}@${job.target.host} -i ${job.identityFile} -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/etc/ssh/known_hosts.d/${job.target.knownHostsName} -s sftp'"
+          "sftp.command='${sftpCommand}'"
         ];
+        backupPrepareCommand = ''
+          ${pkgs.restic}/bin/restic -o ${lib.escapeShellArg sftpOption} unlock
+        '';
       })
       enabledJobs;
+
+    systemd.services = lib.mkMerge (lib.mapAttrsToList (name: job:
+      lib.optionalAttrs job.inhibitSleep {
+        "restic-backups-${name}" = {
+          after = ["restic-backups-${name}-sleep-inhibitor.service"];
+          requires = ["restic-backups-${name}-sleep-inhibitor.service"];
+          serviceConfig.ExecStopPost = [
+            "+${pkgs.systemd}/bin/systemctl stop restic-backups-${name}-sleep-inhibitor.service"
+          ];
+        };
+
+        "restic-backups-${name}-sleep-inhibitor" = {
+          description = "Sleep inhibitor for Restic backup ${name}";
+          unitConfig.StopWhenUnneeded = true;
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = ''
+              ${pkgs.systemd}/bin/systemd-inhibit \
+                --what=sleep \
+                --who=${lib.escapeShellArg "Restic backup ${name}"} \
+                --why=${lib.escapeShellArg "Protecting an active Restic SFTP backup"} \
+                --mode=block \
+                ${pkgs.coreutils}/bin/sleep infinity
+            '';
+          };
+        };
+      })
+    enabledJobs);
   };
 }

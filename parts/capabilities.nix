@@ -43,6 +43,7 @@ in {
       "--keep-monthly 12"
     ],
     checkOpts ? ["--read-data-subset=1G"],
+    inhibitSleep ? false,
     timerConfig ? {
       OnCalendar = "05:30";
       RandomizedDelaySec = "1h";
@@ -57,7 +58,7 @@ in {
         inherit enable;
       }
       // lib.optionalAttrs enable {
-        inherit user paths exclude pruneOpts checkOpts timerConfig identityFile passwordFile target;
+        inherit user paths exclude pruneOpts checkOpts inhibitSleep timerConfig identityFile passwordFile target;
       };
   };
 }
