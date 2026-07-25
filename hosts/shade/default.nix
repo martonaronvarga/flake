@@ -28,12 +28,22 @@
       if [ "$retry_was_active" = 1 ]; then
         ssh "''${ssh_args[@]}" "$remote" 'sudo systemctl stop gloam-a1-retry.service'
       fi
-      ssh "''${ssh_args[@]}" "$remote" \
-        'if sudo test -f /var/lib/gloam-a1-retry/terraform.tfstate; then
-           sudo cat /var/lib/gloam-a1-retry/terraform.tfstate
-         else
-           sudo cat /opt/gloam/oci-edge/terraform.tfstate
-         fi' > "$staging/terraform.tfstate"
+      remote_state="$(ssh "''${ssh_args[@]}" "$remote" \
+        'for candidate in \
+           /var/lib/gloam-a1-retry/terraform.tfstate \
+           /opt/gloam/oci-edge/terraform.tfstate; do
+           if sudo test -f "$candidate"; then
+             printf %s "$candidate"
+             break
+           fi
+         done')"
+      if [ -z "$remote_state" ]; then
+        echo "No OpenTofu state is present on Ubuntu Gloam; preserving the existing mirror."
+        exit 0
+      fi
+      # shellcheck disable=SC2029
+      ssh "''${ssh_args[@]}" "$remote" "sudo cat '$remote_state'" \
+        > "$staging/terraform.tfstate"
       jq -e '.lineage and (.serial >= 0)' "$staging/terraform.tfstate" >/dev/null
       sha256sum "$staging/terraform.tfstate" > "$staging/SHA256SUMS"
       jq -r '"serial=\(.serial) lineage=\(.lineage)"' \
