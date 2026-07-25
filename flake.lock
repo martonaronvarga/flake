@@ -1382,11 +1382,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785013240,
-        "narHash": "sha256-h66Z3h1jG8fqdbfLzAf8yrwoKK0ser81abKqT2Mx61g=",
+        "lastModified": 1785016038,
+        "narHash": "sha256-lS9Z+PP+FMlduUzqj1a0K7wK4luCoZgJxRK49IsrNEM=",
         "ref": "main",
-        "rev": "a4566aa725c36fcc78c2e9bc3b3122ca61a771da",
-        "revCount": 4,
+        "rev": "110233c442c691890482abd075232de3b773dc79",
+        "revCount": 5,
         "type": "git",
         "url": "https://git.martonaronvarga.dev/usu/rfcs.git"
       },
