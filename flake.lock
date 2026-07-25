@@ -1382,11 +1382,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784919276,
-        "narHash": "sha256-e/XiPt9WhkHMbONvV7nNLXA71Mm06AA42y1p1/ii7XA=",
+        "lastModified": 1785010178,
+        "narHash": "sha256-XmVzkY1MyEdTN64trsUrIAyq0huN9P19zGTOPisN1u4=",
         "ref": "main",
-        "rev": "c1eab6a7e0b8009b559d3aa2812baa73a2b923d4",
-        "revCount": 2,
+        "rev": "f19915213fcf0b86371c9764814f5b6bd3c48319",
+        "revCount": 3,
         "type": "git",
         "url": "https://git.martonaronvarga.dev/usu/rfcs.git"
       },
@@ -1562,11 +1562,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1783992919,
-        "narHash": "sha256-7gXVH1MdgRwCcQnYO72BiseG3i3UCaPDLg4Kf169kiM=",
+        "lastModified": 1785010178,
+        "narHash": "sha256-89HGKzqaBE3o8flYSXbA/ZaWZMMmEhmnq4iFYQwTxnI=",
         "ref": "main",
-        "rev": "8c0baf459281e007b64655f49dc97d282afc504e",
-        "revCount": 2,
+        "rev": "872f4d2589dd405d7e807bad3abf92547a65be23",
+        "revCount": 3,
         "type": "git",
         "url": "https://git.martonaronvarga.dev/usu/martonaronvarga.dev.git"
       },
