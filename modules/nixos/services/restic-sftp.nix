@@ -141,9 +141,6 @@ in {
         "restic-backups-${name}" = {
           after = ["restic-backups-${name}-sleep-inhibitor.service"];
           requires = ["restic-backups-${name}-sleep-inhibitor.service"];
-          serviceConfig.ExecStopPost = [
-            "+${pkgs.systemd}/bin/systemctl stop restic-backups-${name}-sleep-inhibitor.service"
-          ];
         };
 
         "restic-backups-${name}-sleep-inhibitor" = {
