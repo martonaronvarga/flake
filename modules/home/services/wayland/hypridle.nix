@@ -14,6 +14,12 @@
     fi
   '';
 
+  lockScript = pkgs.writeShellScript "lock-screen" ''
+    if ! ${pkgs.procps}/bin/pidof hyprlock >/dev/null; then
+      exec ${lib.getExe config.programs.hyprlock.package}
+    fi
+  '';
+
   brillo = lib.getExe pkgs.brillo;
 
   # timeout after which DPMS kicks in
@@ -27,7 +33,10 @@ in {
 
     settings = {
       general = {
-        lock_cmd = lib.getExe config.programs.hyprlock.package;
+        # login1 can emit another lock event while Hyprlock already owns the
+        # session during suspend. A second instance would contend for the
+        # single fprintd device and can leave an unreleasable stale claim.
+        lock_cmd = lockScript.outPath;
         before_sleep_cmd = "${pkgs.systemd}/bin/loginctl lock-session";
       };
 
