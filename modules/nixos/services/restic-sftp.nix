@@ -136,7 +136,55 @@ in {
       })
       enabledJobs;
 
-    systemd.services = lib.mkMerge (lib.mapAttrsToList (name: job:
+    systemd.services = lib.mkMerge (lib.mapAttrsToList (name: job: let
+      sleepInhibitor = pkgs.writeShellApplication {
+        name = "restic-${name}-sleep-inhibitor";
+        runtimeInputs = [pkgs.coreutils pkgs.systemd];
+        text = ''
+          child_pid=""
+
+          cleanup() {
+            if [[ -n "$child_pid" ]]; then
+              kill "$child_pid" 2>/dev/null || true
+              wait "$child_pid" 2>/dev/null || true
+            fi
+          }
+
+          terminate() {
+            cleanup
+            trap - EXIT
+            exit 0
+          }
+
+          trap cleanup EXIT
+          trap terminate INT TERM
+
+          while true; do
+            systemd-inhibit \
+              --what=sleep \
+              --who=${lib.escapeShellArg "Restic backup ${name}"} \
+              --why=${lib.escapeShellArg "Protecting an active Restic SFTP backup"} \
+              --mode=block \
+              sleep infinity &
+            child_pid=$!
+
+            # A persistent timer can fire while the machine is still resuming.
+            # systemd-inhibit exits immediately in that case, so wait briefly
+            # and retry instead of leaving a failed helper unit behind.
+            sleep 1
+            if kill -0 "$child_pid" 2>/dev/null; then
+              systemd-notify --ready
+              wait "$child_pid"
+              exit $?
+            fi
+
+            wait "$child_pid" 2>/dev/null || true
+            child_pid=""
+            sleep 1
+          done
+        '';
+      };
+    in
       lib.optionalAttrs job.inhibitSleep {
         "restic-backups-${name}" = {
           after = ["restic-backups-${name}-sleep-inhibitor.service"];
@@ -147,15 +195,9 @@ in {
           description = "Sleep inhibitor for Restic backup ${name}";
           unitConfig.StopWhenUnneeded = true;
           serviceConfig = {
-            Type = "simple";
-            ExecStart = ''
-              ${pkgs.systemd}/bin/systemd-inhibit \
-                --what=sleep \
-                --who=${lib.escapeShellArg "Restic backup ${name}"} \
-                --why=${lib.escapeShellArg "Protecting an active Restic SFTP backup"} \
-                --mode=block \
-                ${pkgs.coreutils}/bin/sleep infinity
-            '';
+            Type = "notify";
+            ExecStart = lib.getExe sleepInhibitor;
+            TimeoutStartSec = "infinity";
           };
         };
       })

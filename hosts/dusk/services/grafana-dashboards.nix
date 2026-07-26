@@ -871,7 +871,7 @@
         id = 5;
         title = "Failed backup units";
         description = "Backup-related services currently failed.";
-        expr = "sum(node_systemd_unit_state{name=~\"restic-backups-.*\\\\.service|backup-vaultwarden.service|forgejo-dump.service|continuwuity-(maintenance|weekly-archive)\\\\.service\",state=\"failed\"})";
+        expr = "sum(node_systemd_unit_state{name=~\"restic-backups-.*\\\\.service|backup-vaultwarden.service|forgejo-dump.service|continuwuity-(maintenance|weekly-archive)\\\\.service\",name!~\".*-sleep-inhibitor\\\\.service\",state=\"failed\"})";
         x = 12;
         y = 4;
       })

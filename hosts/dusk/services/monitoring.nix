@@ -392,7 +392,7 @@ in {
           ''}
 
                 - alert: ResticBackupFailed
-                  expr: node_systemd_unit_state{name=~"restic-backups-.*\\.service", state="failed"} == 1
+                  expr: node_systemd_unit_state{name=~"restic-backups-.*\\.service", name!~".*-sleep-inhibitor\\.service", state="failed"} == 1
                   for: 5m
                   labels:
                     severity: warning
