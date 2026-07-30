@@ -6,6 +6,11 @@ in {
     enable = true;
     domain = "rfc.${domain}";
   };
+  radicle = {
+    enable = true;
+    seedDomain = "seed.${domain}";
+    webDomain = "radicle.${domain}";
+  };
   matrixLab = {
     enable = false;
     serverName = "metascience.elte.hu";
@@ -54,6 +59,9 @@ in {
         nodeExporter = 9100;
         matrix = 6167;
         matrixLab = 6168;
+        radicleNode = 8776;
+        radicleHttpd = 8082;
+        radicleExplorer = 8083;
       };
     };
     shade = {

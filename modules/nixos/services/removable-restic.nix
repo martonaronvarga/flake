@@ -117,6 +117,7 @@ in {
           "/var/lib/forgejo"
           "/var/lib/continuwuity"
           "/var/lib/vaultwarden"
+          "/var/lib/radicle"
         ]
         ++ lib.optionals inventory.matrixLab.enable [
           "/persist/backups/matrix"

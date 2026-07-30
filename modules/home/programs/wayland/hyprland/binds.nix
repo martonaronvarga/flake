@@ -86,6 +86,11 @@ in {
       ]
       ++ workspaces;
 
+    bindr = [
+      "$mod SHIFT, W, exec, select-wallpaper"
+      "$mod SHIFT, B, exec, select-waybar"
+    ];
+
     bindl = [
       # media controls
       ", XF86AudioPlay, exec, playerctl play-pause"

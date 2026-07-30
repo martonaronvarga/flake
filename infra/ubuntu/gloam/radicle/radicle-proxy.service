@@ -1,0 +1,23 @@
+[Unit]
+Description=Proxy Radicle traffic to dusk over WireGuard
+Documentation=https://radicle.xyz/guides/seeder/
+After=wg-quick@wg0.service
+Wants=wg-quick@wg0.service
+
+[Service]
+ExecStart=/usr/lib/systemd/systemd-socket-proxyd 10.200.200.2:8776
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native

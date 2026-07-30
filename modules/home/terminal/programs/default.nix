@@ -12,5 +12,6 @@
     ./iamb.nix
     ./fastfetch.nix
     ./tmux.nix
+    ./radicle.nix
   ];
 }

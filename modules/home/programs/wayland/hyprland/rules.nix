@@ -50,7 +50,9 @@ in {
         "Bluetooth-Devices"
         "org.pulseaudio.pavucontrol"
         "pavucontrol"
-        "xdg-desktop-portal-gtk"
+        "termfilechooser"
+        "wallpaper-selector"
+        "waybar-selector"
       ]}, float true"
 
       "${classRegex [
@@ -58,11 +60,16 @@ in {
         "Bluetooth-Devices"
         "org.pulseaudio.pavucontrol"
         "pavucontrol"
-        "xdg-desktop-portal-gtk"
+        "termfilechooser"
+        "wallpaper-selector"
+        "waybar-selector"
       ]}, center true"
 
+      "match:class ^(wallpaper-selector)$, size 800 520"
+      "match:class ^(waybar-selector)$, size 460 220"
+
       "${classRegex [
-        "xdg-desktop-portal-gtk"
+        "termfilechooser"
         "hyprpolkitagent"
         "polkit-gnome-authentication-agent-1"
       ]}, dim_around true"
@@ -85,8 +92,8 @@ in {
       "match:class ^(firefox)$, no_blur true"
 
       # Portal file chooser itself.
-      "match:class ^(xdg-desktop-portal-gtk)$, size 900 650"
-      "match:class ^(xdg-desktop-portal-gtk)$, max_size 1100 800"
+      "match:class ^(termfilechooser)$, size 900 650"
+      "match:class ^(termfilechooser)$, max_size 1100 800"
 
       # Launchers / panels / small utilities
       "match:class ^(fuzzel)$, float true"

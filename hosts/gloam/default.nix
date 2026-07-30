@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (inventory) domain matrixLab network rfcs;
+  inherit (inventory) domain matrixLab network radicle rfcs;
   shadeSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3xygPFeJRmLkyiV0P/vak54Wh7ggq9B6HanmUa137A usu@shade";
 in {
   imports = [
@@ -29,7 +29,7 @@ in {
     useDHCP = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [80 443];
+      allowedTCPPorts = [80 443 network.dusk.ports.radicleNode];
       allowedUDPPorts = [network.gloam.wireguard.port];
       interfaces.${network.wireguard.interface}.allowedTCPPorts = [22];
     };
@@ -136,6 +136,21 @@ in {
         };
       }
       // {
+        ${radicle.seedDomain} = lib.mkIf radicle.enable {
+          enableACME = true;
+          forceSSL = true;
+          locations."/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.radicleHttpd}";
+        };
+
+        ${radicle.webDomain} = lib.mkIf radicle.enable {
+          enableACME = true;
+          forceSSL = true;
+          locations = {
+            "/api/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.radicleHttpd}";
+            "/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.radicleExplorer}";
+          };
+        };
+
         ${rfcs.domain} = lib.mkIf rfcs.enable {
           enableACME = true;
           forceSSL = true;
@@ -168,9 +183,33 @@ in {
     defaults.email = "martonaronvarga@gmail.com";
   };
 
-  systemd.tmpfiles.rules = [
-    "d /persist/etc/wireguard 0700 root root -"
-  ];
+  systemd = {
+    sockets.radicle-proxy = lib.mkIf radicle.enable {
+      description = "Public Radicle seed socket";
+      wantedBy = ["sockets.target"];
+      listenStreams = ["0.0.0.0:${toString network.dusk.ports.radicleNode}"];
+      socketConfig.NoDelay = true;
+    };
+
+    services.radicle-proxy = lib.mkIf radicle.enable {
+      description = "Proxy Radicle traffic to dusk over WireGuard";
+      after = ["wg-quick-${network.wireguard.interface}.service"];
+      wants = ["wg-quick-${network.wireguard.interface}.service"];
+      serviceConfig = {
+        ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd ${network.dusk.wireguard.address}:${toString network.dusk.ports.radicleNode}";
+        NoNewPrivileges = true;
+        PrivateDevices = true;
+        PrivateTmp = true;
+        ProtectHome = true;
+        ProtectSystem = "strict";
+        RestrictAddressFamilies = ["AF_INET" "AF_INET6"];
+      };
+    };
+
+    tmpfiles.rules = [
+      "d /persist/etc/wireguard 0700 root root -"
+    ];
+  };
 
   fileSystems."/var".neededForBoot = true;
 

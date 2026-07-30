@@ -6,7 +6,7 @@
   ...
 }: let
   alertmanagerEnv = "/run/alertmanager/smtp.env";
-  inherit (inventory) mail matrixLab network;
+  inherit (inventory) mail matrixLab network radicle;
   blackboxConfig = pkgs.writeText "blackbox.yml" ''
     modules:
       public_website:
@@ -30,6 +30,24 @@
           preferred_ip_protocol: ip4
           fail_if_not_ssl: true
           fail_if_body_not_matches_regexp: ["Forgejo|Personal software forge"]
+      public_radicle_api:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+      public_radicle_explorer:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
+          fail_if_not_ssl: true
+          fail_if_body_not_matches_regexp: ["Radicle"]
+      backend_radicle_api:
+        prober: http
+        timeout: 10s
+        http:
+          preferred_ip_protocol: ip4
       public_matrix_client:
         prober: http
         timeout: 15s
@@ -101,6 +119,11 @@
         icmp:
           preferred_ip_protocol: ip4
           ip_protocol_fallback: false
+      tcp_connect:
+        prober: tcp
+        timeout: 10s
+        tcp:
+          preferred_ip_protocol: ip4
       dns_quad9_dot:
         prober: dns
         timeout: 5s
@@ -208,6 +231,32 @@ in {
           name = "public-forge";
           module = "public_forge";
           target = "https://git.martonaronvarga.dev/";
+        })
+        (mkBlackboxScrape {
+          name = "public-radicle-api";
+          module = "public_radicle_api";
+          # Exercise the same-origin route used by the browser Explorer.
+          target = "https://${radicle.webDomain}/api/v1";
+        })
+        (mkBlackboxScrape {
+          name = "public-radicle-explorer";
+          module = "public_radicle_explorer";
+          target = "https://${radicle.webDomain}/";
+        })
+        (mkBlackboxScrape {
+          name = "public-radicle-seed";
+          module = "tcp_connect";
+          target = "${radicle.seedDomain}:${toString network.dusk.ports.radicleNode}";
+        })
+        (mkBlackboxScrape {
+          name = "backend-radicle-api";
+          module = "backend_radicle_api";
+          target = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.radicleHttpd}/api/v1";
+        })
+        (mkBlackboxScrape {
+          name = "backend-radicle-seed";
+          module = "tcp_connect";
+          target = "${network.dusk.wireguard.address}:${toString network.dusk.ports.radicleNode}";
         })
         (mkBlackboxScrape {
           name = "public-matrix-client";
@@ -333,6 +382,22 @@ in {
                     severity: warning
                   annotations:
                     summary: "the owner-scoped Forgejo runner is not active on dusk"
+
+                - alert: RadicleNodeDown
+                  expr: node_systemd_unit_state{name="radicle-node.service", state="active"} != 1
+                  for: 5m
+                  labels:
+                    severity: critical
+                  annotations:
+                    summary: "the Radicle seed node is not active on dusk"
+
+                - alert: RadicleHttpdDown
+                  expr: node_systemd_unit_state{name="radicle-httpd.service", state="active"} != 1
+                  for: 5m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "the Radicle HTTP API is not active on dusk"
 
                 - alert: ContinuwuityDown
                   expr: node_systemd_unit_state{name="continuwuity.service", state="active"} != 1

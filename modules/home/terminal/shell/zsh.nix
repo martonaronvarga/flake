@@ -26,73 +26,6 @@
       export BAT_THEME=base16
       export OCI_CLI_CONFIG_FILE="$HOME/.config/oci/config"
       export OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True
-      export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
-      export FZF_CTRL_T_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
-      export FZF_ALT_C_COMMAND='fd --type d --strip-cwd-prefix --hidden --follow --exclude .git'
-
-      export FZF_DEFAULT_OPTS='
-        --height=80%
-        --layout=reverse
-        --cycle
-        --border
-        --info=inline
-        --prompt=>\
-        --scrollbar=|
-        --separator=-
-        --no-bold
-        --pointer=>
-        --marker=*
-        --preview-window=right:50%:border-left
-        --color=border:#1a1a1a
-        --color=bg:#000000
-        --color=bg+:#1a1a1a
-        --color=fg:#d0d0d0
-        --color=fg+:#ffffff
-        --color=hl:#33aa77
-        --color=hl+:#33aa77
-        --color=info:#aaaaaa
-        --color=prompt:#e25303
-        --color=pointer:#e25303
-        --color=marker:#33aa77
-        --color=spinner:#e25303
-        --color=header:#5e676e
-        --bind "ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)"
-        --bind=ctrl-j:down,ctrl-k:up,ctrl-n:down,ctrl-p:up
-        --bind=tab:down,btab:up
-      '
-
-      export FZF_CTRL_T_OPTS='
-        --ansi
-        --preview "bat -n --color=always --style=numbers --line-range :300 {}"
-        --preview-window=right:50%:border-left
-        --walker-skip .git,node_modules,target
-        --bind "ctrl-/:change-preview-window(down|hidden|)"
-      '
-
-      export FZF_CTRL_R_OPTS='
-        --height=60%
-        --layout=reverse
-        --border=rounded
-        --info=inline
-        --prompt=history>\
-        --pointer=>
-        --marker=*
-        --no-multi
-        --no-wrap
-        --bind=ctrl-j:down,ctrl-k:up,ctrl-n:down,ctrl-p:up
-        --bind=tab:down,btab:up
-        --bind "ctrl-y:execute-silent(printf %s {2..} | wl-copy --trim-newline)+abort"
-        --color header:italic
-        --header "enter: insert  ctrl-y: copy  ctrl-r: sort  esc: cancel"
-      '
-
-      export FZF_ALT_C_OPTS='
-        --ansi
-        --preview "eza --tree --color=always --icons {} | head -200"
-        --walker-skip .git,node_modules,target
-        --preview-window=right:50%:border-left
-      '
-
       export FZF_COMPLETION_PATH_OPTS='--walker file,dir,follow,hidden'
       export FZF_COMPLETION_DIR_OPTS='--walker dir,follow'
     '';
@@ -223,7 +156,7 @@
       fe = ''
         local -a files
         files=("''${(@f)$(fzf --query="''${1:-}" --multi --select-1 --exit-0 \
-          --preview='bat --color=always --style=numbers --line-range=:300 -- {}' \
+          --preview='bat --color=never --style=numbers --line-range=:300 -- {}' \
           --header='enter: edit  tab: select  esc: cancel')}")
         (( ''${#files} )) || return 0
         ''${EDITOR:-hx} "''${files[@]}"
@@ -234,9 +167,9 @@
           return 2
         }
 
-        rg --line-number --no-heading --color=always --smart-case "''${*:-}" |
-        fzf --ansi --delimiter : \
-          --preview 'bat --style=numbers --color=always {1} --highlight-line {2}' \
+        rg --line-number --no-heading --color=never --smart-case "''${*:-}" |
+        fzf --delimiter : \
+          --preview 'bat --style=numbers --color=never {1} --highlight-line {2}' \
           --preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
           --header='enter: edit match  esc: cancel' \
           --bind 'enter:become(''${EDITOR:-hx} {1}:{2})'
@@ -289,7 +222,7 @@
         local branch
         branch="$(git branch --all --format='%(refname:short)' |
           fzf --header='enter: checkout branch  esc: cancel' \
-            --preview 'git log -n 20 --color=always -- {}')"
+            --preview 'git log -n 20 --color=never -- {}')"
         [[ -n "$branch" ]] || return 0
         git checkout -- "$branch"
       '';
@@ -318,7 +251,7 @@
           git diff --cached --name-only
           git ls-files --others --exclude-standard
         } | sort -u | fzf --multi \
-          --preview 'bat --color=always --style=numbers -- {}' \
+          --preview 'bat --color=never --style=numbers -- {}' \
           --header='enter: edit  tab: select  esc: cancel')}")
         (( ''${#files} )) || return 0
         ''${EDITOR:-hx} "''${files[@]}"
@@ -401,8 +334,7 @@
             display="''${display//$'\t'/  }"
             printf '%s\t%s\0' "$id" "$display"
           done
-        } | FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS $FZF_CTRL_R_OPTS" \
-          FZF_DEFAULT_OPTS_FILE= fzf \
+        } | FZF_DEFAULT_OPTS="$FZF_CTRL_R_OPTS" fzf \
           --read0 \
           --delimiter=$'\t' \
           --with-nth=2.. \
@@ -426,7 +358,22 @@
 
       if [[ $(tty) == /dev/tty1 ]]; then
         if uwsm check may-start; then
-          exec uwsm start hyprland-uwsm.desktop
+          print 'Choose a Wayland session:'
+          print '  1) Hyprland'
+          print '  2) Niri'
+          print -n 'Session [1/2]: '
+          read -r wayland_session
+          case "$wayland_session" in
+            2|n|N|niri|Niri)
+              exec uwsm start niri-uwsm.desktop
+              ;;
+            1|h|H|hyprland|Hyprland|"")
+              exec uwsm start hyprland-uwsm.desktop
+              ;;
+            *)
+              print -u2 'Unknown session; staying in the shell.'
+              ;;
+          esac
         fi
       fi
     '';

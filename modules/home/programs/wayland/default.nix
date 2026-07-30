@@ -3,6 +3,8 @@
 {
   imports = [
     ./hyprland
+    ./niri.nix
+    ./portals.nix
     ./hyprlock.nix
     ./wlogout.nix
   ];
@@ -20,6 +22,7 @@
 
   # make stuff work on wayland
   home.sessionVariables = {
+    GTK_USE_PORTAL = "1";
     QT_QPA_PLATFORM = "wayland";
     SDL_VIDEODRIVER = "wayland";
     XDG_SESSION_TYPE = "wayland";

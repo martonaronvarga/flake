@@ -122,6 +122,23 @@ resource "oci_core_network_security_group_security_rule" "https" {
   }
 }
 
+resource "oci_core_network_security_group_security_rule" "radicle" {
+  network_security_group_id = oci_core_network_security_group.edge.id
+  direction                 = "INGRESS"
+  protocol                  = "6"
+  source                    = "0.0.0.0/0"
+  source_type               = "CIDR_BLOCK"
+  stateless                 = false
+  description               = "Public Radicle seed protocol ingress."
+
+  tcp_options {
+    destination_port_range {
+      min = 8776
+      max = 8776
+    }
+  }
+}
+
 resource "oci_core_network_security_group_security_rule" "egress_all" {
   network_security_group_id = oci_core_network_security_group.edge.id
   direction                 = "EGRESS"

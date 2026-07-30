@@ -98,6 +98,11 @@
         systems.follows = "hyprland/systems";
       };
     };
+
+    niri = {
+      url = "github:niri-wm/niri?ref=v26.04";
+      inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    };
   };
 
   outputs = inputs @ {flake-parts, ...}:
@@ -153,6 +158,8 @@
         };
 
         formatter = pkgs.alejandra;
+
+        packages.tx-02 = pkgs.callPackage ./packages/tx-02.nix {};
 
         checks = nixpkgsLib.optionalAttrs (system == "x86_64-linux") {
           alejandra = mkCheck "alejandra-check" pkgs.alejandra "alejandra --check";

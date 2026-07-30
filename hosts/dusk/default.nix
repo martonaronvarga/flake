@@ -20,6 +20,7 @@ in {
     ./services/matrix-lab.nix
     ./services/rfcs.nix
     ./services/website.nix
+    ./services/radicle.nix
   ];
 
   networking.hostName = "dusk";
@@ -71,6 +72,12 @@ in {
           mode = "0440";
           path = "/run/agenix/forgejo-runner-token";
         };
+        radicle-seed-key = {
+          file = ../../secrets/radicle_seed_key.age;
+          owner = "radicle";
+          mode = "0400";
+          path = "/run/agenix/radicle-seed-key";
+        };
         restic-external-password = {
           file = ../../secrets/restic_external_password.age;
           owner = "root";
@@ -103,6 +110,12 @@ in {
         "/var/lib/forgejo"
         "/var/lib/gitea-runner"
         "/var/lib/containers"
+        {
+          directory = "/var/lib/radicle";
+          user = "radicle";
+          group = "radicle";
+          mode = "0750";
+        }
         {
           directory = "/var/lib/continuwuity";
           user = "continuwuity";

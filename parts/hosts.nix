@@ -19,6 +19,7 @@
     graphical = ../profiles/nixos/graphical.nix;
     headless = ../profiles/nixos/headless.nix;
     hyprland = ../profiles/nixos/hyprland.nix;
+    niri = ../profiles/nixos/niri.nix;
     laptop = ../profiles/nixos/laptop.nix;
     laptop-server = ../profiles/nixos/laptop-server.nix;
     server = ../profiles/nixos/server.nix;
@@ -54,7 +55,7 @@
     shade = {
       system = "x86_64-linux";
       tags = ["laptop" "desktop" "personal"];
-      profiles = ["base" "laptop" "graphical" "hyprland" "audio"];
+      profiles = ["base" "laptop" "graphical" "hyprland" "niri" "audio"];
       externalModules = [
         inputs.disko.nixosModules.default
         inputs.impermanence.nixosModules.impermanence

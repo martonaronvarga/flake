@@ -5,6 +5,9 @@
   inputs,
   ...
 }: let
+  system = pkgs.stdenv.hostPlatform.system;
+  niriPackage = inputs.niri.packages.${system}.niri;
+
   suspendScript = pkgs.writeShellScript "suspend-script" ''
     # check if any player has status "Playing"
     ${lib.getExe pkgs.playerctl} -a status | ${lib.getExe pkgs.ripgrep} Playing -q
@@ -21,6 +24,27 @@
   '';
 
   brillo = lib.getExe pkgs.brillo;
+
+  dpmsScript = pkgs.writeShellScript "wayland-dpms" ''
+    case "''${1:-}" in
+      off)
+        if [ -n "''${NIRI_SOCKET:-}" ]; then
+          exec ${niriPackage}/bin/niri msg action power-off-monitors
+        fi
+        exec ${pkgs.hyprland}/bin/hyprctl dispatch dpms off
+        ;;
+      on)
+        if [ -n "''${NIRI_SOCKET:-}" ]; then
+          exec ${niriPackage}/bin/niri msg action power-on-monitors
+        fi
+        exec ${pkgs.hyprland}/bin/hyprctl dispatch dpms on
+        ;;
+      *)
+        echo "usage: wayland-dpms {on|off}" >&2
+        exit 2
+        ;;
+    esac
+  '';
 
   # timeout after which DPMS kicks in
   timeout = 600;
@@ -51,8 +75,8 @@ in {
         }
         {
           inherit timeout;
-          on-timeout = "hyprctl dispatch dpms off";
-          on-resume = "hyprctl dispatch dpms on";
+          on-timeout = "${dpmsScript} off";
+          on-resume = "${dpmsScript} on";
         }
         {
           timeout = timeout + 10;

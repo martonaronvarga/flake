@@ -18,6 +18,7 @@ _: {
         mode = "0700";
       }
       ".local/state/oama"
+      ".local/state/wayland-appearance"
       ".local/share/wluma"
       ".cache/aerc"
       ".config/mozilla/firefox"
@@ -37,6 +38,10 @@ _: {
       }
       {
         directory = ".ssh";
+        mode = "0700";
+      }
+      {
+        directory = ".radicle";
         mode = "0700";
       }
       {

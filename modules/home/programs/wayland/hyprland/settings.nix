@@ -24,13 +24,12 @@ in {
       "uwsm finalize"
       "hyprctl setcursor ${cursorName} ${toString pointer.size}"
       "blueman-applet"
-      "waybar"
     ];
 
     general = {
       layout = "dwindle";
       gaps_in = 5;
-      gaps_out = 20;
+      gaps_out = 10;
       border_size = 2;
       "col.active_border" = "rgba(000000ff) rgba(808080ee) 45deg";
       "col.inactive_border" = "rgba(00000066)";

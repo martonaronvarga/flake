@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source_dir="$repo_root/infra/ubuntu/gloam/radicle"
+remote="${GLOAM_SSH_TARGET:-gloam}"
+mode="${1:---check}"
+
+check_remote() {
+	ssh "$remote" '
+    set -eu
+    test "$(. /etc/os-release && printf %s "$ID")" = ubuntu
+    command -v nginx >/dev/null
+    command -v certbot >/dev/null
+    test -x /usr/lib/systemd/systemd-socket-proxyd
+    sudo nginx -t
+    sudo wg show wg0 >/dev/null
+    timeout 3 bash -c "</dev/tcp/10.200.200.2/22"
+  '
+}
+
+case "$mode" in
+--check)
+	check_remote
+	ssh "$remote" 'systemctl is-active nginx wg-quick@wg0; systemctl is-active radicle-proxy.socket 2>/dev/null || true'
+	;;
+--apply)
+	check_remote
+	remote_tmp="$(ssh "$remote" 'mktemp -d /tmp/radicle-edge.XXXXXX')"
+	trap 'ssh "$remote" "rm -rf -- ${remote_tmp@Q}" >/dev/null 2>&1 || true' EXIT
+	scp "$source_dir"/* "$remote:$remote_tmp/"
+	ssh "$remote" "REMOTE_TMP=${remote_tmp@Q} bash -s" <<'REMOTE'
+set -euo pipefail
+stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+backup="/var/backups/radicle-edge/$stamp"
+sudo install -d -m 0750 "$backup"
+
+for path in \
+  /etc/iptables/rules.v4 \
+  /etc/systemd/system/radicle-proxy.socket \
+  /etc/systemd/system/radicle-proxy.service \
+  /etc/nginx/sites-available/seed.martonaronvarga.dev \
+  /etc/nginx/sites-available/radicle.martonaronvarga.dev; do
+  if sudo test -e "$path"; then
+    sudo cp -a "$path" "$backup/"
+  fi
+done
+
+sudo install -m 0644 "$REMOTE_TMP/radicle-proxy.socket" /etc/systemd/system/radicle-proxy.socket
+sudo install -m 0644 "$REMOTE_TMP/radicle-proxy.service" /etc/systemd/system/radicle-proxy.service
+
+for domain in seed.martonaronvarga.dev radicle.martonaronvarga.dev; do
+  sudo install -m 0644 "$REMOTE_TMP/$domain.bootstrap.conf" "/etc/nginx/sites-available/$domain"
+  sudo ln -sfn "/etc/nginx/sites-available/$domain" "/etc/nginx/sites-enabled/$domain"
+done
+sudo nginx -t
+sudo systemctl reload nginx
+
+for domain in seed.martonaronvarga.dev radicle.martonaronvarga.dev; do
+  if ! sudo test -s "/etc/letsencrypt/live/$domain/fullchain.pem"; then
+    sudo certbot certonly --nginx --non-interactive --agree-tos \
+      --email martonaronvarga@gmail.com --domain "$domain"
+  fi
+done
+
+# Keep both bootstrap sites valid until every certificate exists. Otherwise a
+# final TLS site installed for the first domain can prevent Certbot from
+# validating Nginx while requesting the second certificate.
+for domain in seed.martonaronvarga.dev radicle.martonaronvarga.dev; do
+  sudo install -m 0644 "$REMOTE_TMP/$domain.conf" "/etc/nginx/sites-available/$domain"
+done
+
+sudo nginx -t
+sudo systemctl daemon-reload
+sudo systemctl enable --now radicle-proxy.socket
+sudo systemctl reload nginx
+sudo ufw allow 8776/tcp comment "Radicle seed"
+
+# Gloam's provider firewall restores a direct INPUT reject before the UFW
+# chains, so the UFW rule alone is not effective. Insert the exception before
+# the first reject and persist the complete ruleset for iptables.service.
+if ! sudo iptables -C INPUT -p tcp --dport 8776 -j ACCEPT 2>/dev/null; then
+  reject_line="$(sudo iptables -L INPUT --line-numbers -n | awk '$2 == "REJECT" { print $1; exit }')"
+  test -n "$reject_line"
+  sudo iptables -I INPUT "$reject_line" -p tcp --dport 8776 -j ACCEPT
+fi
+rules_tmp="$(mktemp)"
+sudo iptables-save >"$rules_tmp"
+sudo install -o root -g root -m 0644 "$rules_tmp" /etc/iptables/rules.v4
+rm -f "$rules_tmp"
+
+sudo systemctl --no-pager --full status radicle-proxy.socket
+REMOTE
+	;;
+*)
+	echo "usage: $0 [--check|--apply]" >&2
+	exit 2
+	;;
+esac

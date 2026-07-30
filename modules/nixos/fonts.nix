@@ -1,8 +1,12 @@
 {
   pkgs,
   lib,
+  inputs,
   ...
-}: {
+}: let
+  system = pkgs.stdenv.hostPlatform.system;
+  tx-02 = inputs.self.packages.${system}.tx-02;
+in {
   fonts = {
     fontconfig = {
       enable = true;
@@ -43,6 +47,7 @@
         font-awesome
         material-symbols
         material-design-icons
+        tx-02
       ])
       ++ (lib.filter lib.isDerivation (builtins.attrValues pkgs.tex-gyre));
 

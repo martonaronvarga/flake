@@ -1,7 +1,7 @@
 let
-  image = builtins.path {
-    path = ../../../../assets/wallpapers/snowflake.jpg;
-    name = "snowflake.jpg";
+  logo = builtins.path {
+    path = ../../../../assets/fastfetch/snowflake.txt;
+    name = "snowflake.txt";
   };
 in {
   xdg.configFile."fastfetch/config.jsonc".text = ''
@@ -9,28 +9,30 @@ in {
       "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
 
       "logo": {
-        "type": "kitty",
-        "source": "${image}",
-        "padding": {
-          "right": 5
+        "type": "file",
+        "source": "${logo}",
+        "color": {
+          "1": "cyan"
         },
-        "printRemaining": false
+        "padding": {
+          "right": 3
+        }
       },
 
       "display": {
-        "separator": " • ",
+        "separator": "  ",
         "brightColor": false,
 
         "color": {
           "title": "cyan",
-          "keys": "magenta",
-          "separator": "light_yellow",
-          "output": "light_yellow"
+          "keys": "cyan",
+          "separator": "bright_black",
+          "output": "white"
         },
 
         "key": {
           "type": "string",
-          "width": 2
+          "width": 3
         },
 
         "duration": {
@@ -73,7 +75,7 @@ in {
         {
           "type": "separator",
           "string": "─",
-          "outputColor": "light_yellow"
+          "outputColor": "bright_black"
         },
         {
           "type": "os",
