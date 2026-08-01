@@ -220,10 +220,14 @@ in {
           "github-https:martonaronvarga/"
         ];
       };
-      "url \"https://git.${domain}/\"" = {
+      "url \"ssh://forgejo/\"" = {
         insteadOf = [
           "forge:"
           "forgejo:"
+        ];
+      };
+      "url \"https://git.${domain}/\"" = {
+        insteadOf = [
           "forge-https:"
           "forgejo-https:"
         ];

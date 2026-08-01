@@ -133,6 +133,45 @@ seed DIDs to its allow list, and use `rad seed ... --from ...` on dusk. Before
 storing sensitive data, use a dummy private repository and confirm its RID is
 absent from the public API and Explorer.
 
+## Public repository inventory
+
+Forgejo is authoritative, GitHub is a Forgejo-managed push mirror, and Radicle
+is an additional public replica. `graph` intentionally has no Radicle identity.
+
+| Repository | Default branch | Radicle RID |
+| --- | --- | --- |
+| `flake` | `main` | `rad:zKjLfiXhv6bDM45sQYmc5USsNj9E` |
+| `rfcs` | `main` | `rad:z2tptGJa4cpaYngCznDqTR5EsBcjC` |
+| `alea` | `main` | `rad:z4423gBk4sGrUZHVx4PdTAcJzKZ57` |
+| `ba-thesis` | `main` | `rad:z3jRy39UjS4zHpPas6umX4ha89xQu` |
+| `cc-mverse` | `main` | `rad:z3jrfAWRRg6nftXvaHQNARhxzELRX` |
+| `cogex` | `main` | `rad:z47Grp8FZEDoJ92KRTQFaeNbrAyaS` |
+| `cse_simulation` | `master` | `rad:z4HvfSYxqPaG5FjrqCjqGb5Np3htg` |
+| `lp-simplex` | `main` | `rad:z4X2TuTucuBXNV8ijLCT4kcF8JTqe` |
+| `math` | `experiment/wiener-ratio-bounds` | `rad:z4XNG5K3JUEzftSjErcGtJi5kiEcA` |
+
+Local checkouts use `origin` for Forgejo, `github` for the read-only GitHub
+mirror, and `rad` for Radicle. Forgejo SSH listens only through WireGuard at
+the `forgejo` SSH alias. Shade's Radicle node likewise accepts inbound protocol
+connections only on its WireGuard address so dusk can fetch repositories.
+
+For routine publication, run this from a checkout or pass its path:
+
+```sh
+repo-publish
+repo-publish /persist/home/usu/documents/dev/cogex
+```
+
+The helper pushes and verifies Forgejo first, synchronizes Radicle when the
+checkout has an RID, and then waits for Forgejo's GitHub push mirror. It warns
+about a dirty worktree but publishes committed work only. Do not push directly
+to `github` during normal operation.
+
+Shade's encrypted identity passphrase is stored as the agenix secret
+`radicle_user_passphrase.age`; the user service reads it from
+`/run/agenix/radicle-user-passphrase`. Rotate it together with the encrypted
+Radicle key and never place its plaintext in Git or a systemd unit.
+
 ## Routine operations
 
 ```sh

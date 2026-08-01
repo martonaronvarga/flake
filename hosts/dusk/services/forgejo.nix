@@ -107,7 +107,7 @@ in {
         ENABLE_PUSH_CREATE_USER = true;
       };
       server = {
-        DISABLE_SSH = true;
+        DISABLE_SSH = false;
         DOMAIN = forgejoDomain;
         ENABLE_GZIP = true;
         HTTP_ADDR = network.dusk.wireguard.address;
@@ -115,7 +115,11 @@ in {
         OFFLINE_MODE = true;
         ROOT_URL = "https://${forgejoDomain}/";
         LANDING_PAGE = "home";
-        START_SSH_SERVER = false;
+        SSH_DOMAIN = forgejoDomain;
+        SSH_LISTEN_HOST = network.dusk.wireguard.address;
+        SSH_LISTEN_PORT = network.dusk.ports.forgejoSsh;
+        SSH_PORT = network.dusk.ports.forgejoSsh;
+        START_SSH_SERVER = true;
       };
       "service.explore".REQUIRE_SIGNIN_VIEW = false;
       service = {
@@ -139,6 +143,7 @@ in {
 
   networking.firewall.interfaces.${network.wireguard.interface}.allowedTCPPorts = [
     network.dusk.ports.forgejo
+    network.dusk.ports.forgejoSsh
   ];
 
   systemd.services = {

@@ -16,6 +16,104 @@
     meta.mainProgram = "fzf";
   };
 
+  repoPublish = pkgs.writeShellApplication {
+    name = "repo-publish";
+    runtimeInputs = with pkgs; [
+      coreutils
+      git
+      radicle-node
+    ];
+    text = ''
+      repository="''${1:-.}"
+      root=$(git -C "$repository" rev-parse --show-toplevel)
+      branch=$(git -C "$root" symbolic-ref --quiet --short HEAD) || {
+        echo "repo-publish: detached HEAD is not publishable" >&2
+        exit 1
+      }
+
+      origin_url=$(git -C "$root" remote get-url origin)
+      case "$origin_url" in
+        *git.martonaronvarga.dev/usu/* | forgejo:usu/* | ssh://forgejo/usu/*) ;;
+        *)
+          echo "repo-publish: origin is not the canonical Forgejo remote: $origin_url" >&2
+          exit 1
+          ;;
+      esac
+
+      if ! git -C "$root" diff --quiet ||
+        ! git -C "$root" diff --cached --quiet ||
+        test -n "$(git -C "$root" ls-files --others --exclude-standard)"; then
+        echo "repo-publish: warning: the working tree is dirty; only committed work will be published" >&2
+      fi
+
+      head=$(git -C "$root" rev-parse HEAD)
+      echo "repo-publish: pushing $branch to Forgejo"
+      git -C "$root" push origin "HEAD:refs/heads/$branch" --follow-tags
+      forgejo_head=$(git -C "$root" ls-remote origin "refs/heads/$branch" | cut -f1)
+      if test "$forgejo_head" != "$head"; then
+        echo "repo-publish: Forgejo verification failed ($forgejo_head != $head)" >&2
+        exit 1
+      fi
+      echo "repo-publish: Forgejo verified at $head"
+
+      if rid=$(rad inspect --rid "$root" 2>/dev/null); then
+        if test -z "''${SSH_AUTH_SOCK:-}"; then
+          SSH_AUTH_SOCK="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/gcr/ssh"
+          export SSH_AUTH_SOCK
+        fi
+        if test ! -S "$SSH_AUTH_SOCK"; then
+          echo "repo-publish: SSH agent socket is unavailable: $SSH_AUTH_SOCK" >&2
+          exit 1
+        fi
+        if test -r /run/agenix/radicle-user-passphrase; then
+          RAD_PASSPHRASE="$(< /run/agenix/radicle-user-passphrase)" \
+            rad auth
+        fi
+        echo "repo-publish: pushing $branch to $rid"
+        git -C "$root" push rad "HEAD:refs/heads/$branch"
+        radicle_home=$(rad self --home)
+        node_id=$(rad node status --only nid)
+        radicle_head=$(
+          git \
+            --git-dir="$radicle_home/storage/''${rid#rad:}" \
+            rev-parse "refs/namespaces/$node_id/refs/heads/$branch"
+        )
+        if test "$radicle_head" != "$head"; then
+          echo "repo-publish: Radicle verification failed ($radicle_head != $head)" >&2
+          exit 1
+        fi
+        echo "repo-publish: syncing $rid with the dusk seed"
+        (
+          cd "$root"
+          rad sync \
+            --seed z6MknCPa2uX2xtrRHHj5e9joMAmAnukNznzTgqSLLbJ1uHtv \
+            --replicas 1 \
+            --timeout 30s
+          rad sync status
+        )
+      else
+        echo "repo-publish: no Radicle identity; skipping Radicle"
+      fi
+
+      if git -C "$root" remote get-url github >/dev/null 2>&1; then
+        echo "repo-publish: waiting for the Forgejo push mirror"
+        github_head=""
+        for _ in $(seq 1 12); do
+          github_head=$(git -C "$root" ls-remote github "refs/heads/$branch" | cut -f1)
+          test "$github_head" = "$head" && break
+          sleep 10
+        done
+        if test "$github_head" != "$head"; then
+          echo "repo-publish: GitHub mirror did not reach $head within 2 minutes" >&2
+          exit 1
+        fi
+        echo "repo-publish: GitHub mirror verified at $head"
+      else
+        echo "repo-publish: no GitHub remote; skipping mirror verification"
+      fi
+    '';
+  };
+
   shellNavigation = with pkgs; [
     eza
     fd
@@ -69,7 +167,8 @@ in {
   xdg.configFile."fzf/fzfrc".text = config.home.sessionVariables.FZF_DEFAULT_OPTS;
 
   home.packages =
-    shellNavigation
+    [repoPublish]
+    ++ shellNavigation
     ++ fileInspection
     ++ archivesAndTransfer
     ++ monitoring

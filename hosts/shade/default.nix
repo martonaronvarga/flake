@@ -152,6 +152,12 @@ in {
           mode = "0400";
           path = "/run/agenix/shade-dusk-builder-key";
         };
+        radicle-user-passphrase = {
+          file = ../../secrets/radicle_user_passphrase.age;
+          owner = "usu";
+          mode = "0400";
+          path = "/run/agenix/radicle-user-passphrase";
+        };
       };
     };
 
@@ -176,6 +182,10 @@ in {
   };
 
   boot.kernel.sysctl."vm.swappiness" = 10;
+
+  networking.firewall.interfaces.${network.wireguard.interface}.allowedTCPPorts = [
+    network.shade.ports.radicleNode
+  ];
 
   nix = {
     distributedBuilds = true;

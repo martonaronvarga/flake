@@ -54,6 +54,7 @@ in {
         rfcs = 8081;
         vaultwarden = 8222;
         forgejo = 3001;
+        forgejoSsh = 2222;
         grafana = 3000;
         prometheus = 9090;
         nodeExporter = 9100;
@@ -70,7 +71,10 @@ in {
         cidr = "10.200.200.3/32";
         publicKey = "/IvwqxIkfzB3DxDqeKzH2Wf5S5anky4Gdor6jvq4MA8=";
       };
-      ports.nodeExporter = 9100;
+      ports = {
+        nodeExporter = 9100;
+        radicleNode = 8776;
+      };
     };
   };
 }

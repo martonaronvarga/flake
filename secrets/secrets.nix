@@ -21,4 +21,5 @@ in {
   "vaultwarden_env.age".publicKeys = [usu dusk];
   "forgejo_runner_token.age".publicKeys = [usu dusk];
   "radicle_seed_key.age".publicKeys = [usu dusk];
+  "radicle_user_passphrase.age".publicKeys = [usu];
 }

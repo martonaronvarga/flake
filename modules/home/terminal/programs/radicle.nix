@@ -1,8 +1,19 @@
 {
+  inventory,
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (inventory) network;
+  startRadicle = pkgs.writeShellScript "start-radicle-node" ''
+    set -eu
+    RAD_PASSPHRASE="$(< /run/agenix/radicle-user-passphrase)"
+    export RAD_PASSPHRASE
+    exec ${lib.getExe' pkgs.radicle-node "radicle-node"} \
+      --force \
+      --listen ${network.shade.wireguard.address}:${toString network.shade.ports.radicleNode}
+  '';
+in {
   home.packages = with pkgs; [
     radicle-node
     radicle-tui
@@ -15,9 +26,10 @@
       After = ["network-online.target"];
       Wants = ["network-online.target"];
       ConditionPathExists = "%h/.radicle/keys/radicle";
+      ConditionPathExistsGlob = "/run/agenix/radicle-user-passphrase";
     };
     Service = {
-      ExecStart = "${lib.getExe' pkgs.radicle-node "radicle-node"} --force --listen 127.0.0.1:8776";
+      ExecStart = startRadicle;
       Environment = [
         "RAD_HOME=%h/.radicle"
         "RUST_LOG=info"
