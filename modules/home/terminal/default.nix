@@ -19,6 +19,7 @@ in {
 
     WINEPREFIX = "${data}/wine";
     XAUTHORITY = "$XDG_RUNTIME_DIR/Xauthority";
+    SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/gcr/ssh";
 
     EDITOR = "hx";
     DIRENV_LOG_FORMAT = "-";

@@ -31,7 +31,7 @@ in {
       gaps_in = 5;
       gaps_out = 10;
       border_size = 2;
-      "col.active_border" = "rgba(000000ff) rgba(808080ee) 45deg";
+      "col.active_border" = "rgba(b0b0b050)";
       "col.inactive_border" = "rgba(00000066)";
       float_gaps = 0;
       no_focus_fallback = true;
@@ -60,7 +60,7 @@ in {
         enabled = true;
         range = 12;
         render_power = 4;
-        color = "rgba(ffffff50)";
+        color = "rgba(b0b0b050)";
         color_inactive = "rgba(000000FF)";
       };
     };
@@ -92,7 +92,7 @@ in {
         text_color = "rgb(FFFFFF)";
       };
 
-      "col.border_active" = "rgba(FFFFFF25)";
+      "col.border_active" = "rgba(b0b0b050)";
       "col.border_inactive" = "rgba(000000FF)";
     };
 

@@ -26,6 +26,7 @@
       export BAT_THEME=base16
       export OCI_CLI_CONFIG_FILE="$HOME/.config/oci/config"
       export OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True
+      export SSH_AUTH_SOCK="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/gcr/ssh"
       export FZF_COMPLETION_PATH_OPTS='--walker file,dir,follow,hidden'
       export FZF_COMPLETION_DIR_OPTS='--walker dir,follow'
     '';
@@ -338,7 +339,6 @@
           --read0 \
           --delimiter=$'\t' \
           --with-nth=2.. \
-          --nth=2.. \
           --scheme=history \
           --query="$LBUFFER" \
           --bind=ctrl-r:toggle-sort)" || {
