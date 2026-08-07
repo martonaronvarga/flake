@@ -193,7 +193,7 @@ in {
     groups.nix-builder = {};
   };
 
-  local.nixPolicy.trustedUsers = ["root" "nix-builder"];
+  local.nixPolicy.trustedUsers = ["root" "nix-builder" "usu"];
 
   services.openssh.settings.AllowUsers = lib.mkForce ["usu" "nix-builder"];
 
