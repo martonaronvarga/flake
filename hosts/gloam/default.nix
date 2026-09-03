@@ -75,6 +75,13 @@ in {
           serverAliases = ["www.martonaronvarga.dev"];
           locations = {
             "/".proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.website}";
+            "/_astro/" = {
+              proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.website}";
+              extraConfig = ''
+                proxy_hide_header Cache-Control;
+                add_header Cache-Control "public, max-age=31536000, immutable" always;
+              '';
+            };
             "/.well-known/matrix/" = {
               proxyPass = "http://${network.dusk.wireguard.address}:${toString network.dusk.ports.matrix}";
               extraConfig = ''

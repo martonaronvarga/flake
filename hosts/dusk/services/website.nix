@@ -1,37 +1,26 @@
 {
-  inventory,
+  config,
   inputs,
-  pkgs,
+  inventory,
   ...
 }: let
   inherit (inventory) network;
-  siteRoot = inputs.website.packages.${pkgs.stdenv.hostPlatform.system}.site;
 in {
-  services.nginx = {
-    enable = true;
-    recommendedGzipSettings = true;
-    recommendedOptimisation = true;
-    recommendedProxySettings = true;
+  imports = [inputs.website.nixosModules.default];
 
-    virtualHosts."martonaronvarga.dev" = {
-      listen = [
-        {
-          addr = network.dusk.wireguard.address;
-          port = network.dusk.ports.website;
-        }
-      ];
-      root = "${siteRoot}/share/web";
-      extraConfig = ''
-        access_log syslog:server=unix:/dev/log combined;
-      '';
-    };
+  services.martonaronvarga = {
+    enable = true;
+    listenAddress = network.dusk.wireguard.address;
+    port = network.dusk.ports.website;
+    environmentFile = config.age.secrets.website-env.path;
+    database.createLocally = true;
   };
 
   networking.firewall.interfaces.${network.wireguard.interface}.allowedTCPPorts = [
     network.dusk.ports.website
   ];
 
-  systemd.services.nginx = {
+  systemd.services.martonaronvarga = {
     after = ["wg-quick-${network.wireguard.interface}.service"];
     requires = ["wg-quick-${network.wireguard.interface}.service"];
   };

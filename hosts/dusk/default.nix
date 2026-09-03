@@ -20,6 +20,7 @@ in {
     ./services/matrix-lab.nix
     ./services/rfcs.nix
     ./services/website.nix
+    ./services/private-web.nix
     ./services/radicle.nix
   ];
 
@@ -96,6 +97,12 @@ in {
           mode = "0400";
           path = "/run/agenix/vaultwarden-env";
         };
+        website-env = {
+          file = ../../secrets/website_env.age;
+          owner = "martonaronvarga";
+          mode = "0400";
+          path = "/run/agenix/website-env";
+        };
       };
     };
   };
@@ -123,6 +130,19 @@ in {
           mode = "0700";
         }
         "/var/lib/postgresql"
+        {
+          directory = "/var/lib/martonaronvarga";
+          user = "martonaronvarga";
+          group = "martonaronvarga";
+          mode = "0750";
+        }
+        "/var/lib/tor"
+        {
+          directory = "/var/lib/i2pd";
+          user = "i2pd";
+          group = "i2pd";
+          mode = "0700";
+        }
       ]
       ++ lib.optionals inventory.matrixLab.enable [
         "/var/lib/matrix-synapse"
