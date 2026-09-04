@@ -21,6 +21,7 @@ in {
   ];
 
   systemd.services.martonaronvarga = {
+    environment.SITE_ORIGIN = "https://martonaronvarga.dev";
     after = ["wg-quick-${network.wireguard.interface}.service"];
     requires = ["wg-quick-${network.wireguard.interface}.service"];
   };

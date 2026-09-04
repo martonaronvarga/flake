@@ -1663,11 +1663,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1788467831,
-        "narHash": "sha256-KT9zgiG8EG1+ipv0uUgKNQP5j4CSuNCufTpY2967tVU=",
+        "lastModified": 1788517831,
+        "narHash": "sha256-LH2apEmDX1VlmSrJW6Yld4O9Pg4p7PqwxOil/CPqQME=",
         "ref": "main",
-        "rev": "f821b626b3df7dbb66f2da90c06efa7419da9833",
-        "revCount": 9,
+        "rev": "f35eeb6f4b03c7e3068ea71dfbf5dd820654890b",
+        "revCount": 13,
         "type": "git",
         "url": "https://git.martonaronvarga.dev/usu/martonaronvarga.dev.git"
       },
