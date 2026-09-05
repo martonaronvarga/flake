@@ -1,8 +1,18 @@
 {
   config,
+  lib,
   pkgs,
   ...
-}: {
+}: let
+  mkInit = name: command:
+    pkgs.runCommand name {} ''
+      ${command} > "$out"
+    '';
+  fzfInit = mkInit "fzf-zsh-init" "${lib.getExe config.programs.fzf.package} --zsh";
+  zoxideInit = mkInit "zoxide-zsh-init" "${lib.getExe config.programs.zoxide.package} init zsh";
+  starshipInit = mkInit "starship-zsh-init" "${lib.getExe config.programs.starship.package} init zsh";
+  direnvInit = mkInit "direnv-zsh-init" "${lib.getExe config.programs.direnv.package} hook zsh";
+in {
   home.packages = with pkgs; [
     nix-zsh-completions
   ];
@@ -10,6 +20,9 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
+    # Reuse the completion dump without repeating compaudit's filesystem scan
+    # for every terminal. A missing dump is still generated automatically.
+    completionInit = "autoload -Uz compinit && compinit -C";
     syntaxHighlighting.enable = true;
     autosuggestion.enable = true;
     autocd = true;
@@ -318,6 +331,13 @@
     ];
 
     initContent = ''
+      # These integrations are generated once in the Nix store instead of
+      # spawning four helper processes during every interactive shell startup.
+      source ${zoxideInit}
+      source ${fzfInit}
+      source ${starshipInit}
+      source ${direnvInit}
+
       bindkey "''${key[Up]}" up-line-or-search
 
       # fzf 0.74 intentionally displays multiline history entries across

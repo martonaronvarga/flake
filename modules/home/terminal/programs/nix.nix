@@ -23,7 +23,7 @@
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
-    enableZshIntegration = true;
+    enableZshIntegration = false;
     config = {
       global = {
         log_format = "-";

@@ -46,6 +46,7 @@
 
       if tty_path="$(tty 2>/dev/null)" && [ "$tty_path" != "not a tty" ]; then
         export GPG_TTY="$tty_path"
+        gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
       fi
 
       token="$(pass show git/git.${domain}/usu)"

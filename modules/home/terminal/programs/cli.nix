@@ -96,20 +96,19 @@
       fi
 
       if git -C "$root" remote get-url github >/dev/null 2>&1; then
-        echo "repo-publish: waiting for the Forgejo push mirror"
-        github_head=""
-        for _ in $(seq 1 12); do
-          github_head=$(git -C "$root" ls-remote github "refs/heads/$branch" | cut -f1)
-          test "$github_head" = "$head" && break
-          sleep 10
-        done
+        # GitHub branches may be updated by collaborators and CI.  A Forgejo
+        # push mirror treats Forgejo as authoritative and can later overwrite
+        # those remote updates, so publish explicitly and without forcing.
+        echo "repo-publish: pushing $branch to GitHub"
+        git -C "$root" push github "HEAD:refs/heads/$branch" --follow-tags
+        github_head=$(git -C "$root" ls-remote github "refs/heads/$branch" | cut -f1)
         if test "$github_head" != "$head"; then
-          echo "repo-publish: GitHub mirror did not reach $head within 2 minutes" >&2
+          echo "repo-publish: GitHub verification failed ($github_head != $head)" >&2
           exit 1
         fi
-        echo "repo-publish: GitHub mirror verified at $head"
+        echo "repo-publish: GitHub verified at $head"
       else
-        echo "repo-publish: no GitHub remote; skipping mirror verification"
+        echo "repo-publish: no GitHub remote; skipping GitHub"
       fi
     '';
   };
@@ -180,7 +179,7 @@ in {
     eza.enable = true;
     fzf = {
       enable = true;
-      enableZshIntegration = true;
+      enableZshIntegration = false;
       package = fzf;
       defaultCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
       fileWidgetCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
@@ -233,7 +232,7 @@ in {
     };
     zoxide = {
       enable = true;
-      enableZshIntegration = true;
+      enableZshIntegration = false;
     };
   };
 }

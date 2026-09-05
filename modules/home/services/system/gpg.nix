@@ -9,9 +9,10 @@
     enableExtraSocket = true;
     enableSshSupport = false;
 
-    # terminal-only pinentry
-    pinentry.package = pkgs.pinentry-tty;
-    pinentry.program = "pinentry-tty";
+    # Use the full-screen terminal frontend.  pinentry-tty competes with
+    # interactive CLI programs for the controlling terminal.
+    pinentry.package = pkgs.pinentry-curses;
+    pinentry.program = "pinentry-curses";
 
     # avoid desktop keyring/passphrase-cache interaction
     noAllowExternalCache = true;

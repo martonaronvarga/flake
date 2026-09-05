@@ -4,6 +4,17 @@
   ...
 }: let
   blackMetal = import ../../theme/black-metal.nix;
+  kitty = pkgs.symlinkJoin {
+    name = "kitty-single-instance";
+    inherit (pkgs.kitty) version;
+    paths = [pkgs.kitty];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      wrapProgram "$out/bin/kitty" \
+        --run 'case "''${1-}" in +*) ;; *) set -- --single-instance "''${@}" ;; esac'
+    '';
+    meta = pkgs.kitty.meta // {mainProgram = "kitty";};
+  };
 in {
   xdg.configFile =
     lib.mapAttrs' (
@@ -16,7 +27,10 @@ in {
 
   programs.kitty = {
     enable = true;
-    package = pkgs.kitty;
+    # Reuse the first kitty process for subsequent OS windows. This avoids
+    # repeated GPU/font initialization while leaving `kitty +kitten ...`
+    # subcommands alone.
+    package = kitty;
     shellIntegration.enableZshIntegration = true;
     font = {
       size = 12;

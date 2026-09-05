@@ -3,7 +3,7 @@
 
   programs.starship = {
     enable = true;
-    enableZshIntegration = true;
+    enableZshIntegration = false;
     settings = {
       add_newline = false;
       command_timeout = 80;
