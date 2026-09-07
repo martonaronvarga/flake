@@ -27,7 +27,10 @@
     bootSecurity = {
       enableSecureBoot = true;
       enableTpmUnlock = true;
-      luksDeviceNames = ["cryptroot"];
+      luksDeviceNames = [
+        "cryptroot"
+        "cryptswap"
+      ];
     };
 
     agenix = {
