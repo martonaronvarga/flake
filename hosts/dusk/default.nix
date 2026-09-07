@@ -187,6 +187,11 @@
 
   local.nixPolicy.trustedUsers = ["root" "nix-builder" "usu"];
 
+  # The ThinkPad's TPM times out on systemd 261's optional login NvPCR
+  # extension and remains unusable until a cold boot. LUKS unlock uses PCR 7
+  # in the initrd and does not depend on this login audit measurement.
+  systemd.suppressedSystemUnits = ["systemd-pcrlogin@.service"];
+
   services.openssh.settings.AllowUsers = lib.mkForce ["usu" "nix-builder"];
 
   programs.starship = {
