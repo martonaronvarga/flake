@@ -4,10 +4,7 @@
   lib,
   pkgs,
   ...
-}: let
-  tpmUnlockDevice = "/dev/disk/by-partlabel/root";
-  tpmUnlockPcrs = config.local.bootSecurity.tpmPcrs;
-in {
+}: {
   imports = [
     ./hardware.nix
     ./disko.nix
@@ -28,7 +25,7 @@ in {
 
   local = {
     bootSecurity = {
-      enableSecureBoot = false;
+      enableSecureBoot = true;
       enableTpmUnlock = true;
       luksDeviceNames = ["cryptroot"];
     };
@@ -154,34 +151,9 @@ in {
   environment.systemPackages = [
     (pkgs.writeShellApplication {
       name = "dusk-enroll-tpm-unlock";
-      runtimeInputs = with pkgs; [cryptsetup sudo systemd];
       text = ''
         set -euo pipefail
-
-        if [ "$(id -u)" -ne 0 ]; then
-          exec sudo "$0" "$@"
-        fi
-
-        if [ ! -e /dev/tpmrm0 ] && [ ! -e /dev/tpm0 ]; then
-          echo "No TPM device found at /dev/tpmrm0 or /dev/tpm0." >&2
-          exit 1
-        fi
-
-        if [ ! -b ${lib.escapeShellArg tpmUnlockDevice} ]; then
-          echo "LUKS device is not available: ${tpmUnlockDevice}" >&2
-          exit 1
-        fi
-
-        echo "Enrolling TPM2 unlock for ${tpmUnlockDevice} using PCR policy ${tpmUnlockPcrs}."
-        echo "You will be asked for the existing LUKS passphrase."
-        systemd-cryptenroll ${lib.escapeShellArg tpmUnlockDevice} \
-          --wipe-slot=tpm2 \
-          --tpm2-device=auto \
-          --tpm2-pcrs=${lib.escapeShellArg tpmUnlockPcrs}
-
-        echo
-        echo "Current LUKS enrollments:"
-        systemd-cryptenroll ${lib.escapeShellArg tpmUnlockDevice}
+        exec /run/current-system/sw/bin/secureboot-enroll-tpm-unlock "$@"
       '';
     })
   ];
