@@ -4,6 +4,7 @@
   ...
 }: {
   home.pointerCursor = {
+    enable = true;
     package = pkgs.catppuccin-cursors.mochaFlamingo;
     name = "catppuccin-mocha-flamingo-cursors";
     size = 16;

@@ -6,7 +6,9 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
-  niriPackage = inputs.niri.packages.${system}.niri;
+  niriPackage = inputs.niri.packages.${system}.niri.override {
+    libdisplay-info = pkgs.libdisplay-info_0_3;
+  };
 
   suspendScript = pkgs.writeShellScript "suspend-script" ''
     # check if any player has status "Playing"

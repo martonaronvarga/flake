@@ -182,8 +182,6 @@ in {
       enableZshIntegration = false;
       package = fzf;
       defaultCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
-      fileWidgetCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
-      changeDirWidgetCommand = "fd --type d --strip-cwd-prefix --hidden --follow --exclude .git";
       defaultOptions = [
         "--height=80%"
         "--layout=reverse"
@@ -202,13 +200,16 @@ in {
         "--bind=ctrl-j:down,ctrl-k:up,ctrl-n:down,ctrl-p:up"
         "--bind=tab:down,btab:up"
       ];
-      fileWidgetOptions = [
-        "--preview='bat -n --color=never --style=numbers --line-range :300 {}'"
-        "--preview-window=right:50%:border-left"
-        "--walker-skip=.git,node_modules,target"
-        "--bind='ctrl-/:change-preview-window(down|hidden|)'"
-      ];
-      historyWidgetOptions = [
+      fileWidget = {
+        command = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
+        options = [
+          "--preview='bat -n --color=never --style=numbers --line-range :300 {}'"
+          "--preview-window=right:50%:border-left"
+          "--walker-skip=.git,node_modules,target"
+          "--bind='ctrl-/:change-preview-window(down|hidden|)'"
+        ];
+      };
+      historyWidget.options = [
         "--height=60%"
         "--layout=reverse"
         "--border=rounded"
@@ -224,11 +225,14 @@ in {
         "--color=header:italic"
         "--header='enter: insert  ctrl-y: copy  ctrl-r: sort  esc: cancel'"
       ];
-      changeDirWidgetOptions = [
-        "--preview='eza --tree --color=never --icons {} | head -200'"
-        "--walker-skip=.git,node_modules,target"
-        "--preview-window=right:50%:border-left"
-      ];
+      changeDirWidget = {
+        command = "fd --type d --strip-cwd-prefix --hidden --follow --exclude .git";
+        options = [
+          "--preview='eza --tree --color=never --icons {} | head -200'"
+          "--walker-skip=.git,node_modules,target"
+          "--preview-window=right:50%:border-left"
+        ];
+      };
     };
     zoxide = {
       enable = true;

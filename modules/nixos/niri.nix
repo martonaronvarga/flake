@@ -5,7 +5,11 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
-  niriPackage = inputs.niri.packages.${system}.niri;
+  # Niri 26.04's libdisplay-info-sys requires libdisplay-info < 0.4.0.
+  # The Hyprland nixpkgs input it follows has already moved to 0.4.
+  niriPackage = inputs.niri.packages.${system}.niri.override {
+    libdisplay-info = pkgs.libdisplay-info_0_3;
+  };
 in {
   programs.niri = {
     enable = true;
