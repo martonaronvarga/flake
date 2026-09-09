@@ -17,7 +17,6 @@ _: {
         directory = ".local/share/iamb";
         mode = "0700";
       }
-      ".local/state/oama"
       ".local/state/wayland-appearance"
       ".local/share/wluma"
       ".cache/aerc"

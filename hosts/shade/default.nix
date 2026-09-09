@@ -122,6 +122,12 @@ in {
           owner = "usu";
           path = "/run/agenix/aerc-client-secret";
         };
+        ttk-mail-password = {
+          file = ../../secrets/ttk_mail_password.age;
+          owner = "usu";
+          mode = "0400";
+          path = "/run/agenix/ttk-mail-password";
+        };
         oci-config = {
           file = ../../secrets/oci_config.age;
           owner = "usu";

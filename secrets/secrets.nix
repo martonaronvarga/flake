@@ -7,6 +7,7 @@ in {
   "usu_password_hash.age".publicKeys = [usu dusk];
   "aerc_client_id.age".publicKeys = [usu];
   "aerc_client_secret.age".publicKeys = [usu];
+  "ttk_mail_password.age".publicKeys = [usu];
   "dusk_wg_private_key.age".publicKeys = [usu dusk];
   "forgejo_mailer_password.age".publicKeys = [usu dusk];
   "gloam_wg_private_key.age".publicKeys = [usu gloam];

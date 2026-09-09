@@ -7,11 +7,13 @@
   inherit (inventory) mail;
   name = "Marton A. Varga";
   account = mail.sender;
+  ttkAccount = "varga.marton.aron@ttk.hu";
+  ttkUsername = "varga.marton.aron";
+  ttkPasswordPath = "/run/agenix/ttk-mail-password";
   # Inbound Cloudflare Email Routing aliases for the Gmail account. Keep Gmail
   # as the SMTP sender unless a domain alias is verified in Gmail "send mail as".
   inherit (mail) aliases;
   username = builtins.replaceStrings ["@"] ["%40"] account;
-  gpgRecipient = "29F264979A64F516D7CB007D804BD4BD3F715230!";
 
   aercOauthToken = pkgs.writeShellApplication {
     name = "aerc-oauth-token";
@@ -94,6 +96,60 @@
     '';
   };
 
+  ttkMailPassword = pkgs.writeShellApplication {
+    name = "ttk-mail-password";
+    runtimeInputs = [pkgs.coreutils];
+    text = ''
+      set -euo pipefail
+
+      password_file=${lib.escapeShellArg ttkPasswordPath}
+      if [[ ! -r "$password_file" ]]; then
+        printf 'TTK mail credential is unavailable: %s\n' "$password_file" >&2
+        exit 1
+      fi
+
+      exec cat "$password_file"
+    '';
+  };
+
+  ttkMailCheck = pkgs.writers.writePython3Bin "ttk-mail-check" {} ''
+    import imaplib
+    import smtplib
+    import ssl
+    import sys
+    from pathlib import Path
+
+    USERNAME = "${ttkUsername}"
+    PASSWORD_PATH = Path("${ttkPasswordPath}")
+
+
+    try:
+        password = PASSWORD_PATH.read_text().rstrip("\r\n")
+        context = ssl.create_default_context()
+
+        with imaplib.IMAP4_SSL(
+            "imap.ttk.hu", 993, ssl_context=context, timeout=20
+        ) as imap:
+            imap.login(USERNAME, password)
+            status, folders = imap.list()
+            if status != "OK":
+                raise RuntimeError(f"IMAP LIST failed: {status}")
+            folder_count = len(folders or [])
+
+        with smtplib.SMTP_SSL(
+            "smtp.ttk.hu", 465, context=context, timeout=20
+        ) as smtp:
+            smtp.login(USERNAME, password)
+            code, _ = smtp.noop()
+            if code != 250:
+                raise RuntimeError(f"SMTP NOOP failed: {code}")
+    except Exception as error:
+        print(f"TTK mail check failed: {error}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"TTK mail authentication is healthy ({folder_count} IMAP folders).")
+  '';
+
   patchedAerc = pkgs.aerc.overrideAttrs (old: {
     patches =
       (old.patches or [])
@@ -140,6 +196,31 @@ in {
 
         signature-cmd = ''
           echo -e '\n-- \nMarton Aron Varga\nMetascience Lab\nELTE Eötvös Loránd University\n${account}'
+        '';
+      };
+      work = {
+        source = "imaps://${ttkUsername}@imap.ttk.hu:993";
+        outgoing = "smtps://${ttkUsername}@smtp.ttk.hu:465";
+
+        source-cred-cmd = lib.getExe ttkMailPassword;
+        outgoing-cred-cmd = lib.getExe ttkMailPassword;
+        outgoing-cred-cmd-cache = false;
+
+        default = "INBOX";
+        folders-sort = "INBOX,Sent,Drafts,Archive,Junk,Trash";
+        postpone = "Drafts";
+        copy-to = "Sent";
+        archive = "Archive";
+
+        from = "${name} <${ttkAccount}>";
+        cache-headers = true;
+        check-mail = "5m";
+
+        pgp-auto-sign = false;
+        send-as-utc = true;
+
+        signature-cmd = ''
+          echo -e '\n-- \nMarton Aron Varga\nHUN-REN TTK\n${ttkAccount}'
         '';
       };
     };
@@ -307,7 +388,6 @@ in {
         default-save-path = "~/.config/aerc/saved";
         pgp-provider = "gpg";
         term = "xterm-kitty";
-        enable-osc8 = true;
         unsafe-accounts-conf = true;
       };
 
@@ -350,14 +430,15 @@ in {
     aercOauthToken
     aercOauthCheck
     aercOauthReauth
+    ttkMailCheck
+    ttkMailPassword
   ];
 
   # look at logs with
   # journalctl --identifier oama --identifier msmtp --identifier fdm -e
   xdg.configFile."oama/config.yaml".text = ''
     encryption:
-      tag: GPG
-      contents: '${gpgRecipient}'
+      tag: KEYRING
 
     services:
       google:
