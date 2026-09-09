@@ -6,7 +6,14 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
-  hyprpaper = inputs.hyprpaper.packages.${system}.hyprpaper;
+  # hyprtoolkit still reads the deprecated stdenv.isBSD alias. Supplying the
+  # value explicitly avoids the warning until the pinned upstream input moves
+  # to stdenv.hostPlatform.isBSD.
+  compatStdenv = pkgs.stdenv // {isBSD = pkgs.stdenv.hostPlatform.isBSD;};
+  hyprtoolkit = inputs.hyprpaper.inputs.hyprtoolkit.packages.${system}.hyprtoolkit.override {
+    stdenv = compatStdenv;
+  };
+  hyprpaper = inputs.hyprpaper.packages.${system}.hyprpaper.override {inherit hyprtoolkit;};
   wallpapers = {
     zeros = builtins.path {
       path = ../../../../assets/wallpapers/zeros.png;

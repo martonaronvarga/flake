@@ -724,10 +724,10 @@ in {
       };
     };
 
-    journald.extraConfig = ''
-      SystemMaxUse=1G
-      MaxRetentionSec=30day
-    '';
+    journald.settings.Journal = {
+      SystemMaxUse = "1G";
+      MaxRetentionSec = "30day";
+    };
   };
 
   environment.systemPackages = with pkgs; [
