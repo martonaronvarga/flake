@@ -17,7 +17,7 @@ data would build up long term.
 | --- | --- | --- |
 | **shade** | Personal ThinkPad and workstation | Hyprland desktop, Home Manager, development tools, and the main deployment environment |
 | **dusk** | Home server and remote builder | Website, Vaultwarden, Forgejo and Actions runner, Matrix, monitoring, alerting, backups, and Nix build capacity |
-| **gloam** | Small public ARM edge | TLS termination, public nginx ingress, and the stable WireGuard meeting point for Shade and Dusk |
+| **gloam** | Public Ubuntu x86_64 edge | TLS termination, public nginx ingress, and the stable WireGuard meeting point for Shade and Dusk |
 
 Public traffic reaches Cloudflare first, then Gloam, and crosses WireGuard to
 the services on Dusk.
@@ -38,11 +38,11 @@ Dusk currently provides:
 
 - `martonaronvarga.dev`, built from its own flake input;
 - Vaultwarden for passwords and passkeys;
-- Forgejo, a private Actions runner, and persistent Nix CI caches;
+- Forgejo and a private Actions runner using rootless Podman and isolated job stores;
 - a Continuwuity Matrix homeserver;
 - Prometheus, Alertmanager, Grafana, node exporters, and layered public/network
   probes;
-- local and removable-drive backup jobs.
+- local backups and a removable-drive backup module (not yet configured).
 
 Gloam owns the public certificates and reverse proxies. Shade can also offload
 ordinary `nix build` work to Dusk without going through Forgejo Actions.
@@ -125,14 +125,13 @@ nh os switch .#shade
 nh os switch .#dusk
 ```
 
-### Deploy Dusk and Gloam
+### Deploy Dusk
 
 Build or deploy one Colmena node from the dev shell:
 
 ```sh
 nix develop -c colmena build --on dusk
 nix develop -c colmena apply --on dusk
-nix develop -c colmena apply --on gloam
 ```
 
 ### Offload a build to Dusk
@@ -191,3 +190,37 @@ unrelated host state; the longer checklist lives in
 For operational detail, start with [`docs/deployment.md`](docs/deployment.md),
 [`docs/dusk-operations.md`](docs/dusk-operations.md), and
 [`docs/ci-and-remote-builds.md`](docs/ci-and-remote-builds.md).
+
+### Deployment and recovery constraints
+
+Gloam currently runs Ubuntu on x86_64. `nixosConfigurations.gloam` is an
+ARM installation candidate, excluded from Colmena until an explicit migration.
+Its disko layout encrypts root and swap and requires console unlocking; never
+run disko against the live edge as a routine deployment step.
+
+Dusk's CI runner uses its own rootless Podman socket. Jobs have public IPv4
+egress, public DNS, and no access to host/private network services. Both the
+rootful socket and shared writable job caches are disabled. Existing rootful
+images/volumes are left on disk for deliberate cleanup after verification.
+The runner account uses UID 986 and subordinate IDs 300000–365535; reserve these
+IDs when provisioning other accounts. CI state persists through the existing
+`/persist` bind for `/var/lib/gitea-runner`.
+
+After deploying Dusk, check `gitea-runner-dusk.service`, trigger a normal CI job,
+and inspect `nft list table inet ci-egress`. Restart the runner after explicitly
+stopping/restarting nftables; stopping the firewall stops its user manager.
+Keep the previous boot generation available while validating firewall changes.
+
+The removable/offsite backup destination remains unconfigured. Before enabling
+it, supply the real disk ID, LUKS UUID, and agenix password paths. Coverage now
+includes website state. The external command uses Restic's locks when copying
+Shade's repository and refuses an already-open backup mount. Test restoring
+representative files into a temporary directory on the independent destination
+before relying on that copy. Local snapshots and backups on Dusk alone do not
+cover loss of the host.
+
+Root rollback validates `root-blank` before deleting any root subvolume. If that
+snapshot is missing, boot rescue media, unlock `cryptroot`, mount the Btrfs top
+level, and inspect the existing root and backups before recreating the blank
+snapshot. Do not reformat the disk. Shade's explicit home rollback policy remains
+enabled; user data must remain declared under `/persist`.
