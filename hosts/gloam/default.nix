@@ -263,9 +263,12 @@ in {
 
   security.sudo.wheelNeedsPassword = false;
 
-  services.openssh.settings = {
-    AllowUsers = ["usu"];
-    PermitRootLogin = "no";
+  services.openssh = {
+    openFirewall = false;
+    settings = {
+      AllowUsers = ["usu"];
+      PermitRootLogin = "no";
+    };
   };
 
   i18n = {

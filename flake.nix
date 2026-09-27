@@ -142,6 +142,7 @@
             ./packages
             ./parts
             ./profiles
+            ./tests
             ./secrets/secrets.nix
           ];
         };
@@ -162,6 +163,19 @@
         packages.tx-02 = pkgs.callPackage ./packages/tx-02.nix {};
 
         checks = nixpkgsLib.optionalAttrs (system == "x86_64-linux") {
+          configuration = import ./tests/configuration.nix {
+            inherit (inputs) self;
+            lib = nixpkgsLib;
+            inherit pkgs;
+          };
+          rollback = pkgs.testers.runNixOSTest (import ./tests/rollback.nix {
+            inherit pkgs;
+            inherit (inputs) self;
+          });
+          rootless-ci = pkgs.testers.runNixOSTest (import ./tests/rootless-ci.nix {
+            inherit pkgs;
+            inherit (inputs) self;
+          });
           alejandra = mkCheck "alejandra-check" pkgs.alejandra "alejandra --check";
           statix = mkCheck "statix-check" pkgs.statix "statix check";
           deadnix = mkCheck "deadnix-check" pkgs.deadnix "deadnix --fail";

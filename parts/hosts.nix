@@ -85,6 +85,15 @@
           identityFile = "/persist/home/usu/.ssh/id_ed25519";
           passwordFile = "/run/agenix/restic-shade-password";
           inhibitSleep = true;
+          serviceConfig = {
+            Nice = 15;
+            CPUSchedulingPolicy = "idle";
+            IOSchedulingClass = "idle";
+            CPUWeight = 10;
+            IOWeight = 10;
+            CPUQuota = "25%";
+          };
+          extraBackupArgs = ["--limit-upload=4096"];
           paths = [
             "/persist/home/usu"
             "/persist/state/opentofu/gloam"
@@ -99,14 +108,43 @@
             "**/node_modules"
             "**/target"
           ];
+          pruneOpts = [];
+          checkOpts = [];
+          timerConfig = {
+            OnCalendar = "03:30";
+            RandomizedDelaySec = "45m";
+            Persistent = true;
+          };
+          target = {
+            user = "usu";
+            host = network.dusk.wireguard.address;
+            repositoryPath = "/persist/backups/restic/shade";
+            hostKey = "${network.dusk.wireguard.address} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHrll3wZxB7KTlmTMVXRwpQUNZpjoMIWEO58nM+lwL47";
+            knownHostsName = "dusk-restic";
+          };
+        })
+        (capabilities.mkResticSftpJob {
+          name = "shade-to-dusk-maintenance";
+          user = "usu";
+          identityFile = "/persist/home/usu/.ssh/id_ed25519";
+          passwordFile = "/run/agenix/restic-shade-password";
+          inhibitSleep = true;
+          serviceConfig = {
+            Nice = 15;
+            CPUSchedulingPolicy = "idle";
+            IOSchedulingClass = "idle";
+            CPUWeight = 10;
+            IOWeight = 10;
+            CPUQuota = "25%";
+          };
           pruneOpts = [
             "--keep-daily 7"
             "--keep-weekly 4"
             "--keep-monthly 6"
           ];
           timerConfig = {
-            OnCalendar = "03:30";
-            RandomizedDelaySec = "45m";
+            OnCalendar = "Sun 04:30";
+            RandomizedDelaySec = "1h";
             Persistent = true;
           };
           target = {
@@ -184,13 +222,8 @@
         ../modules/nixos/agenix.nix
         ../modules/nixos/host-hardening.nix
       ];
-      deployment = {
-        targetHost = "gloam";
-        targetPort = 22;
-        targetUser = network.gloam.sshUser;
-        privilegeEscalationCommand = ["sudo" "-H" "--"];
-        buildOnTarget = true;
-      };
+      # Installation candidate only: the live Gloam is Ubuntu on x86_64.
+      # Add deployment metadata after an explicit NixOS migration.
     };
   };
 

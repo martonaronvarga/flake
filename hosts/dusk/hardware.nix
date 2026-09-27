@@ -28,27 +28,7 @@
           StandardOutput = "journal+console";
           StandardError = "journal+console";
         };
-        script = ''
-          set -euo pipefail
-          mkdir -p /mnt
-          mount -o subvol=/ /dev/mapper/cryptroot /mnt
-
-          # Delete all nested subvolumes under /mnt/root
-          echo "Removing nested subvolumes under /mnt/root..."
-          btrfs subvolume list -o /mnt/root |
-            cut -f9 -d' ' |
-            while read subvolume; do
-              echo "Deleting /$subvolume subvolume..."
-              btrfs subvolume delete "/mnt/$subvolume"
-            done &&
-            echo "Deleting /root subvolume..." &&
-            btrfs subvolume delete /mnt/root
-          echo "Restoring blank /root subvolume"
-          btrfs subvolume snapshot /mnt/root-blank /mnt/root
-          echo "Rollback successful"
-
-          umount /mnt
-        '';
+        script = builtins.readFile ../../modules/nixos/scripts/rollback-root.sh;
       };
     };
 

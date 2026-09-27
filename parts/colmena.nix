@@ -21,10 +21,8 @@
 
   hive = inputs.colmena.lib.makeHive ({
       meta = {
-        nixpkgs = import inputs.nixpkgs {
-          system = "x86_64-linux";
-          config.allowUnfree = true;
-        };
+        nixpkgs = self.nixosConfigurations.dusk.pkgs;
+        nodeNixpkgs = lib.mapAttrs (name: _: self.nixosConfigurations.${name}.pkgs) deployableHosts;
         specialArgs = {
           inherit inputs inventory self;
         };

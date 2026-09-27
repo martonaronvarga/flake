@@ -115,26 +115,7 @@ in {
               StandardOutput = "journal+console";
               StandardError = "journal+console";
             };
-            script = ''
-              set -euo pipefail
-              mkdir -p /mnt
-              mount -o subvol=/ /dev/mapper/cryptroot /mnt
-
-              echo "Removing nested subvolumes under /mnt/root..."
-              btrfs subvolume list -o /mnt/root |
-                cut -f9 -d' ' |
-                while read subvolume; do
-                  echo "Deleting /$subvolume subvolume..."
-                  btrfs subvolume delete "/mnt/$subvolume"
-                done &&
-                echo "Deleting /root subvolume..." &&
-                btrfs subvolume delete /mnt/root
-              echo "Restoring blank /root subvolume"
-              btrfs subvolume snapshot /mnt/root-blank /mnt/root
-              echo "Rollback successful"
-
-              umount /mnt
-            '';
+            script = builtins.readFile ../../modules/nixos/scripts/rollback-root.sh;
           };
 
           "btrfs-home-rollback" = {
@@ -178,16 +159,7 @@ in {
               fi
 
               if btrfs subvolume show /mnt/home >/dev/null 2>&1; then
-                echo "Removing nested subvolumes under /mnt/home..."
-                btrfs subvolume list -o /mnt/home |
-                  cut -f9 -d' ' |
-                  while read subvolume; do
-                    echo "Deleting /$subvolume subvolume..."
-                    btrfs subvolume delete "/mnt/$subvolume"
-                  done
-
-                echo "Deleting /home subvolume..."
-                btrfs subvolume delete /mnt/home
+                btrfs subvolume delete --recursive /mnt/home
               elif [[ -e /mnt/home ]]; then
                 echo "/mnt/home exists but is not a Btrfs subvolume" >&2
                 exit 1

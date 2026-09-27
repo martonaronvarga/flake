@@ -43,6 +43,8 @@ in {
       "--keep-monthly 12"
     ],
     checkOpts ? ["--read-data-subset=1G"],
+    extraBackupArgs ? [],
+    serviceConfig ? {},
     inhibitSleep ? false,
     timerConfig ? {
       OnCalendar = "05:30";
@@ -58,7 +60,7 @@ in {
         inherit enable;
       }
       // lib.optionalAttrs enable {
-        inherit user paths exclude pruneOpts checkOpts inhibitSleep timerConfig identityFile passwordFile target;
+        inherit user paths exclude pruneOpts checkOpts extraBackupArgs serviceConfig inhibitSleep timerConfig identityFile passwordFile target;
       };
   };
 }
