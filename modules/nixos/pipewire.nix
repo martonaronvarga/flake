@@ -5,7 +5,12 @@ _: {
     alsa.support32Bit = true;
     jack.enable = true;
     pulse.enable = true;
-    wireplumber.extraConfig."wireplumber.profiles".main."monitor.libcamera" = "disabled";
+    wireplumber.extraConfig = {
+      "wireplumber.profiles".main."monitor.libcamera" = "disabled";
+      "10-bluetooth"."wireplumber.settings" = {
+        "bluetooth.autoswitch-to-headset-profile" = false;
+      };
+    };
   };
 
   services.pulseaudio.enable = false;
