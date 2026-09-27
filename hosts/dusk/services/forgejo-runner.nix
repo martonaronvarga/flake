@@ -18,17 +18,13 @@
       shutdown_timeout = "5m";
       fetch_interval = "5s";
     };
-    cache = {
-      enabled = true;
-      dir = "/var/lib/gitea-runner/cache";
-    };
+    cache.enabled = false;
     container = {
       network = "podman";
       enable_ipv6 = false;
       privileged = false;
-      options = "--cpus=2 --memory=4g --pids-limit=1024 --volume=forgejo-nix-store:/nix --volume=forgejo-nix-cache:/root/.cache/nix";
-      # Workflows cannot request arbitrary host mounts. The two fixed volumes
-      # above are runner policy and only persist Nix's store and fetch cache.
+      options = "--cpus=2 --memory=4g --pids-limit=1024 --dns=9.9.9.9 --dns=149.112.112.112";
+      # Job stores and caches must not permit poisoning subsequent jobs.
       valid_volumes = [];
       docker_host = "-";
       force_pull = false;
@@ -69,6 +65,8 @@
       experimental-features = nix-command flakes
       sandbox = false
       build-users-group =
+      max-jobs = 1
+      cores = 2
       substituters = https://usu.cachix.org https://cache.nixos.org
       trusted-public-keys = usu.cachix.org-1:5jwkfmhQB89RUnXnSde4kN01awJGUqoBkqP0uRKPMFk= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
       use-xdg-base-directories = true
@@ -88,65 +86,14 @@
     };
   };
 in {
-  users = {
-    users.gitea-runner = {
-      isSystemUser = true;
-      group = "gitea-runner";
-      extraGroups = ["podman"];
-    };
-    groups = {
-      gitea-runner = {};
-      forgejo-runner-secret.members = ["forgejo" "gitea-runner"];
-    };
-  };
-
-  virtualisation.podman = {
+  imports = [../../../modules/nixos/services/rootless-ci.nix];
+  local.rootlessCi = {
     enable = true;
-    dockerCompat = true;
-    dockerSocket.enable = true;
-    defaultNetwork.settings = {
-      dns_enabled = true;
-      subnets = [
-        {
-          subnet = "10.88.0.0/16";
-          gateway = "10.88.0.1";
-        }
-      ];
-    };
+    images = [ciImage];
   };
+  users.groups.forgejo-runner-secret.members = ["forgejo" "gitea-runner"];
 
   systemd.services = {
-    forgejo-ci-volumes = {
-      description = "Create persistent Nix cache volumes for Forgejo CI";
-      wantedBy = ["multi-user.target"];
-      before = ["gitea-runner-dusk.service"];
-      after = ["podman.socket"];
-      requires = ["podman.socket"];
-      path = [pkgs.podman];
-      script = ''
-        podman volume create --ignore --label io.martonaronvarga.forgejo-ci=cache forgejo-nix-store
-        podman volume create --ignore --label io.martonaronvarga.forgejo-ci=cache forgejo-nix-cache
-      '';
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-    };
-
-    forgejo-ci-image = {
-      description = "Load the declarative Forgejo CI image into Podman";
-      wantedBy = ["multi-user.target"];
-      before = ["gitea-runner-dusk.service"];
-      after = ["podman.socket"];
-      requires = ["podman.socket"];
-      restartTriggers = [ciImage];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${pkgs.podman}/bin/podman load --input ${ciImage}";
-      };
-    };
-
     forgejo-runner-register = {
       description = "Declaratively register the owner-scoped Forgejo runner";
       after = ["forgejo.service"];
@@ -163,42 +110,35 @@ in {
     gitea-runner-dusk = {
       description = "Forgejo Actions Runner";
       wantedBy = ["multi-user.target"];
-      after = ["forgejo-ci-image.service" "forgejo-ci-volumes.service" "forgejo-runner-register.service"];
-      requires = ["forgejo-ci-image.service" "forgejo-ci-volumes.service" "forgejo-runner-register.service"];
+      after = ["user@986.service" "forgejo-runner-register.service"];
+      requires = ["user@986.service" "forgejo-runner-register.service"];
+      bindsTo = ["user@986.service"];
       environment = {
         HOME = "/var/lib/gitea-runner";
-        DOCKER_HOST = "unix:///run/podman/podman.sock";
+        DOCKER_HOST = "unix:///run/user/986/podman/podman.sock";
+        XDG_RUNTIME_DIR = "/run/user/986";
+        DBUS_SESSION_BUS_ADDRESS = "unix:path=/run/user/986/bus";
       };
       serviceConfig = {
         User = "gitea-runner";
         Group = "gitea-runner";
         WorkingDirectory = "/var/lib/gitea-runner";
+        ExecStartPre = "${pkgs.systemd}/bin/systemctl --user restart rootless-ci-images.service";
+        NoNewPrivileges = true;
+        PrivateTmp = true;
+        ProtectHome = "tmpfs";
+        # Expose this user's API/bus sockets through the otherwise hidden /run/user.
+        BindPaths = ["/run/user/986"];
+        ProtectSystem = "strict";
+        ReadWritePaths = ["/var/lib/gitea-runner" "/run/user/986"];
+        RestrictSUIDSGID = true;
+        LockPersonality = true;
         ExecStart = "${pkgs.forgejo-runner}/bin/forgejo-runner daemon --config ${runnerConfig}";
+        TimeoutStartSec = "10min";
         Restart = "on-failure";
         RestartSec = "2s";
       };
     };
-  };
-
-  # CI has public egress for fetching dependencies, but cannot reach Dusk,
-  # WireGuard, or private LAN services from the Podman bridge.
-  networking.firewall = {
-    extraCommands = ''
-      iptables -C FORWARD -s 10.88.0.0/16 -d 10.0.0.0/8 -j REJECT 2>/dev/null || iptables -I FORWARD 1 -s 10.88.0.0/16 -d 10.0.0.0/8 -j REJECT
-      iptables -C FORWARD -s 10.88.0.0/16 -d 172.16.0.0/12 -j REJECT 2>/dev/null || iptables -I FORWARD 1 -s 10.88.0.0/16 -d 172.16.0.0/12 -j REJECT
-      iptables -C FORWARD -s 10.88.0.0/16 -d 192.168.0.0/16 -j REJECT 2>/dev/null || iptables -I FORWARD 1 -s 10.88.0.0/16 -d 192.168.0.0/16 -j REJECT
-      iptables -C FORWARD -s 10.88.0.0/16 -d 169.254.0.0/16 -j REJECT 2>/dev/null || iptables -I FORWARD 1 -s 10.88.0.0/16 -d 169.254.0.0/16 -j REJECT
-      iptables -C FORWARD -s 10.88.0.0/16 -d 10.88.0.1/32 -p tcp --dport 53 -j ACCEPT 2>/dev/null || iptables -I FORWARD 1 -s 10.88.0.0/16 -d 10.88.0.1/32 -p tcp --dport 53 -j ACCEPT
-      iptables -C FORWARD -s 10.88.0.0/16 -d 10.88.0.1/32 -p udp --dport 53 -j ACCEPT 2>/dev/null || iptables -I FORWARD 1 -s 10.88.0.0/16 -d 10.88.0.1/32 -p udp --dport 53 -j ACCEPT
-    '';
-    extraStopCommands = ''
-      iptables -D FORWARD -s 10.88.0.0/16 -d 10.0.0.0/8 -j REJECT 2>/dev/null || true
-      iptables -D FORWARD -s 10.88.0.0/16 -d 172.16.0.0/12 -j REJECT 2>/dev/null || true
-      iptables -D FORWARD -s 10.88.0.0/16 -d 192.168.0.0/16 -j REJECT 2>/dev/null || true
-      iptables -D FORWARD -s 10.88.0.0/16 -d 169.254.0.0/16 -j REJECT 2>/dev/null || true
-      iptables -D FORWARD -s 10.88.0.0/16 -d 10.88.0.1/32 -p tcp --dport 53 -j ACCEPT 2>/dev/null || true
-      iptables -D FORWARD -s 10.88.0.0/16 -d 10.88.0.1/32 -p udp --dport 53 -j ACCEPT 2>/dev/null || true
-    '';
   };
 
   assertions = [

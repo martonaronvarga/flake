@@ -6,6 +6,7 @@
   ...
 }: {
   imports = [
+    ./networking.nix
     ./hardware.nix
     ./disko.nix
     ./services/backups.nix
@@ -115,7 +116,12 @@
         "/var/lib/grafana"
         "/var/lib/vaultwarden"
         "/var/lib/forgejo"
-        "/var/lib/gitea-runner"
+        {
+          directory = "/var/lib/gitea-runner";
+          user = "gitea-runner";
+          group = "gitea-runner";
+          mode = "0700";
+        }
         "/var/lib/containers"
         {
           directory = "/var/lib/radicle";

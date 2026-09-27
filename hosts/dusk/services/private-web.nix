@@ -1,5 +1,6 @@
 {
   inventory,
+  lib,
   pkgs,
   ...
 }: let
@@ -57,12 +58,27 @@ in {
     };
   };
 
+  # Keep the persistent bind mount and its existing identity. DynamicUser
+  # would try to move this mount into /var/lib/private during activation.
+  users = {
+    users.i2pd = {
+      isSystemUser = true;
+      uid = 150;
+      group = "i2pd";
+    };
+    groups.i2pd.gid = 150;
+  };
+
   systemd.services = {
     tor = {
       after = ["wg-quick-${network.wireguard.interface}.service" "martonaronvarga.service"];
       wants = ["martonaronvarga.service"];
     };
     i2pd = {
+      serviceConfig = {
+        DynamicUser = lib.mkForce false;
+        StateDirectoryMode = "0700";
+      };
       after = ["wg-quick-${network.wireguard.interface}.service" "martonaronvarga.service"];
       wants = ["martonaronvarga.service"];
     };
