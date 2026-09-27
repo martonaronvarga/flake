@@ -218,10 +218,29 @@ in {
     publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOfsmTWZfEGh/4sY/zZ7fHM08aCPqK9NUXRZlkMJebgF";
   };
 
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
+  services = {
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
+    };
+
+    btrbk.instances.snapshot = {
+      # snapshot on the start and the middle of every hour.
+      onCalendar = "*:00,30";
+      settings = {
+        timestamp_format = "long-iso";
+        preserve_day_of_week = "monday";
+        preserve_hour_of_day = "23";
+        # All snapshots are retained for at least 6 hours regardless of other policies.
+        snapshot_preserve_min = "6h";
+        volume."/" = {
+          snapshot_dir = ".snapshots";
+          subvolume."persist".snapshot_preserve = "48h 7d";
+          subvolume."home".snapshot_preserve = "48h 7d 4w";
+        };
+      };
+    };
   };
 
   environment.persistence."/persist" = {
@@ -235,28 +254,23 @@ in {
 
   fileSystems."/home".neededForBoot = true;
 
-  services.btrbk.instances.snapshot = {
-    # snapshot on the start and the middle of every hour.
-    onCalendar = "*:00,30";
-    settings = {
-      timestamp_format = "long-iso";
-      preserve_day_of_week = "monday";
-      preserve_hour_of_day = "23";
-      # All snapshots are retained for at least 6 hours regardless of other policies.
-      snapshot_preserve_min = "6h";
-      volume."/" = {
-        snapshot_dir = ".snapshots";
-        subvolume."persist".snapshot_preserve = "48h 7d";
-        subvolume."home".snapshot_preserve = "48h 7d 4w";
-      };
-    };
-  };
-
   documentation.dev.enable = true;
 
   environment.systemPackages = [gloamStateSnapshot nixBuildRemote];
 
   systemd.services = {
+    # Limit internal mic boost to prevent hardware clipping distortion on ALC285
+    internal-mic-boost = {
+      description = "Set internal microphone boost to prevent clipping";
+      wantedBy = ["sound.target" "multi-user.target" "post-resume.target"];
+      after = ["sound.target" "pipewire.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.alsa-utils}/bin/amixer -c PCH cset name='Internal Mic Boost Volume' 0";
+      };
+    };
+
     gloam-capacity-state-snapshot = {
       description = "Pull a consistent gloam capacity-state mirror";
       before = ["restic-backups-shade-to-dusk.service"];
