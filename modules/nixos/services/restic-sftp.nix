@@ -53,7 +53,8 @@
       };
 
       paths = lib.mkOption {
-        type = lib.types.nonEmptyListOf lib.types.str;
+        type = lib.types.listOf lib.types.str;
+        default = [];
         description = "Paths included in the backup.";
       };
 
@@ -77,6 +78,18 @@
         type = lib.types.listOf lib.types.str;
         default = ["--read-data-subset=1G"];
         description = "Restic check options.";
+      };
+
+      extraBackupArgs = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Additional arguments for the Restic backup command.";
+      };
+
+      serviceConfig = lib.mkOption {
+        type = lib.types.attrsOf lib.types.anything;
+        default = {};
+        description = "Additional systemd resource controls for this backup job.";
       };
 
       inhibitSleep = lib.mkOption {
@@ -121,10 +134,10 @@ in {
 
     services.restic.backups =
       lib.mapAttrs (_: job: let
-        sftpCommand = "ssh ${job.target.user}@${job.target.host} -i ${job.identityFile} -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/etc/ssh/known_hosts.d/${job.target.knownHostsName} -s sftp";
+        sftpCommand = "ssh ${job.target.user}@${job.target.host} -i ${job.identityFile} -o BatchMode=yes -o ControlMaster=no -o ControlPath=none -o ControlPersist=no -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/etc/ssh/known_hosts.d/${job.target.knownHostsName} -s sftp";
         sftpOption = "sftp.command=${sftpCommand}";
       in {
-        inherit (job) user paths exclude pruneOpts passwordFile timerConfig checkOpts;
+        inherit (job) user paths exclude pruneOpts passwordFile timerConfig checkOpts extraBackupArgs;
         initialize = true;
         repository = "sftp:${job.target.user}@${job.target.host}:${job.target.repositoryPath}";
         extraOptions = [
@@ -185,12 +198,17 @@ in {
         '';
       };
     in
-      lib.optionalAttrs job.inhibitSleep {
-        "restic-backups-${name}" = {
-          after = ["restic-backups-${name}-sleep-inhibitor.service"];
-          requires = ["restic-backups-${name}-sleep-inhibitor.service"];
-        };
-
+      {
+        "restic-backups-${name}" =
+          {
+            inherit (job) serviceConfig;
+          }
+          // lib.optionalAttrs job.inhibitSleep {
+            after = ["restic-backups-${name}-sleep-inhibitor.service"];
+            requires = ["restic-backups-${name}-sleep-inhibitor.service"];
+          };
+      }
+      // lib.optionalAttrs job.inhibitSleep {
         "restic-backups-${name}-sleep-inhibitor" = {
           description = "Sleep inhibitor for Restic backup ${name}";
           unitConfig.StopWhenUnneeded = true;

@@ -17,7 +17,6 @@
       gnugrep
       mount
       restic
-      rsync
       util-linux
     ];
     text = ''
@@ -25,6 +24,14 @@
 
       if [ "$(id -u)" -ne 0 ]; then
         exec sudo "$0" "$@"
+      fi
+
+      exec 9>/run/lock/dusk-backup-external.lock
+      flock -n 9 || { echo "External backup is already running" >&2; exit 1; }
+      if mountpoint -q ${lib.escapeShellArg cfg.mountPoint} ||
+        cryptsetup status ${lib.escapeShellArg cfg.mapperName} >/dev/null 2>&1; then
+        echo "Backup mount or mapper is already in use; refusing to take ownership" >&2
+        exit 1
       fi
 
       device=${lib.escapeShellArg cfg.deviceById}
@@ -57,15 +64,20 @@
 
       export RESTIC_PASSWORD_FILE=${lib.escapeShellArg cfg.passwordFile}
       export RESTIC_REPOSITORY="$dusk_repo"
-      restic snapshots >/dev/null 2>&1 || restic init
+      if [ ! -f "$dusk_repo/config" ]; then restic init; fi
+      restic snapshots >/dev/null
       restic backup ${quotedPaths}
       restic forget --prune --keep-daily 7 --keep-weekly 8 --keep-monthly 12
       restic check --read-data-subset=1G
 
-      rsync -aHAX --delete --numeric-ids \
-        ${lib.escapeShellArg "${cfg.shadeRepository}/"} "$shade_mirror/"
-      RESTIC_PASSWORD_FILE=${lib.escapeShellArg cfg.shadePasswordFile} \
-        RESTIC_REPOSITORY="$shade_mirror" restic check --read-data-subset=1G
+      export RESTIC_PASSWORD_FILE=${lib.escapeShellArg cfg.shadePasswordFile}
+      export RESTIC_REPOSITORY="$shade_mirror"
+      if [ ! -f "$shade_mirror/config" ]; then restic init; fi
+      # Restic holds source/destination locks while copying; rsync cannot
+      # protect against a concurrent source prune removing referenced packs.
+      restic copy --from-repo ${lib.escapeShellArg cfg.shadeRepository} \
+        --from-password-file ${lib.escapeShellArg cfg.shadePasswordFile}
+      restic check --read-data-subset=1G
 
       btrfs scrub start -B ${lib.escapeShellArg cfg.mountPoint}
       install -d -m 0755 /var/lib/prometheus-node-exporter-textfiles
@@ -118,6 +130,7 @@ in {
           "/var/lib/continuwuity"
           "/var/lib/vaultwarden"
           "/var/lib/radicle"
+          "/var/lib/martonaronvarga"
         ]
         ++ lib.optionals inventory.matrixLab.enable [
           "/persist/backups/matrix"
