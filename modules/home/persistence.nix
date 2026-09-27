@@ -18,7 +18,19 @@ _: {
         mode = "0700";
       }
       ".local/state/wayland-appearance"
+      {
+        directory = ".local/state/mail-sync";
+        mode = "0700";
+      }
+      {
+        directory = ".local/share/msmtp";
+        mode = "0700";
+      }
       ".local/share/wluma"
+      {
+        directory = ".mail";
+        mode = "0700";
+      }
       ".cache/aerc"
       ".config/mozilla/firefox"
       ".config/aerc/saved"
