@@ -6,6 +6,7 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
+  hyprlandPackage = inputs.hyprland.packages.${system}.hyprland;
   niriPackage = inputs.niri.packages.${system}.niri.override {
     libdisplay-info = pkgs.libdisplay-info_0_3;
   };
@@ -33,13 +34,13 @@
         if [ -n "''${NIRI_SOCKET:-}" ]; then
           exec ${niriPackage}/bin/niri msg action power-off-monitors
         fi
-        exec ${pkgs.hyprland}/bin/hyprctl dispatch dpms off
+        exec ${hyprlandPackage}/bin/hyprctl dispatch 'hl.dsp.dpms({ action = "off" })'
         ;;
       on)
         if [ -n "''${NIRI_SOCKET:-}" ]; then
           exec ${niriPackage}/bin/niri msg action power-on-monitors
         fi
-        exec ${pkgs.hyprland}/bin/hyprctl dispatch dpms on
+        exec ${hyprlandPackage}/bin/hyprctl dispatch 'hl.dsp.dpms({ action = "on" })'
         ;;
       *)
         echo "usage: wayland-dpms {on|off}" >&2
@@ -67,6 +68,12 @@ in {
       };
 
       listener = [
+        {
+          timeout = timeout - 20;
+          # Media may inhibit suspend, but must not leave the session unlocked.
+          ignore_inhibit = true;
+          on-timeout = "${pkgs.systemd}/bin/loginctl lock-session";
+        }
         {
           timeout = timeout - 10;
           # save the current brightness and dim the screen over a period of

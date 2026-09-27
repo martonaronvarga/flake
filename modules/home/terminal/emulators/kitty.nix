@@ -56,7 +56,7 @@ in {
       linux_display_server auto
       wayland_titlebar_color background
 
-      allow_remote_control yes
+      allow_remote_control no
       enable_audio_bell no
       visual_bell_duration 0.1
 

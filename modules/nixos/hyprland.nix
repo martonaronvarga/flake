@@ -30,13 +30,12 @@
       common = {
         default = ["gnome"];
         "org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
-        "org.freedesktop.portal.OpenURI" = ["hyprland"];
       };
       hyprland = {
         default = ["hyprland" "gnome"];
         "org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
-        "org.freedesktop.portal.impl.portal.Screenshot" = ["hyprland"];
-        "org.freedesktop.portal.impl.portal.ScreenCast" = ["hyprland"];
+        "org.freedesktop.impl.portal.Screenshot" = ["hyprland"];
+        "org.freedesktop.impl.portal.ScreenCast" = ["hyprland"];
       };
     };
     extraPortals = [

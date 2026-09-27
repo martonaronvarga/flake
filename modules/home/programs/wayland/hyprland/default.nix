@@ -18,7 +18,9 @@
     enable = true;
     package = null; # set in nixos module from flake: inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.default;
     portalPackage = null; # use the nixos module from flake: inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-    configType = "hyprlang"; # TODO migrate to lua
+    configType = "lua";
+    # Curves must exist before animations reference them.
+    importantPrefixes = ["env" "config" "curve"];
 
     plugins = with inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}; [
       # hyprbars

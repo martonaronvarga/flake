@@ -1,4 +1,6 @@
-_: let
+{lib, ...}: let
+  bind = key: action: flags: {_args = [key (lib.generators.mkLuaInline action) flags];};
+  exec = key: command: flags: bind key "hl.dsp.exec_cmd(${lib.generators.toLua {} command})" flags;
   # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
   workspaces = builtins.concatLists (builtins.genList (
       x: let
@@ -7,8 +9,8 @@ _: let
         in
           builtins.toString (x + 1 - (c * 10));
       in [
-        "$mod, ${ws}, workspace, ${toString (x + 1)}"
-        "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+        (bind "SUPER + ${ws}" ''hl.dsp.focus({ workspace = "${toString (x + 1)}" })'' {})
+        (bind "SUPER + SHIFT + ${ws}" ''hl.dsp.window.move({ workspace = "${toString (x + 1)}" })'' {})
       ]
     )
     10);
@@ -24,98 +26,106 @@ in {
     bind =
       [
         # compositor commands
-        "$mod SHIFT, E, exec, uwsm stop"
-        "$mod, Q, killactive,"
-        "$mod, F, fullscreen,"
-        "$mod SHIFT, F, fullscreen, 0"
-        "$mod, G, togglegroup,"
-        "$mod SHIFT, N, changegroupactive, f"
-        "$mod SHIFT, P, changegroupactive, b"
-        "$mod, R, layoutmsg, togglesplit"
-        "$mod, T, togglefloating,"
-        "$mod, P, pseudo,"
-        "$mod ALT, ,resizeactive,"
+        (exec "SUPER + SHIFT + E" "uwsm stop" {})
+        (bind "SUPER + Q" ''hl.dsp.window.close()'' {})
+        (bind "SUPER + F" ''hl.dsp.window.fullscreen()'' {})
+        (bind "SUPER + SHIFT + F" ''hl.dsp.window.fullscreen()'' {})
+        (bind "SUPER + G" ''hl.dsp.group.toggle()'' {})
+        (bind "SUPER + SHIFT + N" ''hl.dsp.group.next()'' {})
+        (bind "SUPER + SHIFT + P" ''hl.dsp.group.prev()'' {})
+        (bind "SUPER + R" ''hl.dsp.layout("togglesplit")'' {})
+        (bind "SUPER + T" ''hl.dsp.window.float()'' {})
+        (bind "SUPER + P" ''hl.dsp.window.pseudo()'' {})
+        # Removed the empty resizeactive binding: it had no resize delta.
 
         # utility
-        "$mod, B, exec, firefox"
+        (exec "SUPER + B" "firefox" {})
         # terminal
-        "$mod, Return, exec, uwsm app -- kitty"
+        (exec "SUPER + Return" "uwsm app -- kitty" {})
         # logout menu
-        "$mod, Escape, exec, ${toggle "wlogout"} -p layer-shell"
+        (exec "SUPER + Escape" "${toggle "wlogout"} -p layer-shell" {})
         # lock screen
-        "$mod, L, exec, loginctl lock-session"
+        (exec "SUPER + L" "loginctl lock-session" {})
         # fuzzel
-        "$mod, D, exec, fuzzel"
+        (exec "SUPER + D" "fuzzel" {})
 
         # move focus
-        "$mod, left, movefocus, l"
-        "$mod, right, movefocus, r"
-        "$mod, up, movefocus, u"
-        "$mod, down, movefocus, d"
-        "$mod, Tab, cyclenext"
-        "$mod, Tab, alterzorder"
+        (bind "SUPER + left" ''hl.dsp.focus({ direction = "left" })'' {})
+        (bind "SUPER + right" ''hl.dsp.focus({ direction = "right" })'' {})
+        (bind "SUPER + up" ''hl.dsp.focus({ direction = "up" })'' {})
+        (bind "SUPER + down" ''hl.dsp.focus({ direction = "down" })'' {})
+        (bind "SUPER + Tab" ''hl.dsp.window.cycle_next()'' {})
+        (bind "SUPER + Tab" ''hl.dsp.window.bring_to_top()'' {})
 
         # screenshot
         # area
-        ", Print, exec, ${runOnce "grimblast"} --notify copysave area"
-        "$mod SHIFT, R, exec, ${runOnce "grimblast"} --notify copysave area"
+        (exec "Print" "${runOnce "grimblast"} --notify copysave area" {})
+        (exec "SUPER + SHIFT + R" "${runOnce "grimblast"} --notify copysave area" {})
 
         # current screen
-        "CTRL, Print, exec, ${runOnce "grimblast"} --notify --cursor copysave output"
-        "$mod SHIFT CTRL, R, exec, ${runOnce "grimblast"} --notify --cursor copysave output"
+        (exec "CTRL + Print" "${runOnce "grimblast"} --notify --cursor copysave output" {})
+        (exec "SUPER + SHIFT + CTRL + R" "${runOnce "grimblast"} --notify --cursor copysave output" {})
 
         # all screens
-        "ALT, Print, exec, ${runOnce "grimblast"} --notify --cursor copysave screen"
-        "$mod SHIFT ALT, R, exec, ${runOnce "grimblast"} --notify --cursor copysave screen"
+        (exec "ALT + Print" "${runOnce "grimblast"} --notify --cursor copysave screen" {})
+        (exec "SUPER + SHIFT + ALT + R" "${runOnce "grimblast"} --notify --cursor copysave screen" {})
 
         # special workspace
-        "$mod SHIFT, grave, movetoworkspace, special"
-        "$mod, grave, togglespecialworkspace, current"
+        (bind "SUPER + SHIFT + grave" ''hl.dsp.window.move({ workspace = "special" })'' {})
+        (bind "SUPER + grave" ''hl.dsp.workspace.toggle_special()'' {})
 
         # cycle workspaces
-        "$mod, bracketleft, workspace, m-1"
-        "$mod, bracketright, workspace, m+1"
+        (bind "SUPER + bracketleft" ''hl.dsp.focus({ workspace = "m-1" })'' {})
+        (bind "SUPER + bracketright" ''hl.dsp.focus({ workspace = "m+1" })'' {})
 
         # cycle monitors
-        "$mod SHIFT, bracketleft, focusmonitor, l"
-        "$mod SHIFT, bracketright, focusmonitor, r"
+        (bind "SUPER + SHIFT + bracketleft" ''hl.dsp.focus({ monitor = "l" })'' {})
+        (bind "SUPER + SHIFT + bracketright" ''hl.dsp.focus({ monitor = "r" })'' {})
 
         # send focused workspace to left/right monitors
-        "$mod SHIFT ALT, bracketleft, movecurrentworkspacetomonitor, l"
-        "$mod SHIFT ALT, bracketright, movecurrentworkspacetomonitor, r"
+        (bind "SUPER + SHIFT + ALT + bracketleft" ''hl.dsp.workspace.move({ monitor = "l" })'' {})
+        (bind "SUPER + SHIFT + ALT + bracketright" ''hl.dsp.workspace.move({ monitor = "r" })'' {})
       ]
-      ++ workspaces;
+      ++ workspaces
+      ++ [
+        (exec "SUPER + SHIFT + W" "select-wallpaper" {release = true;})
+        (exec "SUPER + SHIFT + B" "select-waybar" {release = true;})
+      ]
+      ++ [
+        # media controls
+        (exec "XF86AudioPlay" "playerctl play-pause" {locked = true;})
+        (exec "XF86AudioPrev" "playerctl previous" {locked = true;})
+        (exec "XF86AudioNext" "playerctl next" {locked = true;})
 
-    bindr = [
-      "$mod SHIFT, W, exec, select-wallpaper"
-      "$mod SHIFT, B, exec, select-waybar"
-    ];
+        # volume
+        (exec "XF86AudioMute" "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle" {locked = true;})
+        (exec "XF86AudioMicMute" "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle" {locked = true;})
+      ]
+      ++ [
+        # volume
+        (exec "XF86AudioRaiseVolume" "wpctl set-volume -l '1.0' @DEFAULT_AUDIO_SINK@ 6%+" {
+          locked = true;
+          repeating = true;
+        })
+        (exec "XF86AudioLowerVolume" "wpctl set-volume -l '1.0' @DEFAULT_AUDIO_SINK@ 6%-" {
+          locked = true;
+          repeating = true;
+        })
 
-    bindl = [
-      # media controls
-      ", XF86AudioPlay, exec, playerctl play-pause"
-      ", XF86AudioPrev, exec, playerctl previous"
-      ", XF86AudioNext, exec, playerctl next"
-
-      # volume
-      ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-      ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-    ];
-
-    bindle = [
-      # volume
-      ", XF86AudioRaiseVolume, exec, wpctl set-volume -l '1.0' @DEFAULT_AUDIO_SINK@ 6%+"
-      ", XF86AudioLowerVolume, exec, wpctl set-volume -l '1.0' @DEFAULT_AUDIO_SINK@ 6%-"
-
-      # backlight
-      ", XF86MonBrightnessUp, exec, brillo -q -u 300000 -A 5"
-      ", XF86MonBrightnessDown, exec, brillo -q -u 300000 -U 5"
-    ];
-
-    bindm = [
-      "$mod, mouse:273, resizewindow"
-      "$mod ALT, mouse:272, resizewindow"
-      "$mod, mouse:272, movewindow"
-    ];
+        # backlight
+        (exec "XF86MonBrightnessUp" "brillo -q -u 300000 -A 5" {
+          locked = true;
+          repeating = true;
+        })
+        (exec "XF86MonBrightnessDown" "brillo -q -u 300000 -U 5" {
+          locked = true;
+          repeating = true;
+        })
+      ]
+      ++ [
+        (bind "SUPER + mouse:273" ''hl.dsp.window.resize()'' {mouse = true;})
+        (bind "SUPER + ALT + mouse:272" ''hl.dsp.window.resize()'' {mouse = true;})
+        (bind "SUPER + mouse:272" ''hl.dsp.window.drag()'' {mouse = true;})
+      ];
   };
 }
