@@ -19,22 +19,6 @@ in {
   systemd = {
     packages = [pkgs.open-fprintd];
     services = {
-      # Keep open-fprintd's D-Bus proxy alive across sleep so hyprlock retains
-      # its authentication session. These packaged units suspend and resume
-      # the underlying device instead of replacing the proxy process.
-      open-fprintd-suspend.wantedBy = [
-        "suspend.target"
-        "hibernate.target"
-        "hybrid-sleep.target"
-        "suspend-then-hibernate.target"
-      ];
-      open-fprintd-resume.wantedBy = [
-        "suspend.target"
-        "hibernate.target"
-        "hybrid-sleep.target"
-        "suspend-then-hibernate.target"
-      ];
-
       python-validity = {
         description = "Validity fingerprint sensor driver";
         wantedBy = ["multi-user.target"];

@@ -134,7 +134,7 @@ in {
 
     services.restic.backups =
       lib.mapAttrs (_: job: let
-        sftpCommand = "ssh ${job.target.user}@${job.target.host} -i ${job.identityFile} -o BatchMode=yes -o ControlMaster=no -o ControlPath=none -o ControlPersist=no -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/etc/ssh/known_hosts.d/${job.target.knownHostsName} -s sftp";
+        sftpCommand = "ssh ${job.target.user}@${job.target.host} -i ${job.identityFile} -o BatchMode=yes -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ControlMaster=no -o ControlPath=none -o ControlPersist=no -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/etc/ssh/known_hosts.d/${job.target.knownHostsName} -s sftp";
         sftpOption = "sftp.command=${sftpCommand}";
       in {
         inherit (job) user paths exclude pruneOpts passwordFile timerConfig checkOpts extraBackupArgs;
@@ -201,7 +201,15 @@ in {
       {
         "restic-backups-${name}" =
           {
-            inherit (job) serviceConfig;
+            startLimitIntervalSec = 7200;
+            startLimitBurst = 4;
+            environment.RESTIC_RETRY_LOCK = "1h";
+            serviceConfig =
+              {
+                Restart = "on-failure";
+                RestartSec = "15m";
+              }
+              // job.serviceConfig;
           }
           // lib.optionalAttrs job.inhibitSleep {
             after = ["restic-backups-${name}-sleep-inhibitor.service"];

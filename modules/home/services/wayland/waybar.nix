@@ -138,7 +138,9 @@
       };
       "group/audio" = {
         orientation = "horizontal";
-        modules = ["wireplumber" "bluetooth"];
+        # PipeWire exposes a PulseAudio-compatible server, and this module
+        # handles hotplugged sinks without WirePlumber object-id races.
+        modules = ["pulseaudio" "bluetooth"];
         drawer = {
           transition-left-to-right = false;
           transition-duration = 500;
@@ -229,12 +231,6 @@
         format-muted = "  muted";
         format-icons.default = ["" "" ""];
         scroll-step = 1;
-        on-click = "pavucontrol";
-      };
-      wireplumber = {
-        format = "{icon} {node_name}/<span color='#849696'>{volume}</span>";
-        format-muted = " X ";
-        format-icons = ["+--" "++-" "+++"];
         on-click = "pavucontrol";
       };
       bluetooth = {
