@@ -226,10 +226,9 @@
         format = "BRT {percent}%";
       };
       pulseaudio = {
-        format = "{icon} {volume}%";
-        format-bluetooth = " {volume}%";
-        format-muted = "  muted";
-        format-icons.default = ["" "" ""];
+        format = "VOL {volume}%";
+        format-bluetooth = "BT {volume}%";
+        format-muted = "VOL muted";
         scroll-step = 1;
         on-click = "pavucontrol";
       };

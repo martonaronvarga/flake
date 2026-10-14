@@ -13,7 +13,10 @@
     then
       import inputs.nixpkgs {
         inherit system;
-        config.allowUnfree = true;
+        config = {
+          allowUnfree = true;
+          permittedInsecurePackages = ["radicle-node-1.10.3"];
+        };
       }
     else withSystem system ({pkgs, ...}: pkgs);
 in

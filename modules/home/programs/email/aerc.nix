@@ -580,9 +580,11 @@ in {
 
     notmuch = {
       enable = true;
-      new.tags = ["new"];
-      maildir.synchronizeFlags = true;
-      search.excludeTags = ["deleted" "spam"];
+      settings = {
+        new.tags = ["new"];
+        maildir.synchronize_flags = true;
+        search.exclude_tags = ["deleted" "spam"];
+      };
       hooks.postNew = ''
         notmuch tag +inbox -- 'path:personal/INBOX/** or path:work/INBOX/**'
         notmuch tag -inbox -- 'tag:inbox and not path:personal/INBOX/** and not path:work/INBOX/**'

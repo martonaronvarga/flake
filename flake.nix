@@ -44,7 +44,6 @@
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
     };
 
     hyprland.url = "github:hyprwm/Hyprland?submodules=1";
@@ -155,7 +154,10 @@
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           overlays = [inputs.nix-topology.overlays.default];
-          config.allowUnfree = true;
+          config = {
+            allowUnfree = true;
+            permittedInsecurePackages = ["radicle-node-1.10.3"];
+          };
         };
 
         formatter = pkgs.alejandra;

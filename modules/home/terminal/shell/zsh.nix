@@ -46,8 +46,8 @@ in {
 
     shellAliases = {
       eltehpc = "kitty +kitten ssh atlasz";
-      eltevpn = "nmcli connection up elte-vpn";
-      eltevpnstop = "nmcli connection down elte-vpn";
+      eltevpn = "sudo openfortivpn fw1.vpn.elte.hu:4443 --username usumusu";
+      eltevpnstop = "sudo pkill -TERM -x openfortivpn";
       ssh = "kitty +kitten ssh";
       xopen = "xdg-open";
       c = "clear";
@@ -218,14 +218,6 @@ in {
           return 0
         }
         tmux "$change" -t "$session"
-      '';
-      eltevpn-setup = ''
-        nmcli connection show elte-vpn >/dev/null 2>&1 || \
-          nmcli connection add type vpn vpn-type fortisslvpn con-name elte-vpn ifname "*" user usumusu -- \
-            vpn.data "gateway=fw1.vpn.elte.hu:4443"
-        local uuid
-        uuid="$(nmcli --get-values connection.uuid connection show elte-vpn)" || return
-        nm-connection-editor --edit "$uuid" >/dev/null 2>&1 &!
       '';
       gco = ''
         git rev-parse --git-dir >/dev/null 2>&1 || {

@@ -85,6 +85,10 @@ in {
         # send focused workspace to left/right monitors
         (bind "SUPER + SHIFT + ALT + bracketleft" ''hl.dsp.workspace.move({ monitor = "l" })'' {})
         (bind "SUPER + SHIFT + ALT + bracketright" ''hl.dsp.workspace.move({ monitor = "r" })'' {})
+
+        # scroll through workspaces
+        (bind "SUPER + mouse_up" ''hl.dsp.focus({ workspace = "m-1" })'' {mouse = true;})
+        (bind "SUPER + mouse_down" ''hl.dsp.focus({ workspace = "m+1" })'' {mouse = true;})
       ]
       ++ workspaces
       ++ [
